@@ -465,7 +465,7 @@ export default function App() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-8 md:pt-12 pb-12 md:pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative pt-6 md:pt-8 pb-6 md:pb-10 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Retail-scene line illustration backdrop (bold + visible) */}
         <HeroBackdrop />
 
@@ -585,9 +585,9 @@ export default function App() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-8 md:mb-12"
+            className="mb-5 md:mb-7"
           >
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.95] tracking-tighter px-4 mb-6 md:mb-8">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.9] tracking-tighter px-4 mb-3 md:mb-5">
               <motion.span
                 initial={{ opacity: 0, y: 20, letterSpacing: "0.2em" }}
                 animate={{ opacity: 1, y: 0, letterSpacing: "-0.04em" }}
@@ -624,7 +624,7 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-lg md:text-xl lg:text-2xl text-gray-700 max-w-3xl mx-auto font-medium px-4"
+              className="text-base md:text-lg lg:text-xl text-gray-700 max-w-3xl mx-auto font-medium px-4"
             >
               The most intelligent people counting system in the UAE
             </motion.p>
@@ -634,7 +634,7 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="text-base sm:text-lg md:text-xl text-gray-600 max-w-4xl mx-auto mb-10 md:mb-12 leading-relaxed px-4"
+            className="text-sm sm:text-base md:text-lg text-gray-600 max-w-4xl mx-auto mb-6 md:mb-8 leading-relaxed px-4"
           >
             Transform retail performance with AI-powered traffic intelligence. Track footfall, measure conversion, understand demographics—all in real-time with 3D stereo vision technology.
           </motion.p>
@@ -649,7 +649,7 @@ export default function App() {
               whileHover={{ scale: 1.05, y: -4 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="group bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 text-white px-10 py-4 rounded-full shadow-2xl shadow-yellow-500/50 hover:shadow-yellow-500/70 transition-shadow duration-300 flex items-center gap-2 text-lg font-semibold relative overflow-hidden"
+              className="group bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 text-white px-8 py-3 md:px-10 md:py-3.5 rounded-full shadow-2xl shadow-yellow-500/50 hover:shadow-yellow-500/70 transition-shadow duration-300 flex items-center gap-2 text-base md:text-lg font-semibold relative overflow-hidden"
             >
               <span className="relative z-10">Stop Guessing, Start Tracking</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300 relative z-10" />
