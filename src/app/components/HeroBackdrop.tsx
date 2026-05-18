@@ -304,52 +304,6 @@ function CornerCamera({ x, y, label }: { x: number; y: number; label: string }) 
   );
 }
 
-/** Bottom-centre demographics legend showing live breakdown. */
-function DemographicsLegend() {
-  const breakdown = [
-    { cat: "female" as Category, pct: "38%" },
-    { cat: "male" as Category, pct: "32%" },
-    { cat: "kid" as Category, pct: "12%" },
-    { cat: "staff" as Category, pct: "18%" },
-  ];
-
-  return (
-    <g transform="translate(420 660)">
-      <rect x="0" y="0" width="600" height="34" rx="17" fill="white" stroke={amber} strokeOpacity="0.4" strokeWidth="1.1" />
-
-      {/* Live indicator */}
-      <motion.circle
-        cx="20"
-        cy="17"
-        r="4"
-        fill="#16a34a"
-        animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.15, 1] }}
-        transition={{ duration: 1.6, repeat: Infinity }}
-      />
-      <text x="34" y="21" fill={ink} fontSize="10" fontWeight="900" letterSpacing="1.4" fontFamily="sans-serif">
-        DEMOGRAPHICS · LIVE
-      </text>
-
-      {/* Per-category swatches */}
-      {breakdown.map((b, i) => {
-        const c = CATEGORY[b.cat];
-        const x = 200 + i * 100;
-        return (
-          <g key={b.cat} transform={`translate(${x} 0)`}>
-            <circle cx="10" cy="17" r="5" fill={c.primary} />
-            <text x="20" y="14" fill={ink} fontSize="8" fontWeight="900" letterSpacing="1" fontFamily="sans-serif">
-              {c.label}
-            </text>
-            <text x="20" y="24" fill={c.primary} fontSize="11" fontWeight="900" fontFamily="monospace">
-              {b.pct}
-            </text>
-          </g>
-        );
-      })}
-    </g>
-  );
-}
-
 export function HeroBackdrop() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.7]">
@@ -481,9 +435,6 @@ export function HeroBackdrop() {
             </motion.g>
           );
         })}
-
-        {/* Demographics legend */}
-        <DemographicsLegend />
 
         {/* Centre vignette keeps the headline crisp */}
         <rect x="200" y="180" width="1040" height="440" fill="url(#centerFade)" rx="40" />
