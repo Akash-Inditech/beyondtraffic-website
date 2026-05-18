@@ -3,73 +3,31 @@ import { motion, AnimatePresence } from "motion/react";
 
 /**
  * Hero right-column visual: real-photo tracking demo that cycles between
- * two scenes every ~6 seconds.
+ * two scenes every ~6 seconds. The detection boxes and labels are baked
+ * into the source images themselves, so this component only renders the
+ * surrounding HUD chrome (LIVE pill, FPS, REC, visitor ticker, detected
+ * count, scene dots).
  *
- *   Scene 1 — family-hero.jpg    A family of four walking through a mall
- *   Scene 2 — bt-group.jpg       A crowded mall corridor with many people
- *
- * Each scene has its own image (in /public) and its own set of bounding-box
- * positions. The HUD overlays (LIVE, FPS, REC, visitor ticker, detected
- * count) stay constant across scenes; the detected count auto-updates from
- * the active scene's array length.
- *
- * Labels show the persistent unique tracking ID instead of an age estimate,
- * e.g. "Adult Female · T-2913".
- *
- * To swap a photo: replace /public/family-hero.jpg or /public/bt-group.jpg
- * and update the corresponding `detections` array so the percentages line
- * up over the new people.
+ * To swap a photo: replace /public/family-hero.png or /public/bt-group.png
+ * and update the matching `detectedCount` so the HUD number lines up.
  */
-
-type Category = "female" | "male" | "kid";
-
-const CATEGORY: Record<Category, { primary: string; label: string }> = {
-  female: { primary: "#EC4899", label: "Adult Female" },
-  male: { primary: "#3B82F6", label: "Adult Male" },
-  kid: { primary: "#A855F7", label: "Kid" },
-};
-
-type Detection = {
-  id: string;
-  category: Category;
-  leftPct: number;
-  topPct: number;
-  widthPct: number;
-  heightPct: number;
-  confidence: number;
-};
 
 type Scene = {
   name: string;
   image: string;
-  detections: Detection[];
+  detectedCount: number;
 };
 
 const SCENES: Scene[] = [
   {
-    // Scene 1 — family of four walking with shopping bags
     name: "Family · CAM-01",
-    image: `${import.meta.env.BASE_URL}family-hero.jpg`,
-    detections: [
-      { id: "T-2847", category: "male",   leftPct: 22, topPct: 58, widthPct: 14, heightPct: 38, confidence: 99 },
-      { id: "T-2902", category: "kid",    leftPct: 37, topPct: 65, widthPct: 11, heightPct: 31, confidence: 96 },
-      { id: "T-2913", category: "kid",    leftPct: 47, topPct: 64, widthPct: 12, heightPct: 32, confidence: 97 },
-      { id: "T-2941", category: "female", leftPct: 58, topPct: 58, widthPct: 14, heightPct: 40, confidence: 98 },
-      { id: "T-2966", category: "female", leftPct: 75, topPct: 60, widthPct: 13, heightPct: 38, confidence: 95 },
-    ],
+    image: `${import.meta.env.BASE_URL}family-hero.png`,
+    detectedCount: 13,
   },
   {
-    // Scene 2 — crowded mall corridor
     name: "Mall Group · CAM-02",
-    image: `${import.meta.env.BASE_URL}bt-group.jpg`,
-    detections: [
-      { id: "T-3104", category: "male",   leftPct: 17, topPct: 55, widthPct: 11, heightPct: 42, confidence: 98 },
-      { id: "T-3119", category: "male",   leftPct: 29, topPct: 41, widthPct: 11, heightPct: 47, confidence: 99 },
-      { id: "T-3127", category: "female", leftPct: 47, topPct: 39, widthPct: 11, heightPct: 44, confidence: 96 },
-      { id: "T-3142", category: "male",   leftPct: 62, topPct: 36, widthPct: 11, heightPct: 44, confidence: 97 },
-      { id: "T-3158", category: "female", leftPct: 76, topPct: 50, widthPct: 10, heightPct: 38, confidence: 95 },
-      { id: "T-3166", category: "female", leftPct: 86, topPct: 56, widthPct: 9,  heightPct: 36, confidence: 96 },
-    ],
+    image: `${import.meta.env.BASE_URL}bt-group.png`,
+    detectedCount: 22,
   },
 ];
 
@@ -125,7 +83,7 @@ export function HeroTrackingScene() {
       transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
       className="relative aspect-[4/3] md:aspect-[5/4] rounded-2xl md:rounded-[24px] overflow-hidden shadow-2xl shadow-gray-300/50 border border-gray-200/70 bg-gray-100"
     >
-      {/* Cross-fading image + detection layer */}
+      {/* Cross-fading image */}
       <AnimatePresence mode="sync">
         <motion.div
           key={sceneIdx}
@@ -141,60 +99,13 @@ export function HeroTrackingScene() {
             className="absolute inset-0 w-full h-full object-cover"
             loading="eager"
             onError={(e) => {
-              const filename = scene.image.split("/").pop() ?? "image.jpg";
+              const filename = scene.image.split("/").pop() ?? "image.png";
               const fallback = FALLBACK_IMAGE(filename);
               if (e.currentTarget.src !== fallback) {
                 e.currentTarget.src = fallback;
               }
             }}
           />
-
-          {/* Detection boxes for this scene */}
-          {scene.detections.map((d, idx) => {
-            const c = CATEGORY[d.category];
-            return (
-              <motion.div
-                key={`${sceneIdx}-${d.id}`}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.45,
-                  delay: 0.25 + idx * 0.08,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="absolute"
-                style={{
-                  left: `${d.leftPct}%`,
-                  top: `${d.topPct}%`,
-                  width: `${d.widthPct}%`,
-                  height: `${d.heightPct}%`,
-                }}
-              >
-                {/* Clean bounding box */}
-                <div
-                  className="absolute inset-0 rounded-md"
-                  style={{
-                    border: `2px solid ${c.primary}`,
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.18)",
-                  }}
-                />
-
-                {/* Top-left pill: category + unique ID */}
-                <div
-                  className="absolute -top-[26px] left-0 px-2 py-0.5 md:py-1 rounded-md text-[10px] md:text-[11px] font-bold tracking-wide text-white whitespace-nowrap shadow-md"
-                  style={{ background: c.primary }}
-                >
-                  {c.label}
-                  <span className="font-mono opacity-85 ml-1.5">· {d.id}</span>
-                </div>
-
-                {/* Bottom-right: confidence */}
-                <div className="absolute bottom-1 right-1 bg-white/92 backdrop-blur-sm px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold font-mono text-gray-800 shadow-sm">
-                  {d.confidence}%
-                </div>
-              </motion.div>
-            );
-          })}
         </motion.div>
       </AnimatePresence>
 
@@ -262,7 +173,7 @@ export function HeroTrackingScene() {
                 transition={{ duration: 0.3 }}
                 className="text-2xl md:text-3xl font-black text-yellow-400 tabular-nums leading-none"
               >
-                {scene.detections.length}
+                {scene.detectedCount}
               </motion.p>
             </AnimatePresence>
             <p className="text-[10px] md:text-[11px] font-bold text-white/80 mt-1.5">98.4% accuracy</p>
