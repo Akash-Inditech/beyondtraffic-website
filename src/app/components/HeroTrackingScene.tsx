@@ -2,27 +2,22 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 
 /**
- * Hero right-column visual: a real photo of a family walking through a retail
- * environment, with clean detection boxes + minimal HUD overlays.
+ * Hero right-column visual: a real photo of a family shopping, with clean
+ * detection boxes overlaid on each person.
  *
- * Designed to look like a polished product demo screenshot, not a sci-fi UI:
- *  - real photograph as the base (single image, no perspective grid, no
- *    scan-line animation, no glowing neon borders)
- *  - thin solid-stroke bounding boxes with a subtle drop shadow
- *  - solid-colour pill labels with white text above each box
- *  - small white-glass HUD chips (LIVE / FPS / REC) with light backdrop blur
- *  - a soft bottom gradient so the "Visitors Today" / "Detected" numbers
- *    stay readable over any photo
+ * The photo file lives in `/public/family-hero.jpg` so it ships as a static
+ * asset and respects Vite's BASE_URL (works locally and at the GitHub Pages
+ * `/beyondtraffic-website/` sub-path). If the file is missing the component
+ * falls back to a neutral placeholder so the page never breaks.
  *
- * Swap PHOTO_URL with your own family / store photo at any time — bounding
- * box positions are configurable via the DETECTIONS array below.
+ * To swap the photo: drop a new file at /public/family-hero.jpg and adjust
+ * each entry in DETECTIONS so its leftPct / topPct / widthPct / heightPct
+ * line up over the people in your new image.
  */
 
-const PHOTO_URL =
-  "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80";
-
+const PHOTO_URL = `${import.meta.env.BASE_URL}family-hero.jpg`;
 const PHOTO_FALLBACK =
-  "https://placehold.co/1400x1120/F3F4F6/9CA3AF?text=Family+Walking+Through+Store";
+  "https://placehold.co/1400x1120/F3F4F6/9CA3AF?text=Save+image+as+public%2Ffamily-hero.jpg";
 
 type Category = "female" | "male" | "kid";
 
@@ -43,12 +38,13 @@ type Detection = {
   age?: string;
 };
 
-// Conservative positions assuming a family-of-three composition:
-// mom on the left, kid in the middle (smaller box), dad on the right.
+// Positions tuned for the attached family-of-four shot:
+//   dad (left) · boy (left-centre) · mom (centre-right) · girl (right)
 const DETECTIONS: Detection[] = [
-  { id: "T-2847", category: "female", leftPct: 16, topPct: 22, widthPct: 22, heightPct: 74, confidence: 98, age: "34" },
-  { id: "T-2902", category: "kid", leftPct: 42, topPct: 42, widthPct: 16, heightPct: 54, confidence: 96, age: "7" },
-  { id: "T-2913", category: "male", leftPct: 60, topPct: 18, widthPct: 24, heightPct: 78, confidence: 99, age: "36" },
+  { id: "T-2847", category: "male",   leftPct: 9,  topPct: 14, widthPct: 19, heightPct: 84, confidence: 99, age: "36" },
+  { id: "T-2902", category: "kid",    leftPct: 27, topPct: 38, widthPct: 14, heightPct: 60, confidence: 96, age: "7"  },
+  { id: "T-2913", category: "female", leftPct: 44, topPct: 14, widthPct: 22, heightPct: 84, confidence: 98, age: "34" },
+  { id: "T-2941", category: "kid",    leftPct: 68, topPct: 30, widthPct: 17, heightPct: 68, confidence: 97, age: "9"  },
 ];
 
 function VisitorTicker({ start = 12587 }: { start?: number }) {
@@ -81,7 +77,7 @@ export function HeroTrackingScene() {
       {/* Family photo */}
       <img
         src={PHOTO_URL}
-        alt="Family walking through a retail store — demonstrating live people counting and demographic detection"
+        alt="Family of four looking at a clothing storefront — demonstrating live people counting and demographic detection"
         className="absolute inset-0 w-full h-full object-cover"
         loading="eager"
         onError={(e) => {
@@ -93,7 +89,6 @@ export function HeroTrackingScene() {
 
       {/* Top HUD bar */}
       <div className="absolute top-3 md:top-4 left-3 md:left-4 right-3 md:right-4 flex items-center justify-between z-30">
-        {/* LIVE · SENSOR */}
         <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md border border-white/70">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-60" />
@@ -104,7 +99,6 @@ export function HeroTrackingScene() {
           </span>
         </div>
 
-        {/* FPS + REC */}
         <div className="hidden sm:flex items-center gap-2">
           <div className="bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-full shadow-md border border-white/70">
             <span className="text-[10px] font-mono font-semibold text-gray-700">30 FPS</span>
@@ -120,7 +114,7 @@ export function HeroTrackingScene() {
         </div>
       </div>
 
-      {/* Detection boxes over the photo */}
+      {/* Detection boxes */}
       {DETECTIONS.map((d, idx) => {
         const c = CATEGORY[d.category];
         return (
@@ -128,7 +122,7 @@ export function HeroTrackingScene() {
             key={d.id}
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.7 + idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.5, delay: 0.7 + idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
             className="absolute z-20"
             style={{
               left: `${d.leftPct}%`,
@@ -137,7 +131,6 @@ export function HeroTrackingScene() {
               height: `${d.heightPct}%`,
             }}
           >
-            {/* Bounding box: thin clean stroke + soft shadow */}
             <div
               className="absolute inset-0 rounded-md"
               style={{
@@ -146,7 +139,6 @@ export function HeroTrackingScene() {
               }}
             />
 
-            {/* Category label pill, top-left of box */}
             <div
               className="absolute -top-[26px] left-0 px-2 py-0.5 md:py-1 rounded-md text-[10px] md:text-[11px] font-bold tracking-wide text-white whitespace-nowrap shadow-md"
               style={{ background: c.primary }}
@@ -155,7 +147,6 @@ export function HeroTrackingScene() {
               {d.age && <span className="font-mono opacity-80 ml-1.5">· {d.age}</span>}
             </div>
 
-            {/* ID + confidence chip, bottom-right inside box */}
             <div className="absolute bottom-1 right-1 bg-white/92 backdrop-blur-sm px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold font-mono text-gray-800 shadow-sm">
               {d.id} · {d.confidence}%
             </div>
@@ -163,7 +154,7 @@ export function HeroTrackingScene() {
         );
       })}
 
-      {/* Bottom gradient + stats HUD */}
+      {/* Bottom stats HUD */}
       <div className="absolute inset-x-0 bottom-0 p-3 md:p-5 pt-12 md:pt-16 bg-gradient-to-t from-black/65 via-black/30 to-transparent z-30">
         <div className="flex items-end justify-between gap-3">
           <div>
