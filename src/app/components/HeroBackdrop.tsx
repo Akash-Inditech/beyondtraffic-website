@@ -1,45 +1,64 @@
 import { motion } from "motion/react";
 
 /**
- * Hero backdrop: top-down spatial tracking view of a retail floor.
+ * Hero backdrop: modern top-down spatial tracking view of a retail floor.
  *
- * Shows multiple people moving through the space along their own paths.
- * Each tracked person carries:
- *   - a persistent unique ID (T-####) and confidence %
- *   - an AI bounding-box rendered as four corner brackets
- *   - a small directional chevron showing heading
- *   - a faint dotted trail of where they've walked
+ * Tracks seven people simultaneously, each classified into one of four
+ * categories with its own colour:
  *
- * Floor plan includes:
- *   - outer building outline, inner shelves / checkout / dressing zones
- *   - two yellow ENTRY doorways at the bottom
- *   - four corner cameras with subtle circular coverage zones
- *   - a soft floor heatmap of higher-traffic clusters
- *   - a live VISITORS counter that ticks up, with a brief "+1" pop on every
- *     increment so the user clearly sees the tracking → counting → metric loop
+ *   Female (pink)    · Male (blue)    · Kid (violet)    · Staff (emerald)
+ *
+ * Per-person elements rendered:
+ *   - soft category-coloured glow ring (radar-blip feel)
+ *   - tiny top-down body silhouette (shoulder shadow + head circle)
+ *   - directional bearing chevron pointing along the heading
+ *   - four AI bounding-box corner brackets in the category colour
+ *   - persistent ID chip: "T-####  ·  CATEGORY  ·  XX%"
+ *   - periodic floating "+1 FEMALE · 28" / "+1 STAFF · MGR" demographic
+ *     pop that drifts upward and fades, so the user literally sees the
+ *     model classifying age + gender + employee status in real time
+ *
+ * Plus: four corner cameras with circular coverage zones, soft heatmap
+ * blobs at the busiest spots, persistent dotted trails behind every
+ * track, and a bottom-centre demographics legend card showing the live
+ * percentage breakdown by category.
  */
 
-const stroke = "#cbd5e1"; // slate-300
-const strokeDeep = "#94a3b8"; // slate-400
+const stroke = "#cbd5e1";
+const strokeDeep = "#94a3b8";
 const ink = "#1a1a1a";
 const amber = "#EAB308";
 const amberDeep = "#A16207";
 
+type Category = "female" | "male" | "kid" | "staff";
+
+const CATEGORY: Record<
+  Category,
+  { primary: string; ring: string; label: string; symbol: string }
+> = {
+  female: { primary: "#EC4899", ring: "rgba(236,72,153,0.22)", label: "FEMALE", symbol: "F" },
+  male: { primary: "#3B82F6", ring: "rgba(59,130,246,0.22)", label: "MALE", symbol: "M" },
+  kid: { primary: "#A855F7", ring: "rgba(168,85,247,0.22)", label: "KID", symbol: "K" },
+  staff: { primary: "#10B981", ring: "rgba(16,185,129,0.22)", label: "STAFF", symbol: "S" },
+};
+
 type WP = { x: number; y: number };
 type Track = {
   id: string;
+  category: Category;
+  meta: string; // age (e.g. "28") or role (e.g. "MGR-04")
   confidence: number;
   waypoints: WP[];
   duration: number;
   delay: number;
+  popDelay: number; // when in the loop the demographic pop appears
 };
 
-// Hand-tuned paths that hug the edges of the canvas so the hero text in the
-// centre stays clean. Each entry/browse/exit sequence ends back near a
-// doorway so the loop feels coherent.
 const TRACKS: Track[] = [
   {
     id: "T-2847",
+    category: "female",
+    meta: "28",
     confidence: 98,
     waypoints: [
       { x: 220, y: 690 },
@@ -50,9 +69,12 @@ const TRACKS: Track[] = [
     ],
     duration: 14,
     delay: 0,
+    popDelay: 2.0,
   },
   {
     id: "T-2902",
+    category: "male",
+    meta: "34",
     confidence: 96,
     waypoints: [
       { x: 360, y: 700 },
@@ -63,10 +85,13 @@ const TRACKS: Track[] = [
     ],
     duration: 17,
     delay: 2.2,
+    popDelay: 4.0,
   },
   {
     id: "T-2913",
-    confidence: 99,
+    category: "kid",
+    meta: "8",
+    confidence: 94,
     waypoints: [
       { x: 80, y: 540 },
       { x: 160, y: 460 },
@@ -76,22 +101,28 @@ const TRACKS: Track[] = [
     ],
     duration: 19,
     delay: 1.1,
+    popDelay: 5.5,
   },
   {
     id: "T-2941",
-    confidence: 97,
+    category: "staff",
+    meta: "MGR-04",
+    confidence: 99,
     waypoints: [
-      { x: 1220, y: 690 },
-      { x: 1180, y: 540 },
-      { x: 1240, y: 420 },
-      { x: 1290, y: 300 },
-      { x: 1230, y: 220 },
+      { x: 720, y: 580 },
+      { x: 820, y: 500 },
+      { x: 920, y: 460 },
+      { x: 1040, y: 480 },
+      { x: 1140, y: 540 },
     ],
     duration: 13,
     delay: 0.6,
+    popDelay: 1.8,
   },
   {
     id: "T-2966",
+    category: "female",
+    meta: "41",
     confidence: 95,
     waypoints: [
       { x: 1360, y: 700 },
@@ -102,10 +133,13 @@ const TRACKS: Track[] = [
     ],
     duration: 16,
     delay: 3.0,
+    popDelay: 6.0,
   },
   {
     id: "T-2978",
-    confidence: 98,
+    category: "male",
+    meta: "26",
+    confidence: 97,
     waypoints: [
       { x: 1380, y: 480 },
       { x: 1240, y: 460 },
@@ -115,18 +149,22 @@ const TRACKS: Track[] = [
     ],
     duration: 18,
     delay: 4.4,
+    popDelay: 3.5,
   },
   {
     id: "T-2994",
+    category: "staff",
+    meta: "CASHIER-02",
     confidence: 99,
     waypoints: [
-      { x: 220, y: 690 },
-      { x: 300, y: 600 },
-      { x: 400, y: 660 },
-      { x: 480, y: 700 },
+      { x: 700, y: 560 },
+      { x: 720, y: 580 },
+      { x: 740, y: 560 },
+      { x: 720, y: 580 },
     ],
     duration: 11,
     delay: 5.8,
+    popDelay: 4.5,
   },
 ];
 
@@ -134,9 +172,7 @@ function waypointsToPath(wp: WP[]) {
   return `M ${wp[0].x} ${wp[0].y} ` + wp.slice(1).map((p) => `L ${p.x} ${p.y}`).join(" ");
 }
 
-/** Direction chevron pointing along the heading from prev->curr waypoint. */
 function bearingFromPath(wp: WP[]) {
-  // Use the middle segment for a stable representative heading.
   const i = Math.floor(wp.length / 2);
   const a = wp[i - 1];
   const b = wp[i];
@@ -144,46 +180,101 @@ function bearingFromPath(wp: WP[]) {
 }
 
 /** A tracked person rendered at the origin — translated by the parent <motion.g>. */
-function TrackedAvatar({ id, confidence, bearing }: { id: string; confidence: number; bearing: number }) {
+function TrackedAvatar({
+  id,
+  category,
+  meta,
+  confidence,
+  bearing,
+  popDelay,
+}: {
+  id: string;
+  category: Category;
+  meta: string;
+  confidence: number;
+  bearing: number;
+  popDelay: number;
+}) {
+  const c = CATEGORY[category];
+
   return (
     <g>
-      {/* AI bounding-box corner brackets (16x16) */}
-      <g stroke={amber} strokeWidth="1.8" fill="none" strokeLinecap="round">
-        <path d="M -14 -14 L -14 -7 M -14 -14 L -7 -14" />
-        <path d="M 14 -14 L 14 -7 M 14 -14 L 7 -14" />
-        <path d="M -14 14 L -14 7 M -14 14 L -7 14" />
-        <path d="M 14 14 L 14 7 M 14 14 L 7 14" />
+      {/* Pulsing detection halo — the "radar blip" */}
+      <motion.circle
+        cx="0"
+        cy="0"
+        r="18"
+        fill={c.ring}
+        animate={{ scale: [1, 1.35, 1], opacity: [0.9, 0.5, 0.9] }}
+        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <circle cx="0" cy="0" r="11" fill={c.ring} />
+
+      {/* AI bounding box corner brackets in category colour */}
+      <g stroke={c.primary} strokeWidth="2" fill="none" strokeLinecap="round">
+        <path d="M -15 -15 L -15 -7 M -15 -15 L -7 -15" />
+        <path d="M 15 -15 L 15 -7 M 15 -15 L 7 -15" />
+        <path d="M -15 15 L -15 7 M -15 15 L -7 15" />
+        <path d="M 15 15 L 15 7 M 15 15 L 7 15" />
       </g>
 
-      {/* Soft floor halo so the dot reads against any background */}
-      <circle cx="0" cy="0" r="11" fill={amber} fillOpacity="0.18" />
+      {/* Top-down body silhouette: shoulder shadow + head */}
+      <ellipse cx="0" cy="2" rx="7" ry="3.6" fill="#0f172a" opacity="0.32" />
+      <circle cx="0" cy="0" r="5.2" fill={c.primary} stroke="white" strokeWidth="1.6" />
 
-      {/* Person dot */}
-      <circle cx="0" cy="0" r="5.5" fill="#0f172a" />
-      <circle cx="0" cy="0" r="3.5" fill={amber} />
-
-      {/* Heading chevron */}
+      {/* Direction chevron */}
       <g transform={`rotate(${bearing})`}>
-        <path d="M 8 0 L 16 -3 L 14 0 L 16 3 Z" fill={amber} />
+        <path d="M 9 0 L 18 -3.5 L 15.5 0 L 18 3.5 Z" fill={c.primary} />
       </g>
+
+      {/* Category badge dot (small letter) on the head */}
+      <text x="0" y="2" textAnchor="middle" fill="white" fontSize="6.5" fontWeight="900" fontFamily="sans-serif">
+        {c.symbol}
+      </text>
 
       {/* ID chip above the bracket */}
-      <g transform="translate(-32 -32)">
-        <rect x="0" y="0" width="64" height="11" rx="2" fill={amber} fillOpacity="0.96" />
-        <text x="4" y="8" fill={ink} fontSize="7" fontWeight="900" fontFamily="monospace" letterSpacing="0.4">
-          {id} · {confidence}%
+      <g transform="translate(-44 -34)">
+        <rect x="0" y="0" width="88" height="11" rx="2" fill={c.primary} fillOpacity="0.96" />
+        <text x="4" y="8" fill="white" fontSize="6.5" fontWeight="900" fontFamily="monospace" letterSpacing="0.3">
+          {id} · {c.label} · {confidence}%
         </text>
       </g>
+
+      {/* Floating demographic +1 pop that drifts up and fades, looped */}
+      <motion.g
+        initial={{ opacity: 0, y: 0 }}
+        animate={{ opacity: [0, 1, 1, 0], y: [-32, -50, -58, -72] }}
+        transition={{
+          duration: 2.4,
+          ease: "easeOut",
+          delay: popDelay,
+          repeat: Infinity,
+          repeatDelay: 5,
+        }}
+      >
+        <rect x="-44" y="-62" width="88" height="14" rx="7" fill={c.primary} />
+        <text x="0" y="-52" textAnchor="middle" fill="white" fontSize="8" fontWeight="900" fontFamily="sans-serif" letterSpacing="0.4">
+          +1 {c.label} · {meta}
+        </text>
+      </motion.g>
     </g>
   );
 }
 
-/** Static corner camera icon with a subtle circular coverage area. */
 function CornerCamera({ x, y, label }: { x: number; y: number; label: string }) {
   return (
     <g>
       <circle cx={x} cy={y} r="120" fill={amber} fillOpacity="0.04" />
-      <circle cx={x} cy={y} r="120" fill="none" stroke={amber} strokeOpacity="0.18" strokeWidth="0.7" strokeDasharray="3 5" />
+      <circle
+        cx={x}
+        cy={y}
+        r="120"
+        fill="none"
+        stroke={amber}
+        strokeOpacity="0.18"
+        strokeWidth="0.7"
+        strokeDasharray="3 5"
+      />
       <rect x={x - 14} y={y - 8} width="28" height="16" rx="3" fill="white" stroke={amberDeep} strokeWidth="1.1" />
       <circle cx={x} cy={y} r="3" fill={amber} />
       <motion.circle
@@ -196,7 +287,16 @@ function CornerCamera({ x, y, label }: { x: number; y: number; label: string }) 
       />
       <g transform={`translate(${x + 18} ${y - 8})`}>
         <rect x="0" y="0" width="44" height="11" rx="2" fill="white" stroke={amberDeep} strokeOpacity="0.5" strokeWidth="0.6" />
-        <text x="22" y="8" textAnchor="middle" fill={amberDeep} fontSize="6.5" fontWeight="800" letterSpacing="1" fontFamily="monospace">
+        <text
+          x="22"
+          y="8"
+          textAnchor="middle"
+          fill={amberDeep}
+          fontSize="6.5"
+          fontWeight="800"
+          letterSpacing="1"
+          fontFamily="monospace"
+        >
           {label}
         </text>
       </g>
@@ -204,9 +304,55 @@ function CornerCamera({ x, y, label }: { x: number; y: number; label: string }) 
   );
 }
 
+/** Bottom-centre demographics legend showing live breakdown. */
+function DemographicsLegend() {
+  const breakdown = [
+    { cat: "female" as Category, pct: "38%" },
+    { cat: "male" as Category, pct: "32%" },
+    { cat: "kid" as Category, pct: "12%" },
+    { cat: "staff" as Category, pct: "18%" },
+  ];
+
+  return (
+    <g transform="translate(420 660)">
+      <rect x="0" y="0" width="600" height="34" rx="17" fill="white" stroke={amber} strokeOpacity="0.4" strokeWidth="1.1" />
+
+      {/* Live indicator */}
+      <motion.circle
+        cx="20"
+        cy="17"
+        r="4"
+        fill="#16a34a"
+        animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.15, 1] }}
+        transition={{ duration: 1.6, repeat: Infinity }}
+      />
+      <text x="34" y="21" fill={ink} fontSize="10" fontWeight="900" letterSpacing="1.4" fontFamily="sans-serif">
+        DEMOGRAPHICS · LIVE
+      </text>
+
+      {/* Per-category swatches */}
+      {breakdown.map((b, i) => {
+        const c = CATEGORY[b.cat];
+        const x = 200 + i * 100;
+        return (
+          <g key={b.cat} transform={`translate(${x} 0)`}>
+            <circle cx="10" cy="17" r="5" fill={c.primary} />
+            <text x="20" y="14" fill={ink} fontSize="8" fontWeight="900" letterSpacing="1" fontFamily="sans-serif">
+              {c.label}
+            </text>
+            <text x="20" y="24" fill={c.primary} fontSize="11" fontWeight="900" fontFamily="monospace">
+              {b.pct}
+            </text>
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 export function HeroBackdrop() {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.62]">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.7]">
       <svg viewBox="0 0 1440 760" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 w-full h-full">
         <defs>
           <radialGradient id="floorHeatmap" cx="50%" cy="50%" r="50%">
@@ -225,30 +371,25 @@ export function HeroBackdrop() {
           </pattern>
         </defs>
 
-        {/* Floor grid (subtle dot grid for spatial feel) */}
+        {/* Floor grid (dot grid for spatial feel) */}
         <rect x="40" y="160" width="1360" height="540" fill="url(#floorGrid)" />
 
         {/* Outer building outline */}
         <rect x="40" y="160" width="1360" height="540" fill="none" stroke={strokeDeep} strokeWidth="1.3" rx="6" />
 
-        {/* Inner zone boundaries (shelves, dressing rooms, checkout) */}
+        {/* Inner zone boundaries */}
         <g stroke={stroke} strokeWidth="0.8" fill="none" strokeDasharray="3 4">
-          {/* Left fixtures */}
           <rect x="80" y="220" width="160" height="80" rx="3" />
           <rect x="80" y="330" width="160" height="80" rx="3" />
           <rect x="80" y="440" width="120" height="50" rx="3" />
-          {/* Right fixtures */}
           <rect x="1200" y="220" width="160" height="80" rx="3" />
           <rect x="1200" y="330" width="160" height="80" rx="3" />
           <rect x="1240" y="440" width="120" height="50" rx="3" />
-          {/* Central checkout island */}
           <rect x="640" y="540" width="160" height="40" rx="4" />
-          {/* Dressing rooms */}
           <rect x="320" y="220" width="80" height="120" rx="3" />
           <rect x="1040" y="220" width="80" height="120" rx="3" />
         </g>
 
-        {/* Zone labels */}
         <g fill={strokeDeep} fontSize="9" fontWeight="900" letterSpacing="2.5" fontFamily="sans-serif">
           <text x="160" y="266" textAnchor="middle">SHELVES · A</text>
           <text x="160" y="376" textAnchor="middle">SHELVES · B</text>
@@ -259,20 +400,29 @@ export function HeroBackdrop() {
           <text x="1080" y="285" textAnchor="middle">FITTING</text>
         </g>
 
-        {/* Soft heatmap blobs in genuinely high-traffic spots */}
+        {/* Soft heatmap blobs at high-traffic spots */}
         <g>
           <circle cx="280" cy="500" r="90" fill="url(#floorHeatmap)" />
           <circle cx="1160" cy="500" r="90" fill="url(#floorHeatmap)" />
           <circle cx="720" cy="600" r="70" fill="url(#floorHeatmap)" />
         </g>
 
-        {/* Entry/exit doorways at the bottom */}
+        {/* Entry doorways */}
         {[
           { x: 220, label: "ENTRY 01" },
           { x: 1220, label: "ENTRY 02" },
         ].map((d) => (
           <g key={d.x}>
-            <line x1={d.x - 30} y1="700" x2={d.x + 30} y2="700" stroke={amber} strokeWidth="2.5" strokeDasharray="4 4" strokeOpacity="0.9" />
+            <line
+              x1={d.x - 30}
+              y1="700"
+              x2={d.x + 30}
+              y2="700"
+              stroke={amber}
+              strokeWidth="2.5"
+              strokeDasharray="4 4"
+              strokeOpacity="0.9"
+            />
             <rect x={d.x - 32} y="708" width="64" height="13" rx="2" fill={amber} fillOpacity="0.95" />
             <text x={d.x} y="717" textAnchor="middle" fill={ink} fontSize="8" fontWeight="900" fontFamily="monospace" letterSpacing="1.2">
               {d.label}
@@ -280,32 +430,31 @@ export function HeroBackdrop() {
           </g>
         ))}
 
-        {/* Corner cameras with circular coverage zones */}
+        {/* Corner cameras */}
         <CornerCamera x={120} y={200} label="CAM-01" />
         <CornerCamera x={1320} y={200} label="CAM-02" />
         <CornerCamera x={120} y={620} label="CAM-03" />
         <CornerCamera x={1320} y={620} label="CAM-04" />
 
-        {/* Static dotted trails for every tracked person — shows the path */}
+        {/* Persistent dotted trails (per-category coloured) */}
         {TRACKS.map((t) => (
           <path
             key={`trail-${t.id}`}
             d={waypointsToPath(t.waypoints)}
             fill="none"
-            stroke={amber}
+            stroke={CATEGORY[t.category].primary}
             strokeWidth="1.1"
             strokeDasharray="3 5"
-            strokeOpacity="0.4"
+            strokeOpacity="0.32"
             strokeLinecap="round"
           />
         ))}
 
-        {/* Moving tracked people — each translated through its waypoints */}
+        {/* Moving tracked people — translated through waypoints */}
         {TRACKS.map((t) => {
           const xs = t.waypoints.map((w) => w.x);
           const ys = t.waypoints.map((w) => w.y);
           const bearing = bearingFromPath(t.waypoints);
-          // Even time distribution per segment.
           const times = t.waypoints.map((_, i) => i / (t.waypoints.length - 1));
           return (
             <motion.g
@@ -321,31 +470,22 @@ export function HeroBackdrop() {
                 delay: t.delay,
               }}
             >
-              <TrackedAvatar id={t.id} confidence={t.confidence} bearing={bearing} />
+              <TrackedAvatar
+                id={t.id}
+                category={t.category}
+                meta={t.meta}
+                confidence={t.confidence}
+                bearing={bearing}
+                popDelay={t.popDelay}
+              />
             </motion.g>
           );
         })}
 
-        {/* Status strip — bottom center */}
-        <g transform="translate(580 660)">
-          <rect x="0" y="0" width="280" height="28" rx="14" fill="white" stroke={amber} strokeOpacity="0.4" strokeWidth="1.1" />
-          <motion.circle
-            cx="16"
-            cy="14"
-            r="4"
-            fill="#16a34a"
-            animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.15, 1] }}
-            transition={{ duration: 1.6, repeat: Infinity }}
-          />
-          <text x="30" y="18" fill={ink} fontSize="10" fontWeight="900" letterSpacing="1.6" fontFamily="sans-serif">
-            TRACKING {TRACKS.length} ACTIVE
-          </text>
-          <text x="200" y="18" fill={strokeDeep} fontSize="9" fontWeight="800" letterSpacing="1" fontFamily="monospace">
-            · 4 CAMS · 30 FPS
-          </text>
-        </g>
+        {/* Demographics legend */}
+        <DemographicsLegend />
 
-        {/* Centre vignette to keep the hero headline crisp */}
+        {/* Centre vignette keeps the headline crisp */}
         <rect x="200" y="180" width="1040" height="440" fill="url(#centerFade)" rx="40" />
       </svg>
     </div>
