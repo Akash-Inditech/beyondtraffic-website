@@ -2,132 +2,56 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 
 /**
- * Right-column visual for the hero — a dark camera-tracking scene with
- * stylized human silhouettes inside category-coloured bounding boxes.
+ * Hero right-column visual: a real photo of a family walking through a retail
+ * environment, with clean detection boxes + minimal HUD overlays.
  *
- * Modern twist vs. a static stock photo:
- *  - perspective floor grid with a vanishing-point hint
- *  - constantly travelling scan line
- *  - animated corner brackets + soft glow on every box
- *  - per-person LIVE classification label (ADULT FEMALE / ADULT MALE /
- *    KID / STAFF) in its own colour
- *  - HUD overlays: live indicator, FPS, detected count, visitor ticker
- *  - subtle floor-halo + sway per person so the scene feels alive
+ * Designed to look like a polished product demo screenshot, not a sci-fi UI:
+ *  - real photograph as the base (single image, no perspective grid, no
+ *    scan-line animation, no glowing neon borders)
+ *  - thin solid-stroke bounding boxes with a subtle drop shadow
+ *  - solid-colour pill labels with white text above each box
+ *  - small white-glass HUD chips (LIVE / FPS / REC) with light backdrop blur
+ *  - a soft bottom gradient so the "Visitors Today" / "Detected" numbers
+ *    stay readable over any photo
+ *
+ * Swap PHOTO_URL with your own family / store photo at any time — bounding
+ * box positions are configurable via the DETECTIONS array below.
  */
 
-type Category = "female" | "male" | "kid" | "staff";
+const PHOTO_URL =
+  "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80";
 
-const CATEGORY: Record<
-  Category,
-  { primary: string; glow: string; label: string }
-> = {
-  female: { primary: "#EC4899", glow: "rgba(236,72,153,0.55)", label: "ADULT FEMALE" },
-  male: { primary: "#3B82F6", glow: "rgba(59,130,246,0.55)", label: "ADULT MALE" },
-  kid: { primary: "#A855F7", glow: "rgba(168,85,247,0.55)", label: "KID" },
-  staff: { primary: "#10B981", glow: "rgba(16,185,129,0.6)", label: "STAFF" },
+const PHOTO_FALLBACK =
+  "https://placehold.co/1400x1120/F3F4F6/9CA3AF?text=Family+Walking+Through+Store";
+
+type Category = "female" | "male" | "kid";
+
+const CATEGORY: Record<Category, { primary: string; label: string }> = {
+  female: { primary: "#EC4899", label: "Adult Female" },
+  male: { primary: "#3B82F6", label: "Adult Male" },
+  kid: { primary: "#A855F7", label: "Kid" },
 };
 
-type Subject = {
+type Detection = {
   id: string;
   category: Category;
-  variant: 0 | 1 | 2 | 3;
   leftPct: number;
-  bottomPct: number;
+  topPct: number;
   widthPct: number;
   heightPct: number;
-  sway: number;
-  delay: number;
+  confidence: number;
+  age?: string;
 };
 
-const SUBJECTS: Subject[] = [
-  // From left to right: female (with bag), female (coat), male (backpack), staff
-  { id: "T-2847", category: "female", variant: 0, leftPct: 6, bottomPct: 6, widthPct: 19, heightPct: 78, sway: 1.5, delay: 0.1 },
-  { id: "T-2902", category: "female", variant: 1, leftPct: 30, bottomPct: 8, widthPct: 18, heightPct: 80, sway: 1.2, delay: 0.3 },
-  { id: "T-2913", category: "male", variant: 2, leftPct: 53, bottomPct: 4, widthPct: 22, heightPct: 86, sway: 1.8, delay: 0.5 },
-  { id: "T-2941", category: "staff", variant: 3, leftPct: 79, bottomPct: 7, widthPct: 18, heightPct: 80, sway: 1.4, delay: 0.7 },
+// Conservative positions assuming a family-of-three composition:
+// mom on the left, kid in the middle (smaller box), dad on the right.
+const DETECTIONS: Detection[] = [
+  { id: "T-2847", category: "female", leftPct: 16, topPct: 22, widthPct: 22, heightPct: 74, confidence: 98, age: "34" },
+  { id: "T-2902", category: "kid", leftPct: 42, topPct: 42, widthPct: 16, heightPct: 54, confidence: 96, age: "7" },
+  { id: "T-2913", category: "male", leftPct: 60, topPct: 18, widthPct: 24, heightPct: 78, confidence: 99, age: "36" },
 ];
 
-/** Stylized "from behind" silhouettes — flat dark fill with category-colour rim glow. */
-function PersonSilhouette({ variant, rim }: { variant: 0 | 1 | 2 | 3; rim: string }) {
-  const fill = "#0a0a0a";
-  const inner = "#1a1a1a";
-
-  if (variant === 0) {
-    // Adult female with shoulder bag
-    return (
-      <svg viewBox="0 0 80 200" className="h-full w-auto" preserveAspectRatio="xMidYMax meet">
-        {/* Hair shape (slightly past shoulders) */}
-        <path d="M 20 14 Q 40 -2 60 14 L 64 50 L 16 50 Z" fill={fill} />
-        {/* Face/neck */}
-        <ellipse cx="40" cy="22" rx="14" ry="16" fill={inner} />
-        {/* Coat */}
-        <path d="M 10 54 Q 40 46 70 54 L 72 138 L 8 138 Z" fill={fill} />
-        <path d="M 10 54 Q 40 46 70 54 L 72 138 L 8 138 Z" fill="none" stroke={rim} strokeOpacity="0.25" strokeWidth="0.8" />
-        {/* Shoulder bag */}
-        <line x1="20" y1="58" x2="6" y2="80" stroke={fill} strokeWidth="2.5" />
-        <rect x="-2" y="78" width="16" height="26" rx="2" fill={fill} />
-        {/* Legs */}
-        <rect x="18" y="138" width="18" height="62" fill={fill} />
-        <rect x="44" y="138" width="18" height="62" fill={fill} />
-      </svg>
-    );
-  }
-  if (variant === 1) {
-    // Adult female in a long coat with hood
-    return (
-      <svg viewBox="0 0 80 200" className="h-full w-auto" preserveAspectRatio="xMidYMax meet">
-        {/* Hood + head */}
-        <path d="M 18 10 Q 40 -4 62 10 L 64 48 L 16 48 Z" fill={fill} />
-        <ellipse cx="40" cy="24" rx="13" ry="14" fill={inner} />
-        {/* Long coat */}
-        <path d="M 8 50 Q 40 42 72 50 L 70 160 L 10 160 Z" fill={fill} />
-        <path d="M 40 50 L 40 160" stroke={inner} strokeWidth="0.6" />
-        {/* Legs */}
-        <rect x="18" y="160" width="18" height="40" fill={fill} />
-        <rect x="44" y="160" width="18" height="40" fill={fill} />
-      </svg>
-    );
-  }
-  if (variant === 2) {
-    // Adult male with backpack
-    return (
-      <svg viewBox="0 0 80 200" className="h-full w-auto" preserveAspectRatio="xMidYMax meet">
-        {/* Head */}
-        <ellipse cx="40" cy="20" rx="13" ry="15" fill={fill} />
-        {/* Shoulders broad */}
-        <path d="M 8 50 Q 40 40 72 50 L 74 130 L 6 130 Z" fill={fill} />
-        {/* Backpack (humping out the back, wider than body) */}
-        <rect x="14" y="48" width="52" height="58" rx="4" fill={inner} stroke={rim} strokeOpacity="0.18" strokeWidth="0.7" />
-        <line x1="20" y1="48" x2="20" y2="106" stroke="#000" strokeWidth="1" />
-        <line x1="60" y1="48" x2="60" y2="106" stroke="#000" strokeWidth="1" />
-        {/* Body lower */}
-        <rect x="14" y="130" width="52" height="14" fill={fill} />
-        {/* Legs (slightly apart - walking) */}
-        <rect x="18" y="144" width="18" height="56" fill={fill} />
-        <rect x="44" y="144" width="18" height="56" fill={fill} />
-      </svg>
-    );
-  }
-  // variant 3 — Staff with hi-vis badge
-  return (
-    <svg viewBox="0 0 80 200" className="h-full w-auto" preserveAspectRatio="xMidYMax meet">
-      {/* Head */}
-      <ellipse cx="40" cy="22" rx="13" ry="15" fill={fill} />
-      {/* Uniform top */}
-      <path d="M 12 52 Q 40 44 68 52 L 70 132 L 10 132 Z" fill={fill} />
-      {/* High-vis staff badge on chest */}
-      <rect x="32" y="72" width="16" height="6" rx="0.8" fill="#fbbf24" />
-      <rect x="32" y="80" width="16" height="2" rx="0.5" fill="#fbbf24" opacity="0.85" />
-      {/* Pants */}
-      <rect x="14" y="132" width="52" height="14" fill={inner} />
-      <rect x="18" y="146" width="18" height="54" fill={fill} />
-      <rect x="44" y="146" width="18" height="54" fill={fill} />
-    </svg>
-  );
-}
-
-/** Small ticking counter — increments +1 every 1.8–4.2s, displayed in the HUD. */
-function VisitorTicker({ start = 12420 }: { start?: number }) {
+function VisitorTicker({ start = 12587 }: { start?: number }) {
   const [count, setCount] = useState(start);
   useEffect(() => {
     let cancelled = false;
@@ -152,208 +76,119 @@ export function HeroTrackingScene() {
       initial={{ opacity: 0, y: 24, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="relative aspect-[16/12] md:aspect-[5/4] rounded-2xl md:rounded-[28px] overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-black border border-slate-800/60 shadow-2xl shadow-slate-900/30"
+      className="relative aspect-[4/3] md:aspect-[5/4] rounded-2xl md:rounded-[24px] overflow-hidden shadow-2xl shadow-gray-300/50 border border-gray-200/70 bg-gray-100"
     >
-      {/* Top vignette */}
-      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
-
-      {/* Bottom vignette */}
-      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-10" />
-
-      {/* Subtle perspective floor grid */}
-      <svg viewBox="0 0 400 300" preserveAspectRatio="none" className="absolute inset-0 w-full h-full opacity-30 pointer-events-none">
-        <defs>
-          <linearGradient id="gridFade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FACC15" stopOpacity="0" />
-            <stop offset="50%" stopColor="#FACC15" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#FACC15" stopOpacity="0.7" />
-          </linearGradient>
-        </defs>
-        {/* Horizontal floor lines, denser near bottom */}
-        {[170, 188, 208, 232, 260].map((y, i) => (
-          <line
-            key={`h${i}`}
-            x1="0"
-            y1={y}
-            x2="400"
-            y2={y}
-            stroke="url(#gridFade)"
-            strokeWidth="0.6"
-          />
-        ))}
-        {/* Vanishing-point lines */}
-        {Array.from({ length: 11 }).map((_, i) => {
-          const x = 200;
-          const spread = (i - 5) * 36;
-          return (
-            <line
-              key={`v${i}`}
-              x1={x + spread}
-              y1="300"
-              x2={x + spread * 0.18}
-              y2="160"
-              stroke="url(#gridFade)"
-              strokeWidth="0.5"
-            />
-          );
-        })}
-      </svg>
-
-      {/* Faint cyan ambient glow at horizon */}
-      <div className="absolute inset-x-0 top-1/3 h-20 bg-gradient-radial from-cyan-500/10 to-transparent pointer-events-none" />
-
-      {/* Traveling scan line */}
-      <motion.div
-        className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-yellow-400/70 to-transparent pointer-events-none z-20"
-        animate={{ top: ["10%", "92%", "10%"] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+      {/* Family photo */}
+      <img
+        src={PHOTO_URL}
+        alt="Family walking through a retail store — demonstrating live people counting and demographic detection"
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+        onError={(e) => {
+          if (e.currentTarget.src !== PHOTO_FALLBACK) {
+            e.currentTarget.src = PHOTO_FALLBACK;
+          }
+        }}
       />
 
-      {/* People with bounding boxes */}
-      {SUBJECTS.map((s) => {
-        const c = CATEGORY[s.category];
+      {/* Top HUD bar */}
+      <div className="absolute top-3 md:top-4 left-3 md:left-4 right-3 md:right-4 flex items-center justify-between z-30">
+        {/* LIVE · SENSOR */}
+        <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md border border-white/70">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-60" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-900">
+            Live · Sensor 01
+          </span>
+        </div>
+
+        {/* FPS + REC */}
+        <div className="hidden sm:flex items-center gap-2">
+          <div className="bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-full shadow-md border border-white/70">
+            <span className="text-[10px] font-mono font-semibold text-gray-700">30 FPS</span>
+          </div>
+          <div className="bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-full shadow-md border border-white/70 flex items-center gap-1.5">
+            <motion.span
+              className="w-1.5 h-1.5 rounded-full bg-red-500"
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.2, repeat: Infinity }}
+            />
+            <span className="text-[9px] font-black uppercase tracking-wider text-red-600">REC</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Detection boxes over the photo */}
+      {DETECTIONS.map((d, idx) => {
+        const c = CATEGORY[d.category];
         return (
           <motion.div
-            key={s.id}
-            className="absolute z-10"
+            key={d.id}
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 + idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute z-20"
             style={{
-              left: `${s.leftPct}%`,
-              bottom: `${s.bottomPct}%`,
-              width: `${s.widthPct}%`,
-              height: `${s.heightPct}%`,
-            }}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              x: [-s.sway, s.sway, -s.sway],
-            }}
-            transition={{
-              opacity: { duration: 0.6, delay: s.delay },
-              y: { duration: 0.6, delay: s.delay, ease: [0.16, 1, 0.3, 1] },
-              x: { duration: 4.5, repeat: Infinity, ease: "easeInOut" },
+              left: `${d.leftPct}%`,
+              top: `${d.topPct}%`,
+              width: `${d.widthPct}%`,
+              height: `${d.heightPct}%`,
             }}
           >
-            {/* Floor halo under person */}
+            {/* Bounding box: thin clean stroke + soft shadow */}
             <div
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[120%] h-3 rounded-[50%] blur-md opacity-50"
-              style={{ background: c.glow }}
-            />
-
-            {/* Category label above bounding box */}
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: s.delay + 0.3 }}
-              className="absolute left-1/2 -translate-x-1/2 -top-8 whitespace-nowrap"
-            >
-              <div
-                className="text-[9px] md:text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-[0.16em] text-white shadow-lg"
-                style={{
-                  background: c.primary,
-                  boxShadow: `0 6px 20px ${c.glow}`,
-                }}
-              >
-                {c.label}
-              </div>
-              {/* small notch pointing down to box */}
-              <div
-                className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-0 h-0"
-                style={{
-                  borderLeft: "4px solid transparent",
-                  borderRight: "4px solid transparent",
-                  borderTop: `4px solid ${c.primary}`,
-                }}
-              />
-            </motion.div>
-
-            {/* Bounding box */}
-            <motion.div
               className="absolute inset-0 rounded-md"
               style={{
-                border: `1.5px solid ${c.primary}`,
-                boxShadow: `0 0 32px ${c.glow}, inset 0 0 16px ${c.glow}`,
+                border: `2px solid ${c.primary}`,
+                boxShadow: "0 2px 12px rgba(0,0,0,0.18)",
               }}
-              animate={{ opacity: [0.85, 1, 0.85] }}
-              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            {/* Corner brackets */}
-            {[
-              "top-[-3px] left-[-3px] border-t-2 border-l-2",
-              "top-[-3px] right-[-3px] border-t-2 border-r-2",
-              "bottom-[-3px] left-[-3px] border-b-2 border-l-2",
-              "bottom-[-3px] right-[-3px] border-b-2 border-r-2",
-            ].map((pos) => (
-              <span key={pos} className={`absolute w-2.5 h-2.5 ${pos}`} style={{ borderColor: c.primary }} />
-            ))}
-
-            {/* Bottom ID + confidence chip */}
-            <div className="absolute left-1/2 -translate-x-1/2 -bottom-6 text-[8px] font-bold tracking-wider text-white/85 bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded font-mono whitespace-nowrap">
-              {s.id} · 98%
+            {/* Category label pill, top-left of box */}
+            <div
+              className="absolute -top-[26px] left-0 px-2 py-0.5 md:py-1 rounded-md text-[10px] md:text-[11px] font-bold tracking-wide text-white whitespace-nowrap shadow-md"
+              style={{ background: c.primary }}
+            >
+              {c.label}
+              {d.age && <span className="font-mono opacity-80 ml-1.5">· {d.age}</span>}
             </div>
 
-            {/* The actual person silhouette inside the box */}
-            <div className="absolute inset-0 flex items-end justify-center overflow-hidden">
-              <div className="h-[95%]">
-                <PersonSilhouette variant={s.variant} rim={c.primary} />
-              </div>
+            {/* ID + confidence chip, bottom-right inside box */}
+            <div className="absolute bottom-1 right-1 bg-white/92 backdrop-blur-sm px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold font-mono text-gray-800 shadow-sm">
+              {d.id} · {d.confidence}%
             </div>
           </motion.div>
         );
       })}
 
-      {/* HUD: TOP-LEFT — LIVE indicator + sensor */}
-      <div className="absolute top-3 left-3 md:top-4 md:left-4 z-30">
-        <div className="flex items-center gap-2 bg-black/55 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-white/10">
-          <motion.span
-            className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 1.2, repeat: Infinity }}
-          />
-          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white">
-            LIVE · SENSOR 01
-          </span>
+      {/* Bottom gradient + stats HUD */}
+      <div className="absolute inset-x-0 bottom-0 p-3 md:p-5 pt-12 md:pt-16 bg-gradient-to-t from-black/65 via-black/30 to-transparent z-30">
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <p className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.16em] text-white/80 mb-0.5">
+              Visitors today
+            </p>
+            <p className="text-2xl md:text-3xl font-black text-white tabular-nums leading-none">
+              <VisitorTicker start={12587} />
+            </p>
+            <p className="text-[10px] md:text-[11px] font-bold text-emerald-400 mt-1.5">
+              ↑ +18.2% vs yesterday
+            </p>
+          </div>
+
+          <div className="text-right">
+            <p className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.16em] text-white/80 mb-0.5">
+              Detected
+            </p>
+            <p className="text-2xl md:text-3xl font-black text-yellow-400 tabular-nums leading-none">
+              {DETECTIONS.length}
+            </p>
+            <p className="text-[10px] md:text-[11px] font-bold text-white/80 mt-1.5">98.4% accuracy</p>
+          </div>
         </div>
       </div>
-
-      {/* HUD: TOP-RIGHT — FPS + REC */}
-      <div className="absolute top-3 right-3 md:top-4 md:right-4 z-30 flex items-center gap-2">
-        <div className="text-[10px] font-mono text-yellow-400/90 bg-black/55 backdrop-blur-md px-2 py-1.5 rounded-lg border border-white/10">
-          30 FPS · 1080p
-        </div>
-        <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-red-400 bg-black/55 backdrop-blur-md px-2 py-1.5 rounded-lg border border-white/10">
-          <motion.span
-            className="w-1.5 h-1.5 rounded-full bg-red-500"
-            animate={{ opacity: [1, 0.2, 1] }}
-            transition={{ duration: 1.2, repeat: Infinity }}
-          />
-          REC
-        </div>
-      </div>
-
-      {/* HUD: BOTTOM-LEFT — visitors today */}
-      <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4 z-30">
-        <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/55 mb-0.5">
-          Visitors today
-        </p>
-        <p className="text-xl md:text-2xl font-black text-white tabular-nums leading-none">
-          <VisitorTicker start={12587} />
-        </p>
-        <p className="text-[9px] font-bold text-emerald-400 mt-0.5">↑ +18.2% vs yesterday</p>
-      </div>
-
-      {/* HUD: BOTTOM-RIGHT — detection summary */}
-      <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 z-30 text-right">
-        <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/55 mb-0.5">
-          Detected
-        </p>
-        <p className="text-xl md:text-2xl font-black text-yellow-400 tabular-nums leading-none">4</p>
-        <p className="text-[9px] font-bold text-white/60 mt-0.5">98.4% accuracy</p>
-      </div>
-
-      {/* Subtle outer rim highlight */}
-      <div className="absolute inset-0 rounded-2xl md:rounded-[28px] pointer-events-none ring-1 ring-inset ring-white/5" />
     </motion.div>
   );
 }
