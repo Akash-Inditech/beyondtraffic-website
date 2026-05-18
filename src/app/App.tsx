@@ -1136,7 +1136,7 @@ export default function App() {
                 </div>
 
                 {/* Recharts area chart */}
-                <div className="flex-1 min-h-[160px] -mx-2">
+                <div className="h-[200px] md:h-[220px] -mx-2">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={[
