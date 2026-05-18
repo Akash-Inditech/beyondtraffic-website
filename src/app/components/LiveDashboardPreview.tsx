@@ -44,12 +44,61 @@ const demographicData = [
   { name: "Child", value: 6, color: "#FACC15" },
 ];
 
-const detectedPeople = [
-  { id: 1, x: 18, y: 62, delay: 0, conf: 98 },
-  { id: 2, x: 42, y: 48, delay: 0.6, conf: 96 },
-  { id: 3, x: 68, y: 70, delay: 1.2, conf: 99 },
-  { id: 4, x: 82, y: 55, delay: 1.8, conf: 94 },
+type DetectedCategory = "female" | "male" | "kid" | "staff";
+
+const CATEGORY: Record<
+  DetectedCategory,
+  { primary: string; glow: string; label: string }
+> = {
+  female: { primary: "#EC4899", glow: "rgba(236,72,153,0.55)", label: "FEMALE" },
+  male: { primary: "#3B82F6", glow: "rgba(59,130,246,0.55)", label: "MALE" },
+  kid: { primary: "#A855F7", glow: "rgba(168,85,247,0.55)", label: "KID" },
+  staff: { primary: "#10B981", glow: "rgba(16,185,129,0.6)", label: "STAFF" },
+};
+
+const detectedPeople: {
+  id: string;
+  x: number;
+  y: number;
+  delay: number;
+  conf: number;
+  category: DetectedCategory;
+  meta: string;
+  sway: number; // horizontal sway amplitude in px
+}[] = [
+  { id: "T-2847", x: 14, y: 62, delay: 0, conf: 98, category: "female", meta: "28", sway: 3 },
+  { id: "T-2902", x: 33, y: 48, delay: 0.6, conf: 96, category: "male", meta: "34", sway: 2 },
+  { id: "T-2913", x: 50, y: 72, delay: 1.2, conf: 99, category: "kid", meta: "8", sway: 4 },
+  { id: "T-2941", x: 70, y: 55, delay: 1.8, conf: 94, category: "staff", meta: "MGR-04", sway: 1.5 },
+  { id: "T-2966", x: 86, y: 65, delay: 2.4, conf: 97, category: "female", meta: "41", sway: 2.5 },
 ];
+
+/** Front-facing person silhouette — fills its bounding box. */
+function PersonSilhouette({ color, isStaff }: { color: string; isStaff?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 36" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      {/* head */}
+      <circle cx="12" cy="5.5" r="3.8" fill={color} />
+      {/* neck */}
+      <rect x="11" y="9" width="2" height="2" fill={color} opacity="0.7" />
+      {/* shoulders + torso */}
+      <path d="M 4 14 Q 12 11 20 14 L 21 28 L 3 28 Z" fill={color} />
+      {/* arms hint */}
+      <path d="M 4 14 L 2 24" stroke={color} strokeWidth="2" strokeLinecap="round" opacity="0.85" />
+      <path d="M 20 14 L 22 24" stroke={color} strokeWidth="2" strokeLinecap="round" opacity="0.85" />
+      {/* legs */}
+      <rect x="7.5" y="28" width="3.4" height="7" fill={color} rx="0.6" />
+      <rect x="13.1" y="28" width="3.4" height="7" fill={color} rx="0.6" />
+      {/* staff: white badge on chest */}
+      {isStaff && (
+        <>
+          <rect x="9.5" y="17" width="5" height="3" fill="white" rx="0.5" />
+          <rect x="10.5" y="18" width="3" height="1" fill={color} />
+        </>
+      )}
+    </svg>
+  );
+}
 
 function useCountUp(target: number, durationMs = 1800, startWhen = true) {
   const [value, setValue] = useState(0);
@@ -75,6 +124,8 @@ export function LiveDashboardPreview() {
   const [inView, setInView] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [liveCount, setLiveCount] = useState(1247);
+  const [clock, setClock] = useState(() => new Date());
+  const [audioBars, setAudioBars] = useState<number[]>([0.3, 0.55, 0.8, 0.45, 0.6, 0.35]);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -92,6 +143,24 @@ export function LiveDashboardPreview() {
     }, 2200);
     return () => clearInterval(id);
   }, [inView]);
+
+  // Live ticking clock for the camera HUD
+  useEffect(() => {
+    if (!inView) return;
+    const id = setInterval(() => setClock(new Date()), 1000);
+    return () => clearInterval(id);
+  }, [inView]);
+
+  // Audio / motion meter — small randomized levels every 200ms
+  useEffect(() => {
+    if (!inView) return;
+    const id = setInterval(() => {
+      setAudioBars((prev) => prev.map(() => 0.2 + Math.random() * 0.8));
+    }, 220);
+    return () => clearInterval(id);
+  }, [inView]);
+
+  const clockText = clock.toLocaleTimeString([], { hour12: false });
 
   const totalVisitors = useCountUp(1846, 2000, inView);
   const conversion = useCountUp(248, 2000, inView);
@@ -137,22 +206,30 @@ export function LiveDashboardPreview() {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
               {/* CAMERA / DETECTION VIEW */}
               <div className="lg:col-span-2 p-5 md:p-6 bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white relative overflow-hidden">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-start justify-between mb-4 gap-3">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-yellow-400 mb-1">
                       Sensor 01 · Main Entrance
                     </p>
                     <p className="text-xs text-gray-400 flex items-center gap-1.5">
-                      <Wifi className="w-3 h-3" /> 3D Stereo Vision · 1080p
+                      <Wifi className="w-3 h-3" /> 3D Stereo Vision · 1080p · 30 FPS
                     </p>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-red-400 uppercase">
-                    <motion.span
-                      animate={{ opacity: [1, 0.2, 1] }}
-                      transition={{ duration: 1.2, repeat: Infinity }}
-                      className="w-1.5 h-1.5 rounded-full bg-red-500"
-                    />
-                    Rec
+                  <div className="flex flex-col items-end gap-1">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-red-400 uppercase">
+                      <motion.span
+                        animate={{ opacity: [1, 0.2, 1] }}
+                        transition={{ duration: 1.2, repeat: Infinity }}
+                        className="w-1.5 h-1.5 rounded-full bg-red-500"
+                      />
+                      Rec
+                    </div>
+                    <p className="text-[10px] font-mono text-yellow-300/80 tabular-nums">
+                      {clockText} · UTC+4
+                    </p>
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-emerald-400">
+                      {detectedPeople.length} detected
+                    </p>
                   </div>
                 </div>
 
@@ -220,44 +297,116 @@ export function LiveDashboardPreview() {
                     Entry Zone
                   </p>
 
-                  {/* Detected people with bounding boxes */}
-                  {detectedPeople.map((p) => (
-                    <motion.div
-                      key={p.id}
-                      className="absolute"
-                      style={{ left: `${p.x}%`, top: `${p.y}%` }}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{
-                        opacity: [0, 1, 1, 0],
-                        scale: [0.8, 1, 1, 0.9],
-                        y: [-4, 0, -2, -6],
-                      }}
-                      transition={{
-                        duration: 4,
-                        delay: p.delay,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    >
-                      <div className="relative w-12 h-16 -translate-x-1/2 -translate-y-full">
-                        <div className="absolute inset-0 border-2 border-yellow-400 rounded-md shadow-[0_0_12px_rgba(251, 191, 36,0.6)]" />
-                        <div className="absolute -top-5 left-0 bg-yellow-400 text-black text-[8px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap uppercase tracking-wider">
-                          Person · {p.conf}%
+                  {/* Detected people: bounding box + silhouette + category chip */}
+                  {detectedPeople.map((p) => {
+                    const c = CATEGORY[p.category];
+                    const isStaff = p.category === "staff";
+                    return (
+                      <motion.div
+                        key={p.id}
+                        className="absolute"
+                        style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                        initial={{ opacity: 0, scale: 0.85 }}
+                        animate={{
+                          opacity: [0, 1, 1, 1, 0.85],
+                          scale: [0.85, 1, 1.02, 1, 0.95],
+                          x: [-p.sway, p.sway, -p.sway],
+                          y: [-2, 0, -2],
+                        }}
+                        transition={{
+                          duration: 5.5,
+                          delay: p.delay,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        <div className="relative w-12 h-[68px] -translate-x-1/2 -translate-y-full">
+                          {/* Outer bounding box with category glow */}
+                          <div
+                            className="absolute inset-0 border-2 rounded-md"
+                            style={{
+                              borderColor: c.primary,
+                              boxShadow: `0 0 14px ${c.glow}`,
+                            }}
+                          />
+                          {/* Person silhouette inside */}
+                          <div className="absolute inset-1 opacity-95">
+                            <PersonSilhouette color={c.primary} isStaff={isStaff} />
+                          </div>
+                          {/* Category + age/role chip (top-left) */}
+                          <div
+                            className="absolute -top-[18px] left-0 text-[7.5px] font-black px-1.5 py-[1px] rounded whitespace-nowrap uppercase tracking-wider text-white"
+                            style={{ background: c.primary }}
+                          >
+                            {c.label} · {p.meta}
+                          </div>
+                          {/* ID + confidence (bottom) */}
+                          <div className="absolute -bottom-[14px] left-1/2 -translate-x-1/2 text-[7px] font-bold text-white/85 bg-black/60 px-1 py-[1px] rounded whitespace-nowrap font-mono tracking-wide">
+                            {p.id} · {p.conf}%
+                          </div>
+                          {/* Corner brackets in category color */}
+                          {[
+                            "top-[-2px] left-[-2px] border-t-2 border-l-2",
+                            "top-[-2px] right-[-2px] border-t-2 border-r-2",
+                            "bottom-[-2px] left-[-2px] border-b-2 border-l-2",
+                            "bottom-[-2px] right-[-2px] border-b-2 border-r-2",
+                          ].map((pos) => (
+                            <span
+                              key={pos}
+                              className={`absolute w-2 h-2 ${pos}`}
+                              style={{ borderColor: c.primary }}
+                            />
+                          ))}
+                          {/* Direction chevron at the bottom of the box */}
+                          <span
+                            className="absolute -bottom-[3px] left-1/2 -translate-x-1/2 w-0 h-0"
+                            style={{
+                              borderLeft: "4px solid transparent",
+                              borderRight: "4px solid transparent",
+                              borderTop: `5px solid ${c.primary}`,
+                            }}
+                          />
                         </div>
-                        {/* corner brackets */}
-                        <span className="absolute -top-0.5 -left-0.5 w-2 h-2 border-t-2 border-l-2 border-yellow-300" />
-                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 border-t-2 border-r-2 border-yellow-300" />
-                        <span className="absolute -bottom-0.5 -left-0.5 w-2 h-2 border-b-2 border-l-2 border-yellow-300" />
-                        <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 border-b-2 border-r-2 border-yellow-300" />
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
 
                   {/* HUD corners */}
                   <span className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-yellow-400/60" />
                   <span className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-yellow-400/60" />
                   <span className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-yellow-400/60" />
                   <span className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-yellow-400/60" />
+
+                  {/* Audio / motion meter — vertical bars on the right edge */}
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col items-end gap-[3px]">
+                    <span className="text-[7px] font-bold uppercase tracking-widest text-yellow-400/80 mb-1">
+                      MOT
+                    </span>
+                    {audioBars.map((b, i) => (
+                      <motion.span
+                        key={i}
+                        className="block bg-yellow-400 rounded-sm"
+                        style={{
+                          width: "8px",
+                          height: `${Math.round(b * 22)}px`,
+                          opacity: 0.4 + b * 0.6,
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Entry threshold line at the bottom of the frame */}
+                  <div className="absolute left-4 right-4 bottom-7 flex items-center gap-2">
+                    <motion.span
+                      animate={{ opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 1.4, repeat: Infinity }}
+                      className="w-1.5 h-1.5 rounded-full bg-yellow-400"
+                    />
+                    <div className="flex-1 h-px border-t border-dashed border-yellow-400/60" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-yellow-400/80">
+                      ENTRY LINE
+                    </span>
+                  </div>
 
                   <div className="absolute bottom-2 right-2 text-[9px] font-mono text-yellow-300/80 bg-black/40 px-1.5 py-0.5 rounded">
                     98.4% ACC
