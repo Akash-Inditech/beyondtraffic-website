@@ -587,30 +587,30 @@ export default function App() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="mb-5 md:mb-7"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.9] tracking-tighter px-4 mb-3 md:mb-5">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-[0.95] tracking-tight px-4 mb-3 md:mb-5">
               <motion.span
-                initial={{ opacity: 0, y: 20, letterSpacing: "0.2em" }}
-                animate={{ opacity: 1, y: 0, letterSpacing: "-0.04em" }}
+                initial={{ opacity: 0, y: 20, letterSpacing: "0.12em" }}
+                animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                 transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                 className="block text-gray-900 drop-shadow-sm"
               >
-                INTELLIGENCE.
+                Real-Time Traffic.
               </motion.span>
               <motion.span
-                initial={{ opacity: 0, y: 20, letterSpacing: "0.2em" }}
-                animate={{ opacity: 1, y: 0, letterSpacing: "-0.04em" }}
+                initial={{ opacity: 0, y: 20, letterSpacing: "0.12em" }}
+                animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                 transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="block text-gray-900 drop-shadow-sm"
               >
-                PRECISION.
+                Real Business Insight,
               </motion.span>
               <motion.span
-                initial={{ opacity: 0, y: 20, letterSpacing: "0.2em" }}
-                animate={{ opacity: 1, y: 0, letterSpacing: "-0.04em" }}
+                initial={{ opacity: 0, y: 20, letterSpacing: "0.12em" }}
+                animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                 transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 className="block stori-gradient drop-shadow-lg relative"
               >
-                INSIGHT.
+                See Beyond the Crowd!
                 <motion.span
                   className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-yellow-500 to-yellow-500 rounded-full"
                   initial={{ scaleX: 0 }}
