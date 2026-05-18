@@ -54,33 +54,12 @@ import {
   YAxis,
 } from "recharts";
 import { FAQAccordion } from "./components/FAQAccordion";
-import { HeroBackdrop } from "./components/HeroBackdrop";
+import { HeroTrackingScene } from "./components/HeroTrackingScene";
 import { IndustryCard } from "./components/IndustryCard";
 import { LiveDashboardPreview } from "./components/LiveDashboardPreview";
 import { MallAnalytics } from "./components/MallAnalytics";
 import { RetailProblemViz } from "./components/RetailProblemViz";
 import { RetailSceneStripe } from "./components/RetailSceneStripe";
-
-// Live-ticking visitor counter for the hero overlay card.
-// Ticks +1 every 2–5 seconds to feel like a real people-counting feed.
-function LiveVisitorTicker({ start = 12420 }: { start?: number }) {
-  const [count, setCount] = useState(start);
-  useEffect(() => {
-    let cancelled = false;
-    const tick = () => {
-      if (cancelled) return;
-      setCount((c) => c + 1);
-      const delay = 1800 + Math.random() * 3200;
-      setTimeout(tick, delay);
-    };
-    const initial = setTimeout(tick, 1500);
-    return () => {
-      cancelled = true;
-      clearTimeout(initial);
-    };
-  }, []);
-  return <span>{count.toLocaleString()}</span>;
-}
 
 const NAV_DROPDOWNS = [
   {
@@ -464,203 +443,136 @@ export default function App() {
         </AnimatePresence>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative pt-6 md:pt-8 pb-6 md:pb-10 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Retail-scene line illustration backdrop (bold + visible) */}
-        <HeroBackdrop />
-
-        {/* Floating LIVE visitor counter card (left side, AI-detection feel) */}
-        <motion.div
-          className="hidden lg:block absolute top-28 left-6 xl:left-12 2xl:left-20 z-20 max-w-[220px]"
-          initial={{ opacity: 0, x: -20, y: 0 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <motion.div
-            className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-yellow-200 p-4 relative"
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          >
-            {/* AI bracket corners */}
-            <span className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-yellow-500 rounded-tl-md" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-yellow-500 rounded-tr-md" />
-            <span className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-yellow-500 rounded-bl-md" />
-            <span className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-yellow-500 rounded-br-md" />
-
-            <div className="flex items-center gap-2 mb-2">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
-              </span>
-              <span className="text-[10px] font-black tracking-[0.18em] text-gray-700 uppercase">Live · CAM-01</span>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-0.5">Visitors today</p>
-            <p className="text-2xl font-black text-gray-900 tabular-nums leading-tight">
-              <LiveVisitorTicker start={12420} />
-            </p>
-            <p className="text-[10px] font-semibold text-emerald-600 mt-1 flex items-center gap-1">
-              <span className="inline-block">↑</span> +18.2% vs yesterday
-            </p>
-          </motion.div>
-        </motion.div>
-
-        {/* Floating "Now in store" card (right side, with mini sparkline) */}
-        <motion.div
-          className="hidden lg:block absolute top-48 right-6 xl:right-12 2xl:right-20 z-20 max-w-[220px]"
-          initial={{ opacity: 0, x: 20, y: 0 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <motion.div
-            className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-yellow-200 p-4 relative"
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 5.6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-          >
-            <span className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-yellow-500 rounded-tl-md" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-yellow-500 rounded-tr-md" />
-            <span className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-yellow-500 rounded-bl-md" />
-            <span className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-yellow-500 rounded-br-md" />
-
-            <div className="flex items-center gap-2 mb-2">
-              <Activity className="w-3.5 h-3.5 text-yellow-600" />
-              <span className="text-[10px] font-black tracking-[0.18em] text-gray-700 uppercase">Now in store</span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-black text-gray-900 tabular-nums leading-tight">247</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">people</p>
-            </div>
-            <p className="text-[10px] font-semibold text-gray-500 mt-1">Peak · 2-3 PM</p>
-            <svg viewBox="0 0 100 24" className="w-full h-6 mt-2" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="sparkFill" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#EAB308" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="#EAB308" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path d="M 0 18 L 12 14 L 24 16 L 36 10 L 48 12 L 60 6 L 72 8 L 84 4 L 100 6 L 100 24 L 0 24 Z" fill="url(#sparkFill)" />
-              <path d="M 0 18 L 12 14 L 24 16 L 36 10 L 48 12 L 60 6 L 72 8 L 84 4 L 100 6" fill="none" stroke="#EAB308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </motion.div>
-        </motion.div>
-
-        {/* Floating sparkles */}
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-yellow-400 rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -30, 0],
-                opacity: [0, 1, 0],
-                scale: [0, 1.5, 0],
-              }}
-              transition={{
-                duration: 3 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-        </div>
-
-        <div className="max-w-7xl mx-auto text-center relative z-10">
-          {/* Stori-style label tag */}
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.05 }}
-            className="mb-4 md:mb-5"
-          >
-            <span className="stori-label">
-              Beyond Traffic &mdash; The Intelligence Platform for Modern Retail
-            </span>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-5 md:mb-7"
-          >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-[0.95] tracking-tight px-4 mb-3 md:mb-5">
-              <motion.span
-                initial={{ opacity: 0, y: 20, letterSpacing: "0.12em" }}
-                animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
-                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="block text-gray-900 drop-shadow-sm"
-              >
-                Real-Time Traffic.
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, y: 20, letterSpacing: "0.12em" }}
-                animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="block text-gray-900 drop-shadow-sm"
-              >
-                Real Business Insight,
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, y: 20, letterSpacing: "0.12em" }}
-                animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
-                transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="block stori-gradient drop-shadow-lg relative"
-              >
-                See Beyond the Crowd!
-                <motion.span
-                  className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-yellow-500 to-yellow-500 rounded-full"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                />
-              </motion.span>
-            </h1>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-base md:text-lg lg:text-xl text-gray-700 max-w-3xl mx-auto font-medium px-4"
-            >
-              The most intelligent people counting system in the UAE
-            </motion.p>
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="text-sm sm:text-base md:text-lg text-gray-600 max-w-4xl mx-auto mb-6 md:mb-8 leading-relaxed px-4"
-          >
-            Transform retail performance with AI-powered traffic intelligence. Track footfall, measure conversion, understand demographics—all in real-time with 3D stereo vision technology.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="flex gap-4 justify-center flex-wrap px-4"
-          >
-            <motion.a
-              href="#contact"
-              whileHover={{ scale: 1.05, y: -4 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="group bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 text-white px-8 py-3 md:px-10 md:py-3.5 rounded-full shadow-2xl shadow-yellow-500/50 hover:shadow-yellow-500/70 transition-shadow duration-300 flex items-center gap-2 text-base md:text-lg font-semibold relative overflow-hidden"
-            >
-              <span className="relative z-10">Stop Guessing, Start Tracking</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300 relative z-10" />
+      {/* Hero Section — two-column: text left, dark tracking scene right */}
+      <section className="relative pt-8 md:pt-12 pb-10 md:pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden bg-white">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
+            {/* LEFT — content */}
+            <div className="lg:col-span-6 xl:col-span-6 text-left">
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-yellow-500"
-                initial={{ x: "100%" }}
-                whileHover={{ x: 0 }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.a>
-          </motion.div>
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.05 }}
+                className="mb-4 md:mb-5"
+              >
+                <span className="stori-label">
+                  Beyond Traffic &mdash; The Intelligence Platform for Modern Retail
+                </span>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="mb-5 md:mb-7"
+              >
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[0.98] tracking-tight mb-4 md:mb-5">
+                  <motion.span
+                    initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
+                    animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
+                    transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                    className="block text-gray-900 drop-shadow-sm"
+                  >
+                    Real-Time Traffic.
+                  </motion.span>
+                  <motion.span
+                    initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
+                    animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
+                    transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="block text-gray-900 drop-shadow-sm"
+                  >
+                    Real Business Insight,
+                  </motion.span>
+                  <motion.span
+                    initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
+                    animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
+                    transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="block stori-gradient drop-shadow-lg relative"
+                  >
+                    See Beyond the Crowd!
+                    <motion.span
+                      className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 rounded-full origin-left"
+                      style={{ width: "92%" }}
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.8, delay: 0.8 }}
+                    />
+                  </motion.span>
+                </h1>
+
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className="text-base md:text-lg lg:text-xl text-gray-700 font-medium"
+                >
+                  The most intelligent people counting system in the UAE
+                </motion.p>
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                className="text-sm md:text-base text-gray-600 max-w-xl mb-6 md:mb-8 leading-relaxed"
+              >
+                Transform retail performance with AI-powered traffic intelligence. Track footfall, measure conversion, understand demographics&mdash;all in real-time with 3D stereo vision technology.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
+                className="flex gap-3 flex-wrap items-center"
+              >
+                <motion.a
+                  href="#contact"
+                  whileHover={{ scale: 1.04, y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  className="group bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 text-white px-7 py-3 md:px-8 md:py-3.5 rounded-full shadow-2xl shadow-yellow-500/40 hover:shadow-yellow-500/60 transition-shadow duration-300 flex items-center gap-2 text-base md:text-lg font-semibold relative overflow-hidden"
+                >
+                  <span className="relative z-10">Stop Guessing, Start Tracking</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300 relative z-10" />
+                </motion.a>
+                <motion.a
+                  href="#dashboard"
+                  whileHover={{ scale: 1.04, y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  className="text-gray-800 px-5 py-3 md:px-6 md:py-3.5 rounded-full border-2 border-gray-200 hover:border-gray-400 transition-colors flex items-center gap-2 text-sm md:text-base font-semibold"
+                >
+                  See Live Dashboard
+                </motion.a>
+              </motion.div>
+
+              {/* Trust micro-bar under CTAs */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.7, delay: 0.85 }}
+                className="mt-6 md:mt-8 flex items-center gap-5 text-[11px] md:text-xs font-bold uppercase tracking-widest text-gray-500"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  50+ UAE Stores Live
+                </span>
+                <span className="hidden sm:flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                  98% Accuracy
+                </span>
+                <span className="hidden md:flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  24/7 Monitoring
+                </span>
+              </motion.div>
+            </div>
+
+            {/* RIGHT — dark tracking scene */}
+            <div className="lg:col-span-6 xl:col-span-6">
+              <HeroTrackingScene />
+            </div>
+          </div>
         </div>
       </section>
 
