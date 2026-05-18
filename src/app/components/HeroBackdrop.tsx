@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 
 /**
@@ -179,63 +178,6 @@ function TrackedAvatar({ id, confidence, bearing }: { id: string; confidence: nu
   );
 }
 
-/** Top-right card showing live visitor count that ticks up. */
-function LiveCounterCard() {
-  const [count, setCount] = useState(12847);
-  const [pulse, setPulse] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-    const tick = () => {
-      if (cancelled) return;
-      setCount((c) => c + 1);
-      setPulse((p) => p + 1);
-      const delay = 1800 + Math.random() * 2400;
-      setTimeout(tick, delay);
-    };
-    const initial = setTimeout(tick, 2500);
-    return () => {
-      cancelled = true;
-      clearTimeout(initial);
-    };
-  }, []);
-
-  return (
-    <g transform="translate(1190 175)">
-      <rect x="0" y="0" width="220" height="68" rx="14" fill="white" stroke={amber} strokeOpacity="0.45" strokeWidth="1.3" />
-      <text x="14" y="20" fill={strokeDeep} fontSize="9" fontWeight="900" letterSpacing="2" fontFamily="sans-serif">
-        VISITORS · TODAY
-      </text>
-      <text x="14" y="50" fill="#0f172a" fontSize="26" fontWeight="900" fontFamily="sans-serif">
-        {count.toLocaleString()}
-      </text>
-
-      {/* live indicator */}
-      <motion.circle
-        cx="200"
-        cy="20"
-        r="4"
-        fill="#ef4444"
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 1.4, repeat: Infinity }}
-      />
-
-      {/* +1 pop on each tick */}
-      <motion.g
-        key={pulse}
-        initial={{ opacity: 0, y: 0 }}
-        animate={{ opacity: [0, 1, 1, 0], y: [10, -4, -10, -24] }}
-        transition={{ duration: 1.4, ease: "easeOut" }}
-      >
-        <rect x="170" y="44" width="40" height="14" rx="7" fill="#16a34a" />
-        <text x="190" y="54" textAnchor="middle" fill="white" fontSize="9" fontWeight="900" fontFamily="sans-serif">
-          +1
-        </text>
-      </motion.g>
-    </g>
-  );
-}
-
 /** Static corner camera icon with a subtle circular coverage area. */
 function CornerCamera({ x, y, label }: { x: number; y: number; label: string }) {
   return (
@@ -402,9 +344,6 @@ export function HeroBackdrop() {
             · 4 CAMS · 30 FPS
           </text>
         </g>
-
-        {/* Live visitors counter card */}
-        <LiveCounterCard />
 
         {/* Centre vignette to keep the hero headline crisp */}
         <rect x="200" y="180" width="1040" height="440" fill="url(#centerFade)" rx="40" />
