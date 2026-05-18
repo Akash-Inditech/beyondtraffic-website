@@ -1064,8 +1064,8 @@ export default function App() {
             </p>
           </motion.div>
 
-          {/* Vibrant Bento Grid Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-6 auto-rows-fr">
+          {/* Vibrant Bento Grid Layout — auto-rows removed so each card sizes to its own content (no forced equal-height stretching) */}
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-6 items-start">
             {/* Large Feature - Real-Time with Chart */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
