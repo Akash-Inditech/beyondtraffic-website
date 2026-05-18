@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Traffic - Retail Intelligence</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: #ffffff;
+            --bg-alt: #faf5ff; 
+            --bg-dark: #0f172a; 
+            --text-dark: #1e293b; 
+            --text-light: #64748b;
+            
+            --primary-purple: #7c3aed; 
+            --deep-purple: #4c1d95;
+            --light-purple: #f3e8ff;
+            --accent-cyan: #06b6d4; 
+            
+            --radius-sm: 12px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+            --radius-pill: 50px;
+            
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 30px rgba(124, 58, 237, 0.08);
+            --shadow-lg: 0 20px 40px rgba(124, 58, 237, 0.15);
+            
+            --transition-smooth: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-dark); 
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* DATA MATRIX BACKGROUND */
+        .bg-matrix {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; pointer-events: none;
+            background-image: radial-gradient(var(--light-purple) 1.5px, transparent 1.5px);
+            background-size: 40px 40px;
+            opacity: 0.25;
+            animation: matrixDrift 60s linear infinite;
+        }
+        @keyframes matrixDrift {
+            0% { background-position: 0 0; }
+            100% { background-position: 400px 400px; }
+        }
+
+        /* TYPOGRAPHY */
+        h1, h2, h3, h4, .font-heading { 
+            font-family: 'Outfit', sans-serif; 
+            text-transform: uppercase; 
+            line-height: 1.1; 
+            color: var(--text-dark);
+            letter-spacing: -0.02em;
+        }
+        .hero-title { font-size: clamp(3.5rem, 7vw, 6.5rem); font-weight: 900; }
+        .section-title { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 1rem; font-weight: 800; }
+        .purple-text { color: var(--primary-purple); }
+        .white-text { color: #ffffff; }
+        .subtitle { font-size: 1.15rem; color: var(--text-light); max-width: 800px; font-weight: 400; }
+        
+        .eyebrow { 
+            display: inline-flex; align-items: center;
+            font-weight: 700; color: var(--primary-purple); 
+            letter-spacing: 1.5px; text-transform: uppercase; 
+            margin-bottom: 1rem; font-size: 0.85rem; 
+            background: var(--light-purple); padding: 8px 16px;
+            border-radius: var(--radius-pill);
+        }
+
+        /* LAYOUT & COMPONENTS */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 10; }
+        .section-pad { padding: 7rem 0; }
+        
+        /* Navigation & Dropdowns */
+        nav { 
+            padding: 1.25rem 0; display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(0, 0, 0, 0.05); 
+        }
+        .logo { font-family: 'Outfit', sans-serif; font-size: 1.75rem; font-weight: 900; color: var(--deep-purple); text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; transition: transform 0.2s; display: inline-block; }
+        .logo:active { transform: scale(0.96); }
+        
+        .nav-links { display: flex; gap: 1rem; align-items: center; }
+        .nav-item { position: relative; padding: 1rem 0; }
+        .nav-item > a { color: var(--text-dark); text-decoration: none; font-weight: 600; font-size: 0.95rem; padding: 10px 16px; border-radius: var(--radius-pill); transition: var(--transition-smooth); display: inline-block; }
+        .nav-item:hover > a { background: var(--bg-alt); color: var(--primary-purple); }
+        
+        /* Click Response for Nav Links */
+        .nav-item > a:active { transform: scale(0.92); background: var(--light-purple); }
+        
+        .dropdown-menu {
+            position: absolute; top: 100%; left: 0; background: #000; 
+            min-width: 260px; padding: 1.5rem; border-radius: 0 24px 24px 24px; 
+            opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition-smooth);
+            box-shadow: var(--shadow-lg); z-index: 100;
+        }
+        .nav-item:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu a { 
+            display: flex; align-items: center; gap: 12px; color: #fff; text-decoration: none; 
+            font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1rem; text-transform: uppercase;
+            padding: 0.75rem 0; transition: color 0.2s, transform 0.1s; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .dropdown-menu a:last-child { border-bottom: none; }
+        .dropdown-menu a:hover { color: var(--primary-purple); }
+        .dropdown-menu a:active { transform: scale(0.98) translateX(5px); }
+        .dropdown-arrow { color: var(--text-light); transition: transform 0.2s; }
+        .dropdown-menu a:hover .dropdown-arrow { transform: translateX(5px); color: var(--primary-purple); }
+
+        /* Buttons & Click Response */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 1.1rem 2.5rem; border-radius: var(--radius-pill); font-weight: 600;
+            text-decoration: none; transition: var(--transition-smooth); cursor: pointer; border: none;
+            font-family: 'Inter', sans-serif; font-size: 1rem;
+        }
+        .btn-purple { background: var(--primary-purple); color: #fff; box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3); }
+        .btn-purple:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(124, 58, 237, 0.4); background: var(--deep-purple); }
+        .btn-dark { background: #000; color: #fff; }
+        .btn-dark:hover { background: #222; transform: translateY(-3px); }
+        
+        /* The Tactile Click Effect */
+        .btn:active {
+            transform: scale(0.96) translateY(0) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+        }
+        
+        /* Grids & Cards */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+
+        .info-card {
+            background: #ffffff; padding: 3rem 2.5rem; height: 100%; 
+            border-radius: var(--radius-md); transition: var(--transition-smooth); 
+            box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.03);
+        }
+        .info-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-md); border-color: var(--light-purple); }
+        .info-card h3 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-dark); }
+
+        .card-purple { background: var(--primary-purple); color: #fff; border: none; }
+        .card-purple h3, .card-purple p, .card-purple li { color: #fff; }
+        .card-purple .focus-pill { background: rgba(0,0,0,0.2); color: #fff; border: none; }
+
+        .card-deep { background: var(--deep-purple); color: #fff; border: none; }
+        .card-deep h3, .card-deep p, .card-deep li { color: #fff; }
+        .card-deep .focus-pill { background: rgba(255,255,255,0.1); color: #fff; border: none; }
+
+        .focus-pill { display: inline-block; font-size: 0.85rem; font-weight: 600; background: var(--bg-alt); padding: 8px 16px; border-radius: var(--radius-pill); border: 1px solid var(--light-purple); margin-top: 1.5rem; }
+
+        /* Form */
+        .modern-input {
+            width: 100%; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem;
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-sm);
+            color: var(--text-dark); font-size: 1rem; transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+        }
+        .modern-input:focus { outline: none; border-color: var(--primary-purple); background: #fff; box-shadow: 0 0 0 4px var(--light-purple); }
+
+        /* Accordion FAQ */
+        details { background: #fff; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1rem; transition: 0.3s; box-shadow: var(--shadow-sm); cursor: pointer; }
+        details[open] { border-color: var(--primary-purple); box-shadow: var(--shadow-md); }
+        details:active { transform: scale(0.99); }
+        summary { font-weight: 600; list-style: none; font-size: 1.1rem; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
+        summary::after { content: '+'; color: var(--primary-purple); font-size: 1.5rem; font-weight: 400; }
+        details[open] summary::after { content: '−'; }
+        .faq-ans { margin-top: 1rem; color: var(--text-light); border-left: 3px solid var(--light-purple); padding-left: 1rem; cursor: text; }
+
+        /* LOGO MARQUEE */
+        .marquee-wrapper {
+            width: 100%; overflow: hidden; background: #ffffff; padding: 3rem 0;
+            border-top: 1px solid rgba(0,0,0,0.05); position: relative;
+        }
+        .marquee-wrapper::before, .marquee-wrapper::after {
+            content: ''; position: absolute; top: 0; width: 150px; height: 100%; z-index: 2; pointer-events: none;
+        }
+        .marquee-wrapper::before { left: 0; background: linear-gradient(to right, #ffffff 0%, transparent 100%); }
+        .marquee-wrapper::after { right: 0; background: linear-gradient(to left, #ffffff 0%, transparent 100%); }
+        
+        .marquee-track {
+            display: flex; width: max-content; gap: 5rem; align-items: center;
+            animation: scroll-left 30s linear infinite;
+        }
+        .marquee-track:hover { animation-play-state: paused; }
+        
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .brand-logo {
+            font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800;
+            color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 10px; transition: color 0.3s;
+        }
+        .brand-logo:hover { color: var(--primary-purple); }
+        .brand-logo svg { width: 30px; height: 30px; fill: currentColor; }
+
+        /* CSS DASHBOARD UI */
+        .dashboard-ui { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid #e2e8f0; }
+        .dash-header { background: #1e293b; padding: 1rem 1.5rem; display: flex; gap: 1rem; }
+        .dash-tab { color: #94a3b8; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+        .dash-tab:hover { color: #cbd5e1; }
+        .dash-tab:active { transform: scale(0.95); }
+        .dash-tab.active { color: #fff; border-bottom: 2px solid var(--primary-purple); padding-bottom: 4px; }
+        
+        .dash-body { padding: 1.5rem; background: #f8fafc; }
+        .heatmap-grid { display: grid; grid-template-columns: auto repeat(7, 1fr); gap: 4px; margin-bottom: 2rem; }
+        .hm-label { font-size: 0.7rem; color: var(--text-light); text-align: right; padding-right: 8px; align-self: center; }
+        .hm-cell { height: 24px; border-radius: 4px; transition: 0.2s; cursor: crosshair; }
+        .hm-cell:hover { transform: scale(1.1); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        .c-1 { background: #f3e8ff; } .c-2 { background: #d8b4fe; } 
+        .c-3 { background: #a855f7; } .c-4 { background: #7e22ce; } .c-5 { background: #4c1d95; }
+
+        .chart-container { height: 120px; position: relative; border-left: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; padding-left: 10px; cursor: pointer; }
+        .svg-line { width: 100%; height: 100%; overflow: visible; }
+        
+        /* CSS HARDWARE SENSORS */
+        .sensor-graphic { 
+            width: 100%; height: 200px; background: #f1f5f9; border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center; position: relative;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 1.5rem;
+        }
+        .camera-body {
+            width: 160px; height: 60px; background: #fff; border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center;
+            padding: 0 20px; position: relative; transition: transform 0.3s;
+        }
+        .info-card:hover .camera-body { transform: scale(1.05); }
+        .lens {
+            width: 30px; height: 30px; background: #0f172a; border-radius: 50%;
+            border: 3px solid #e2e8f0; position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,1);
+        }
+        .lens::after { content: ''; position: absolute; top: 4px; left: 4px; width: 8px; height: 8px; background: rgba(255,255,255,0.4); border-radius: 50%; }
+        .led-light { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; position: absolute; top: -10px; right: 30px; box-shadow: 0 0 10px #22c55e; }
+
+        /* ANIMATIONS */
+        .reveal-up { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal-up.active { opacity: 1; transform: translateY(0); }
+        .delay-1 { transition-delay: 0.1s; } .delay-2 { transition-delay: 0.2s; } .delay-3 { transition-delay: 0.3s; }
+
+        @media (max-width: 992px) { .grid-2 { grid-template-columns: 1fr; gap: 3rem; } .nav-links { display: none; } }
+        @media (max-width: 768px) { .section-pad { padding: 4rem 0; } .hero-title { font-size: 3rem; } .section-title { font-size: 2rem; } }
+    </style>
+</head>
+<body>
+
+    <!-- DATA MATRIX BACKGROUND -->
+    <div class="bg-matrix"></div>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="#home" class="logo">Beyond Traffic<span class="purple-text">.</span></a>
+            
+            <div class="nav-links">
+                <!-- Dropdowns -->
+                <div class="nav-item">
+                    <a href="#platform">Platform</a>
+                    <div class="dropdown-menu">
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> Real-Time Footfall</a>
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> POS Integration</a>
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> Conversion Analytics</a>
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> Demographics</a>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="#industry">Industry</a>
+                    <div class="dropdown-menu">
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> Retail Stores</a>
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> Shopping Malls</a>
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> Restaurants</a>
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> Commercial Buildings</a>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="#resources">Resources</a>
+                    <div class="dropdown-menu">
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> Blog</a>
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> FAQ</a>
+                        <a href="#"><span class="dropdown-arrow">&rarr;</span> Testimony</a>
+                    </div>
+                </div>
+                
+                <!-- Fixed Pricing Wrapper -->
+                <div class="nav-item">
+                    <a href="#pricing">Pricing</a>
+                </div>
+                
+            </div>
+            
+            <a href="#contact" class="btn btn-purple" style="padding: 0.75rem 1.75rem;">Unlock Insights</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="section-pad" id="home" style="padding-top: 5rem; padding-bottom: 2rem;">
+        <div class="container text-center">
+            <h1 class="hero-title reveal-up active">THE INTELLIGENT PEOPLE <br><span class="purple-text">COUNTING SYSTEM</span> IN THE UAE</h1>
+            <p class="subtitle reveal-up delay-1 active" style="margin: 1.5rem auto 3rem auto; font-size: 1.25rem;">Not just people counting, we improve retail performance using traffic intelligence. The most accurate people counting system for retail. Track footfall, measure conversion, understand demographics all in real-time with Al-powered 3D stereo vision.</p>
+            <div class="reveal-up delay-2 active" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="#contact" class="btn btn-purple">Stop Guessing, Start Tracking</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOGO MARQUEE -->
+    <div class="marquee-wrapper reveal-up delay-3 active">
+        <div class="marquee-track">
+            <!-- Group 1 -->
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13h-13L12 6.5z"/></svg>
+                BFL GROUP
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                HealthySpot
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                New West KnifeWorks
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h2v5zm0 4h-2v-2h2v2z"/></svg>
+                Inditech Technologies
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 4C7 4 2.73 7.11 1 12c1.73 4.89 6 8 11 8s9.27-3.11 11-8c-1.73-4.89-6-8-11-8zm0 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                Optical Retail UAE
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+                Galadari Motors
+            </div>
+
+            <!-- Group 2 (Exact Duplicate for seamless loop) -->
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13h-13L12 6.5z"/></svg>
+                BFL GROUP
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                HealthySpot
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                New West KnifeWorks
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h2v5zm0 4h-2v-2h2v2z"/></svg>
+                Inditech Technologies
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 4C7 4 2.73 7.11 1 12c1.73 4.89 6 8 11 8s9.27-3.11 11-8c-1.73-4.89-6-8-11-8zm0 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                Optical Retail UAE
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+                Galadari Motors
+            </div>
+        </div>
+    </div>
+
+    <!-- HORIZONTAL STATS & TESTIMONIAL SECTION (DARK THEME) -->
+    <section class="section-pad" style="background: var(--bg-dark); color: #fff; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: var(--primary-purple); opacity: 0.2; filter: blur(100px); border-radius: 50%;"></div>
+        
+        <div class="container">
+            
+            <!-- HORIZONTAL STATS BAR -->
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4rem; margin-bottom: 4rem;" class="reveal-up">
+                <div style="text-align: center;">
+                    <h4 style="font-size: 4rem; color: #fff; margin-bottom: 0;">1M+</h4>
+                    <p style="font-weight: 500; color: #94a3b8; font-size: 1.1rem;">Visitors tracked daily</p>
+                </div>
+                <div style="text-align: center;">
+                    <h4 style="font-size: 4rem; color: #fff; margin-bottom: 0;">98%</h4>
+                    <p style="font-weight: 500; color: #94a3b8; font-size: 1.1rem;">Counting accuracy</p>
+                </div>
+                <div style="text-align: center;">
+                    <h4 style="font-size: 4rem; color: #fff; margin-bottom: 0;">50+</h4>
+                    <p style="font-weight: 500; color: #94a3b8; font-size: 1.1rem;">UAE stores live</p>
+                </div>
+                <div style="text-align: center;">
+                    <h4 style="font-size: 4rem; color: #fff; margin-bottom: 0;">24/7</h4>
+                    <p style="font-weight: 500; color: #94a3b8; font-size: 1.1rem;">Real-time monitoring</p>
+                </div>
+            </div>
+
+            <!-- RICH TESTIMONIAL BLOCK -->
+            <div class="grid-2 reveal-up delay-1">
+                <div style="position: relative;">
+                    <span style="font-family: serif; font-size: 6rem; color: var(--primary-purple); position: absolute; top: -40px; left: -30px; opacity: 0.5;">"</span>
+                    <span class="eyebrow" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; position: relative; z-index: 2;">What Retailers Say</span>
+                    <h3 style="font-size: 2.5rem; margin-bottom: 1rem; color: #fff; position: relative; z-index: 2;">TRUSTED ACROSS RETAIL</h3>
+                    <p style="font-size: 1.35rem; line-height: 1.8; color: #e2e8f0; position: relative; z-index: 2;">Our retail brands in Dubai have benefited tremendously from the deployment of Beyond Traffic. The 3D stereo data is extremely accurate and very easy for our operational teams to use. We are early in our analytics journey and are excited to continue to drive performance in our stores across the region.</p>
+                    
+                    <div style="margin-top: 2.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="color: #fff; font-size: 1.2rem; letter-spacing: 0; text-transform: none; margin-bottom: 0.25rem;">Tariq Al-Futtaim</h4>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">Chief Operations Officer, Luxury Retail Group</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Profile Image & Geometric Accents -->
+                <div style="position: relative; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <div style="position: absolute; bottom: 10%; right: 10%; width: 0; height: 0; border-left: 100px solid transparent; border-bottom: 100px solid var(--accent-cyan);"></div>
+                    <div style="position: absolute; top: 10%; left: 10%; width: 0; height: 0; border-right: 80px solid transparent; border-top: 80px solid var(--primary-purple);"></div>
+                    <div style="width: 280px; height: 350px; background: #1e293b; border-radius: var(--radius-lg); overflow: hidden; position: relative; z-index: 5; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+                        <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 200px; height: 250px; background: #334155; border-radius: 100px 100px 0 0;"></div>
+                        <div style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 100px; height: 120px; background: #475569; border-radius: 50px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE RETAIL PROBLEM -->
+    <section class="section-pad">
+        <div class="container">
+            <span class="eyebrow reveal-up">The Retail Problem</span>
+            <h2 class="section-title reveal-up">RETAILERS OPERATE <br><span class="purple-text">COMPLETELY BLIND</span></h2>
+            <p class="subtitle reveal-up" style="margin-bottom: 4rem;">Without a reliable people counting system, every staffing decision, store layout change, and marketing campaign is a costly guess.</p>
+            
+            <div class="grid-4">
+                <div class="info-card reveal-up delay-1">
+                    <h3 style="color: var(--primary-purple);">1) Inaccurate foot traffic measurement</h3>
+                    <p>Manual counts miss thousands of daily visitors, making data unreliable</p>
+                </div>
+                <div class="info-card reveal-up delay-2">
+                    <h3 style="color: var(--primary-purple);">2) Traffic not linked to transactions</h3>
+                    <p>No visibility into conversion rates or revenue lost to missed opportunities</p>
+                </div>
+                <div class="info-card reveal-up delay-3">
+                    <h3 style="color: var(--primary-purple);">3) Unknown customer demographics</h3>
+                    <p>Marketing targets the wrong audience spend is wasted on poor segments</p>
+                </div>
+                <div class="info-card reveal-up delay-1">
+                    <h3 style="color: var(--primary-purple);">4) Slow, manual reporting cycles</h3>
+                    <p>Decisions are made days after the data is relevant, costing sales</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KEY FEATURES -->
+    <section id="platform" class="section-pad" style="background: var(--bg-alt); border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;">
+        <div class="container">
+            <span class="eyebrow reveal-up">People Counting Solutions</span>
+            <h2 class="section-title reveal-up">ONE PLATFORM. <br><span class="purple-text">MANY INSIGHTS.</span></h2>
+            <p class="subtitle reveal-up" style="margin-bottom: 4rem;">Al-powered footfall analytics embedded with deep learning and 3D stereo vision the most complete retail traffic counter available.</p>
+            
+            <div class="grid-3">
+                <div class="info-card reveal-up delay-1">
+                    <h3>Real-Time Footfall Counter</h3>
+                    <p>Track today, yesterday, weekly and monthly footfall with live updates. Your always-on retail traffic counter.</p>
+                </div>
+                <div class="info-card reveal-up delay-2">
+                    <h3>Multi-Location Footfall</h3>
+                    <p>Filter and compare in-store analytics across all your locations from one unified people counting dashboard.</p>
+                </div>
+                <div class="info-card reveal-up delay-3">
+                    <h3>Pass-By Traffic Counter</h3>
+                    <p>Measure how many people walk past vs. enter essential data for window display and signage optimization.</p>
+                </div>
+                <div class="info-card reveal-up delay-1">
+                    <h3>POS Integration</h3>
+                    <p>Sync your Point of Sale with the footfall counter to measure conversion rates and peak selling hours automatically.</p>
+                </div>
+                <div class="info-card reveal-up delay-2">
+                    <h3>Conversion Rate Analytics</h3>
+                    <p>Auto-calculate the % of visitors who become paying customers. Core to any customer journey analytics software.</p>
+                </div>
+                <div class="info-card reveal-up delay-3">
+                    <h3>Hourly Distribution</h3>
+                    <p>See footfall broken by hour to optimize staffing and identify peak periods with your retail traffic counter data.</p>
+                </div>
+                <div class="info-card reveal-up delay-1">
+                    <h3>Demographics & Segmentation</h3>
+                    <p>Go beyond counts gender, age group, and group-visit segmentation for sharper in-store analytics insights.</p>
+                </div>
+                <div class="info-card reveal-up delay-2">
+                    <h3>Staff vs. Customer Filter</h3>
+                    <p>Al distinguishes staff movements from customers so your people counting system data is always clean.</p>
+                </div>
+                <div class="info-card reveal-up delay-3">
+                    <h3>Automated Report Scheduling</h3>
+                    <p>Daily, weekly, or monthly email reports to stakeholders zero manual work. True set-it-and-forget-it analytics.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- IN-STORE ANALYTICS -->
+    <section class="section-pad">
+        <div class="container grid-2">
+            <div>
+                <span class="eyebrow reveal-up">In-Store Analytics</span>
+                <h2 class="section-title reveal-up">SEE EVERY CUSTOMER. <br><span class="purple-text">KNOW YOUR STORE.</span></h2>
+                <p class="subtitle reveal-up" style="margin-bottom: 2rem;">Your people counting solutions platform tracks every visitor in real time from entrance to checkout giving you a complete customer journey analytics picture.</p>
+                
+                <ul style="list-style: none; margin-top: 2.5rem;" class="reveal-up">
+                    <li style="margin-bottom: 2rem; background: #fff; padding: 1.5rem; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">
+                        <strong style="font-size: 1.2rem; color: var(--primary-purple);">1. 3D Stereo Vision Detection</strong><br>
+                        <span style="color: var(--text-light); display: inline-block; margin-top: 0.5rem;">The footfall camera uses dual lenses to detect and count every person accurately, filtering out carts, shadows, and mannequins.</span>
+                    </li>
+                    <li style="margin-bottom: 2rem; background: #fff; padding: 1.5rem; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">
+                        <strong style="font-size: 1.2rem; color: var(--primary-purple);">2. Real-Time Footfall Counter</strong><br>
+                        <span style="color: var(--text-light); display: inline-block; margin-top: 0.5rem;">Watch your people counter update live as visitors enter and exit no delays, no gaps.</span>
+                    </li>
+                    <li style="margin-bottom: 2rem; background: #fff; padding: 1.5rem; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">
+                        <strong style="font-size: 1.2rem; color: var(--primary-purple);">3. Customer Journey Analytics</strong><br>
+                        <span style="color: var(--text-light); display: inline-block; margin-top: 0.5rem;">Understand where customers go, how long they stay, and what drives conversion in your retail traffic analysis.</span>
+                    </li>
+                    <li style="background: #fff; padding: 1.5rem; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">
+                        <strong style="font-size: 1.2rem; color: var(--primary-purple);">4. Multi-Unit Path Linking</strong><br>
+                        <span style="color: var(--text-light); display: inline-block; margin-top: 0.5rem;">Al coordinates multiple sensors to cover wide entrances with zero double-counting perfect people counting solutions for large stores.</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="reveal-up delay-2">
+                <!-- CUSTOM CSS DASHBOARD -->
+                <div class="dashboard-ui">
+                    <div class="dash-header">
+                        <div class="dash-tab active">Dashboard Views</div>
+                    </div>
+                    <div class="dash-body">
+                        <div style="margin-bottom: 1.5rem;">
+                            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: var(--text-dark); margin-bottom: 0.5rem; text-transform: uppercase;">Footfall Analytics Your Way</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-light);">Multiple views, one platform from your live people counter to historical retail traffic counter reports. (include dashboard views)</p>
+                        </div>
+                        
+                        <!-- Heatmap Grid -->
+                        <div class="heatmap-grid">
+                            <div></div>
+                            <div class="hm-label text-center">Sun</div><div class="hm-label text-center">Mon</div><div class="hm-label text-center">Tue</div><div class="hm-label text-center">Wed</div><div class="hm-label text-center">Thu</div><div class="hm-label text-center">Fri</div><div class="hm-label text-center">Sat</div>
+                            
+                            <div class="hm-label">10 AM</div>
+                            <div class="hm-cell c-1"></div><div class="hm-cell c-2"></div><div class="hm-cell c-3"></div><div class="hm-cell c-2"></div><div class="hm-cell c-1"></div><div class="hm-cell c-4"></div><div class="hm-cell c-5"></div>
+                            
+                            <div class="hm-label">12 PM</div>
+                            <div class="hm-cell c-2"></div><div class="hm-cell c-3"></div><div class="hm-cell c-4"></div><div class="hm-cell c-4"></div><div class="hm-cell c-3"></div><div class="hm-cell c-5"></div><div class="hm-cell c-5"></div>
+                            
+                            <div class="hm-label">2 PM</div>
+                            <div class="hm-cell c-3"></div><div class="hm-cell c-4"></div><div class="hm-cell c-5"></div><div class="hm-cell c-5"></div><div class="hm-cell c-4"></div><div class="hm-cell c-5"></div><div class="hm-cell c-4"></div>
+                            
+                            <div class="hm-label">4 PM</div>
+                            <div class="hm-cell c-2"></div><div class="hm-cell c-3"></div><div class="hm-cell c-3"></div><div class="hm-cell c-2"></div><div class="hm-cell c-2"></div><div class="hm-cell c-4"></div><div class="hm-cell c-3"></div>
+                        </div>
+
+                        <!-- Line Chart -->
+                        <div class="chart-container">
+                            <svg class="svg-line" viewBox="0 0 400 100" preserveAspectRatio="none">
+                                <path d="M0,80 C50,90 100,50 150,60 C200,70 250,20 300,40 C350,60 400,10" fill="none" stroke="var(--accent-cyan)" stroke-width="3" stroke-linecap="round"/>
+                                <path d="M0,90 C50,95 100,70 150,80 C200,85 250,40 300,50 C350,70 400,30" fill="none" stroke="var(--primary-purple)" stroke-width="3" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DETAILED FEATURES -->
+    <section class="section-pad" style="background: var(--bg-alt); border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;">
+        <div class="container">
+            <h2 class="section-title reveal-up">POWERFUL FEATURES BUILT FOR <br><span class="purple-text">MODERN RETAIL INTELLIGENCE</span></h2>
+            <p class="subtitle reveal-up" style="margin-bottom: 4rem;">Beyond Traffic combines advanced Al, real-time data processing, and intuitive dashboards to deliver a complete retail analytics platform. Every feature is designed to help you understand customer behavior, improve conversions, and optimize store performance across locations.</p>
+            
+            <div class="grid-3">
+                <div class="info-card reveal-up delay-1">
+                    <h3 style="color: var(--primary-purple);">1. Real-Time Footfall Analytics</h3>
+                    <p>Track every visitor entering and exiting your store with live data updates. Identify peak hours, daily trends, and seasonal patterns to make smarter operational decisions.</p>
+                    <p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-dark);">Key Benefits:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Real-time people counting</li>
+                        <li>Entry and exit tracking</li>
+                        <li>Hourly, daily, monthly insights</li>
+                    </ul>
+                </div>
+                
+                <div class="info-card reveal-up delay-2">
+                    <h3 style="color: var(--primary-purple);">2. Conversion & Sales Insights</h3>
+                    <p>Understand how your traffic translates into revenue. By integrating with your POS system, Beyond Traffic helps you measure true store performance.</p>
+                    <p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-dark);">Key Benefits:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Conversion rate (visitors vs buyers)</li>
+                        <li>Revenue per visitor</li>
+                        <li>Peak selling hour identification</li>
+                    </ul>
+                </div>
+
+                <div class="info-card reveal-up delay-3">
+                    <h3 style="color: var(--primary-purple);">3. Customer Behavior & Demographics</h3>
+                    <p>Go beyond numbers and understand who your customers are and how they interact with your store.</p>
+                    <p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-dark);">Key Benefits:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Gender-based insights</li>
+                        <li>Adults vs children tracking</li>
+                        <li>Group vs individual visits</li>
+                        <li>Staff vs customer differentiation</li>
+                    </ul>
+                </div>
+
+                <div class="info-card reveal-up delay-1">
+                    <h3 style="color: var(--primary-purple);">4. Multi-Store Performance Analytics</h3>
+                    <p>Manage all your locations from a single dashboard and compare performance across regions.</p>
+                    <p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-dark);">Key Benefits:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Store-to-store comparison</li>
+                        <li>Performance benchmarking</li>
+                        <li>Centralized data visibility</li>
+                    </ul>
+                </div>
+
+                <div class="info-card reveal-up delay-2">
+                    <h3 style="color: var(--primary-purple);">5. Occupancy & In-Store Intelligence</h3>
+                    <p>Gain visibility into how customers move within your store and how space is utilized.</p>
+                    <p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-dark);">Key Benefits:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Real-time occupancy monitoring</li>
+                        <li>Zone-level insights</li>
+                        <li>Dwell time tracking</li>
+                    </ul>
+                </div>
+
+                <div class="info-card reveal-up delay-3">
+                    <h3 style="color: var(--primary-purple);">6. Al-Driven Insights & Forecasting</h3>
+                    <p>Turn data into decisions with built-in intelligence that highlights trends and predicts future performance.</p>
+                    <p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-dark);">Key Benefits:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Predictive traffic trends</li>
+                        <li>Automated recommendations</li>
+                        <li>Anomaly detection</li>
+                    </ul>
+                </div>
+
+                <div class="info-card reveal-up delay-1">
+                    <h3 style="color: var(--primary-purple);">7. Smart Reporting & Dashboards</h3>
+                    <p>Access clear, visual insights without manual effort.</p>
+                    <p style="margin-top: 1.5rem; font-weight: 600; color: var(--text-dark);">Key Benefits:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Custom dashboards</li>
+                        <li>Automated reports (daily/weekly/monthly)</li>
+                        <li>Multi-user access with role-based control</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HARDWARE / SENSORS SECTION WITH CSS GRAPHICS -->
+    <section class="section-pad">
+        <div class="container text-center">
+            <h2 class="section-title reveal-up">HIGH ACCURACY SENSORS THAT <br><span class="purple-text">POWER EVERY INSIGHT</span></h2>
+            <p class="subtitle reveal-up" style="margin: 0 auto 4rem auto;">Accurate data starts at the source. Beyond Traffic's advanced people counting sensors use 3D stereo vision and Al technology to capture precise, real-world customer movement-ensuring every insight you see is reliable and actionable.</p>
+            
+            <div class="grid-3 text-left">
+                <!-- Hardware Card 1 -->
+                <div class="info-card reveal-up delay-1">
+                    <div class="sensor-graphic">
+                        <div class="camera-body">
+                            <div class="led-light"></div>
+                            <div class="lens"></div>
+                            <div class="lens"></div>
+                        </div>
+                    </div>
+                    <h3>3D Al-Powered Counting Technology</h3>
+                    <p>Our sensors use dual-lens stereo vision to create depth-based detection, ensuring accurate counting even in crowded or complex retail environments.</p>
+                </div>
+                
+                <!-- Hardware Card 2 -->
+                <div class="info-card reveal-up delay-2">
+                    <div class="sensor-graphic">
+                        <div class="camera-body" style="width: 120px; height: 120px; border-radius: 50%; flex-direction: column;">
+                            <div class="lens" style="width: 40px; height: 40px;"></div>
+                        </div>
+                    </div>
+                    <h3>Industry-Leading Accuracy</h3>
+                    <p>Achieve up to 98%+ accuracy with intelligent filtering that eliminates false counts caused by shadows, reflections, carts, and other non-human objects</p>
+                </div>
+
+                <!-- Hardware Card 3 -->
+                <div class="info-card reveal-up delay-3">
+                    <div class="sensor-graphic">
+                        <div style="width: 80%; height: 10px; background: #cbd5e1; border-radius: 5px; position: relative;">
+                            <div style="position: absolute; top: -10px; left: 20%; width: 20px; height: 30px; background: var(--primary-purple); border-radius: 4px;"></div>
+                            <div style="position: absolute; top: -10px; right: 20%; width: 20px; height: 30px; background: var(--primary-purple); border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <h3>True Customer Detection</h3>
+                    <p>Go beyond basic counting with smart identification capabilities:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Distinguish staff from customers</li>
+                        <li>Detect adults vs children</li>
+                        <li>Identify group visits</li>
+                    </ul>
+                </div>
+                
+                <div class="info-card reveal-up delay-1">
+                    <h3>Seamless Coverage for Any Space</h3>
+                    <p>Designed to handle real-world retail challenges:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Wide entrance coverage</li>
+                        <li>Multi-sensor linking for large areas</li>
+                        <li>No double counting in overlapping zones</li>
+                    </ul>
+                </div>
+                <div class="info-card reveal-up delay-2">
+                    <h3>Flexible Installation & Connectivity</h3>
+                    <p>Easy deployment across different store formats:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Supports multiple mounting heights</li>
+                        <li>Surface-mounted design</li>
+                        <li>Wi-Fi and BLE connectivity</li>
+                    </ul>
+                </div>
+                <div class="info-card reveal-up delay-3">
+                    <h3>Real-Time Device Monitoring</h3>
+                    <p>Stay in control with proactive system management:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light);">
+                        <li>Device health alerts</li>
+                        <li>Maintenance notifications</li>
+                        <li>Remote diagnostics</li>
+                    </ul>
+                </div>
+            </div>
+            <p style="margin-top: 3rem; color: var(--text-light); background: #fff; border-radius: var(--radius-sm); border: 1px dashed var(--light-purple); padding: 2rem; display: inline-block;">(include sensor images -)</p>
+        </div>
+    </section>
+
+    <!-- COLORED INDUSTRY CARDS -->
+    <section id="industry" class="section-pad" style="background: var(--bg-alt); border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;">
+        <div class="container">
+            <h2 class="section-title text-center reveal-up">BUILT FOR MODERN <br><span class="purple-text">RETAIL ENVIRONMENTS</span></h2>
+            
+            <ul style="display: flex; justify-content: center; gap: 2.5rem; list-style: none; margin-bottom: 4rem; flex-wrap: wrap; font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 500;" class="reveal-up">
+                <li>Retail Stores</li><li style="color: var(--light-purple);">|</li>
+                <li>Shopping Malls</li><li style="color: var(--light-purple);">|</li>
+                <li>Restaurants</li><li style="color: var(--light-purple);">|</li>
+                <li>Commercial Buildings</li>
+            </ul>
+
+            <div class="grid-2">
+                <!-- Dark Purple Card -->
+                <div class="info-card card-deep reveal-up">
+                    <h3 style="font-size: 2rem;">Fashion & Apparel Retail</h3>
+                    <p style="margin-bottom: 1rem; color: #cbd5e1;">From high-street fashion to independent boutiques fashion retailers in the UAE need to know exactly who's walking through the door, when, and how often they convert to buyers.</p>
+                    <p style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">Challenge: High rent = high pressure to convert</p>
+                    <p style="margin-top: 1rem; font-weight: 600;">Solution:</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; margin-bottom: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">Conversion rate + hourly staffing data</li>
+                        <li style="margin-bottom: 0.5rem;">Know which displays attract the most dwell time</li>
+                        <li style="margin-bottom: 0.5rem;">Compare conversion rates across mall locations</li>
+                        <li style="margin-bottom: 0.5rem;">Staff peak hours based on real footfall data</li>
+                        <li style="margin-bottom: 0.5rem;">Measure impact of promotions on actual traffic</li>
+                        <li style="margin-bottom: 0.5rem;">Understand gender split to optimise stock mix</li>
+                    </ul>
+                    <div class="focus-pill">Focus points: | Conversion Tracking | Demographics | Multi-Location</div>
+                </div>
+
+                <!-- Clean White Card -->
+                <div class="info-card reveal-up delay-1">
+                    <h3 style="font-size: 2rem; color: var(--primary-purple);">Shopping Malls & Retail Centres</h3>
+                    <p style="margin-bottom: 1.5rem;">UAE shopping malls are among the busiest in the world. Mall operators and management companies need accurate zone-by-zone footfall data to serve tenants, prove ROI on events and manage operations at scale.</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light); margin-bottom: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;">Entrance-by-entrance traffic counts across the mall</li>
+                        <li style="margin-bottom: 0.5rem;">Zone-level footfall for tenant benchmarking</li>
+                        <li style="margin-bottom: 0.5rem;">Occupancy counter for safety & compliance</li>
+                        <li style="margin-bottom: 0.5rem;">Peak hour planning for cleaning, security, and concierge</li>
+                        <li style="margin-bottom: 0.5rem;">Event impact measurement (how much did DSF sale drive footfall?)</li>
+                        <li style="margin-bottom: 0.5rem;">Automated reports for management and tenant reporting</li>
+                    </ul>
+                    <div class="focus-pill" style="color: var(--primary-purple); background: var(--bg-alt); border-color: var(--light-purple);">Focus points: Zone Analytics Occupancy Counter Tenant Reports</div>
+                </div>
+
+                <!-- Vibrant Purple Card -->
+                <div class="info-card card-purple reveal-up">
+                    <h3 style="font-size: 2rem;">Jewellery & Luxury Retail</h3>
+                    <p style="margin-bottom: 1.5rem; color: #e9d5ff;">Jewellery retail in the UAE is high-value and high-service. Every visitor who walks in is a serious potential customer. Know your true window-to-visit rate, staff accordingly, and track if your window displays are pulling people in from the mall corridor.</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; margin-bottom: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;">Pass-by to entry conversion rate (window appeal metric)</li>
+                        <li style="margin-bottom: 0.5rem;">Sales conversion from footfall vs. appointments</li>
+                        <li style="margin-bottom: 0.5rem;">Gender demographics for targeted marketing</li>
+                        <li style="margin-bottom: 0.5rem;">Staff-to-customer ratio optimization</li>
+                        <li style="margin-bottom: 0.5rem;">Cross-location data for multi-store chains</li>
+                    </ul>
+                </div>
+
+                <!-- Clean White Card -->
+                <div class="info-card reveal-up delay-1">
+                    <h3 style="font-size: 2rem; color: var(--primary-purple);">Hospitality & F&B</h3>
+                    <p style="margin-bottom: 1.5rem;">Hotels, restaurants, cafes and food courts in the UAE can use footfall analytics to manage queue times, optimise seating, track peak periods and measure campaign effectiveness in driving walk-ins.</p>
+                    <ul style="margin-left: 1.5rem; font-size: 0.95rem; color: var(--text-light); margin-bottom: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;">Live occupancy counter for seating management</li>
+                        <li style="margin-bottom: 0.5rem;">Peak traffic hours for kitchen and staff scheduling</li>
+                        <li style="margin-bottom: 0.5rem;">Queue monitoring at reception, buffet, or entry</li>
+                        <li style="margin-bottom: 0.5rem;">Group visit identification for reservations planning</li>
+                        <li style="margin-bottom: 0.5rem;">Multi-outlet comparison for F&B chains</li>
+                    </ul>
+                    <div class="focus-pill" style="color: var(--primary-purple); background: var(--bg-alt); border-color: var(--light-purple);">Focus points: Occupancy Counter Queue Analytics</div>
+                </div>
+            </div>
+
+            <div class="info-card reveal-up text-center" style="margin-top: 4rem; background: var(--primary-purple); color: #fff;">
+                <h3 style="font-size: 2.5rem; font-family: 'Outfit', sans-serif; color: #fff;">Find Your Industry Solution</h3>
+                <p style="margin-bottom: 2.5rem; font-size: 1.1rem; color: var(--light-purple);">Tell us about your business and we'll show you exactly how Beyond Traffic's footfall counter works for your specific UAE context.</p>
+                <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+                    <a href="#contact" class="btn" style="background: #fff; color: var(--primary-purple);">Discover Your Industry ROI</a>
+                    <a href="#platform" class="btn" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3);">Explore Features</a>
+                </div>
+            </div>
+
+            <div class="text-center reveal-up" style="margin-top: 5rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <h3 style="margin-bottom: 1rem; font-size: 2rem;">People Counting Camera for Small Businesses in UAE</h3>
+                <p style="font-size: 1.1rem; color: var(--text-light);">You don't need to be a large chain to benefit from footfall analytics. Beyond Traffic is specifically designed to be affordable and easy-to-use for independent retailers, boutiques, and SMEs across the UAE</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" class="section-pad">
+        <div class="container">
+            <h2 class="section-title text-center reveal-up" style="margin-bottom: 4rem;">SECTION FAQ- BEYOND TRAFFIC</h2>
+            <div style="max-width: 900px; margin: 0 auto;">
+                <details class="reveal-up">
+                    <summary>1)What is a people counting system?</summary>
+                    <div class="faq-ans">A people counting system is a technology solution that tracks the number of visitors entering and exiting a store or location. Beyond Traffic uses Al-powered sensors and footfall analytics software to provide real-time visitor insights, helping businesses in the UAE make data-driven decisions.</div>
+                </details>
+                <details class="reveal-up">
+                    <summary>2)How does footfall analytics help retail businesses in the UAE?</summary>
+                    <div class="faq-ans">
+                        Footfall analytics helps UAE retailers understand:
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                            <li>How many customers visit their store?</li>
+                            <li>When peak hours occur</li>
+                            <li>How many visitors convert into buyers?</li>
+                        </ul>
+                        This allows businesses to optimize staffing, improve store layouts, and increase sales performance.
+                    </div>
+                </details>
+                <details class="reveal-up">
+                    <summary>3)Is Beyond Traffic suitable for malls and large retail chains in Dubai?</summary>
+                    <div class="faq-ans">
+                        Yes. Beyond Traffic is designed for:
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                            <li>Multi-store retail chains</li>
+                            <li>Shopping malls</li>
+                            <li>Large commercial spaces</li>
+                        </ul>
+                        It provides centralized dashboards to compare performance across multiple locations in Dubai and across the UAE.
+                    </div>
+                </details>
+                <details class="reveal-up">
+                    <summary>4)How accurate is the Beyond Traffic people counting system?</summary>
+                    <div class="faq-ans">Beyond Traffic uses advanced 3D stereo vision sensors with Al filtering technology, delivering up to 98%+ accuracy under typical retail conditions. It eliminates false counts caused by shadows, reflections, and non-human objects.</div>
+                </details>
+                <details class="reveal-up">
+                    <summary>5)Can the system differentiate between staff and customers?</summary>
+                    <div class="faq-ans">Yes. Beyond Traffic can distinguish staff from customers, ensuring accurate footfall data and more reliable conversion rate analysis.</div>
+                </details>
+                <details class="reveal-up">
+                    <summary>6) Does the system track customer demographics?</summary>
+                    <div class="faq-ans">
+                        Yes. The platform provides basic demographic insights such as:
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                            <li>Gender (male/female)</li>
+                            <li>Adults vs children</li>
+                            <li>Group vs individual visitors</li>
+                        </ul>
+                        This helps UAE retailers tailor marketing and in-store experiences.
+                    </div>
+                </details>
+                <details class="reveal-up">
+                    <summary>7)Can Beyond Traffic measure conversion rates?</summary>
+                    <div class="faq-ans">Yes. By integrating with your POS system, Beyond Traffic compares footfall data with transactions to calculate conversion rates and identify opportunities to improve sales.</div>
+                </details>
+                <details class="reveal-up">
+                    <summary>8)What kind of reports does the system provide?</summary>
+                    <div class="faq-ans">
+                        Beyond Traffic offers:
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                            <li>Real-time dashboards</li>
+                            <li>Daily, weekly, and monthly reports</li>
+                            <li>Automated email reports</li>
+                            <li>Customizable analytics views</li>
+                        </ul>
+                        Reports can be accessed anytime from cloud-based dashboards.
+                    </div>
+                </details>
+                <details class="reveal-up">
+                    <summary>9)Can I monitor multiple stores from one dashboard?</summary>
+                    <div class="faq-ans">Yes. Beyond Traffic provides multi-store analytics, allowing you to monitor performance across all your UAE locations from a single platform.</div>
+                </details>
+                <details class="reveal-up">
+                    <summary>10) How much does a people counting system cost in the UAE?</summary>
+                    <div class="faq-ans">
+                        The cost depends on:
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                            <li>Number of stores</li>
+                            <li>Number of entrances</li>
+                            <li>Required features and integrations</li>
+                        </ul>
+                        Contact us for a customized quote tailored to your UAE business. (Link to contact page)
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING & CONTACT -->
+    <section id="pricing" class="section-pad" style="background: var(--bg-dark); color: #fff;">
+        <div class="container text-center reveal-up" style="margin-bottom: 5rem;">
+            <h2 class="section-title white-text">EXPLORE THE POSSIBILITIES OF BEYOND TRAFFIC</h2>
+            <p class="subtitle" style="margin: 0 auto; color: #94a3b8;">Estimate the Pricing for the Beyond Traffic subscription. Reference: Pricing | RetailNext</p>
+        </div>
+        
+        <div class="container" id="contact">
+            <div style="background: #1e293b; padding: 4rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: var(--radius-md);" class="reveal-up">
+                <div class="grid-2">
+                    <div>
+                        <span class="eyebrow" style="background: rgba(124, 58, 237, 0.2); border: none;">Get In Touch</span>
+                        <h2 class="section-title white-text" style="margin-bottom: 1rem;">SEE YOUR STORE CLEARLY</h2>
+                        <p style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #fff;">See Beyond Traffic in Action</p>
+                        <p style="color: #cbd5e1; margin-bottom: 1.5rem;">Book a personalized demo of the most accurate people counting system in the region. See real-time footfall analytics, live dashboards, and how our retail traffic counter can transform your operations.</p>
+                        <p style="color: #cbd5e1; margin-bottom: 2rem;">See Beyond Traffic's people counting platform live - tailored to your store type and UAE location. No pressure, no commitment.</p>
+                        <div style="background: #0f172a; padding: 1.5rem; border-radius: var(--radius-sm);">
+                            <p style="color: var(--primary-purple); font-weight: 600; font-size: 0.95rem;">Include contact form...add company addresses of all branches</p>
+                            <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 0.5rem;">Dubai Headquarters: Dubai Silicon Oasis, DDP, Building A2, Dubai, UAE.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <form style="background: #0f172a; padding: 2.5rem; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <input type="text" placeholder="Name" style="width: 100%; padding: 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 1rem;" required>
+                                </div>
+                                <div>
+                                    <input type="text" placeholder="Company" style="width: 100%; padding: 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 1rem;" required>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <input type="text" placeholder="Role" style="width: 100%; padding: 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 1rem;">
+                                </div>
+                                <div>
+                                    <input type="email" placeholder="Email" style="width: 100%; padding: 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 1rem;" required>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <input type="tel" placeholder="Phone" style="width: 100%; padding: 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 1rem;">
+                                </div>
+                                <div>
+                                    <input type="number" placeholder="Number of locations" style="width: 100%; padding: 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 1rem;">
+                                </div>
+                            </div>
+
+                            <input type="text" placeholder="Industry" style="width: 100%; padding: 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 1rem;">
+                            <textarea rows="3" placeholder="Message/Specific needs" style="width: 100%; padding: 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 1rem;"></textarea>
+                            <input type="text" placeholder="How did you hear about us?" style="width: 100%; padding: 1rem; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 1.5rem;">
+                            
+                            <button type="submit" class="btn btn-purple" style="width: 100%; padding: 1.15rem; font-size: 1.05rem;">Reveal My Store's Potential &rarr;</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="padding: 5rem 0 2rem 0; border-top: 1px solid #f1f5f9; background: #fff;">
+        <div class="container grid-3" style="margin-bottom: 4rem;">
+            <div>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 800; color: var(--text-dark);">Column 1</h3>
+                <ul style="list-style: none;">
+                    <li style="margin-bottom: 0.75rem; font-weight: 700; color: var(--primary-purple); text-transform: uppercase; font-size: 0.9rem;">Platform</li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#platform" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Footfall Counter (target to platform)</a></li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#platform" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Features (point to features section on main page)</a></li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#platform" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">People counting sensor (target to sensor section on home page)</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 800; color: var(--text-dark);">Column 2</h3>
+                <ul style="list-style: none;">
+                    <li style="margin-bottom: 0.75rem; font-weight: 700; color: var(--primary-purple); text-transform: uppercase; font-size: 0.9rem;">Industries</li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#industry" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Fashion</a></li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#industry" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Malls</a></li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#industry" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Hospitality</a></li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#industry" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">F&B</a></li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#industry" style="color: var(--text-light); text-decoration: none; font-size: 0.95rem;">Jewelry</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 800; color: var(--text-dark);">Column 3</h3>
+                <ul style="list-style: none; margin-bottom: 2rem;">
+                    <li style="margin-bottom: 0.75rem; font-weight: 700; color: var(--primary-purple); text-transform: uppercase; font-size: 0.9rem;">Resources</li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#faq" style="color: var(--text-light); text-decoration: none; transition: color 0.3s;">FAQ</a></li>
+                    <li style="margin-bottom: 0.75rem;"><a href="#" style="color: var(--text-light); text-decoration: none; transition: color 0.3s;">Testimony</a></li>
+                    <li id="blog" style="margin-bottom: 0.75rem;"><a href="#" style="color: var(--text-light); text-decoration: none; transition: color 0.3s;">Blog</a></li>
+                </ul>
+                <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: var(--radius-sm); border: 1px solid #f1f5f9;">
+                    <strong style="display: block; margin-bottom: 1rem; color: var(--text-dark);">Newsletter signup form</strong>
+                    <div style="display: flex;">
+                        <input type="email" placeholder="Email Address" style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: var(--radius-pill) 0 0 var(--radius-pill); border-right: none; outline: none; width: 100%;">
+                        <button class="btn btn-purple" style="border-radius: 0 var(--radius-pill) var(--radius-pill) 0; padding: 0 1.5rem;">Join</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <p style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; color: var(--deep-purple);">Beyond Traffic.</p>
+            <p style="color: var(--text-light); font-size: 0.9rem;">&copy; 2026 Beyond Traffic LLC. Dubai, UAE.</p>
+        </div>
+    </footer>
+
+    <!-- SCROLL ANIMATION SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { entry.target.classList.add('active'); }
+                });
+            }, observerOptions);
+
+            const revealElements = document.querySelectorAll('.reveal-up');
+            revealElements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
