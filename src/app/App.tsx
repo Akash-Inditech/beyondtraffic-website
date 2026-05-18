@@ -2072,31 +2072,31 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-50px" }}
-            className="relative bg-gradient-to-br from-yellow-500 via-amber-500 to-yellow-500 rounded-3xl p-12 md:p-20 overflow-hidden shadow-2xl shadow-yellow-500/50"
+            className="relative bg-gradient-to-br from-yellow-500 via-amber-500 to-yellow-500 rounded-3xl p-6 md:p-10 overflow-hidden shadow-xl shadow-yellow-500/40 max-w-4xl mx-auto"
           >
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
-            <div className="relative z-10 text-center">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-72 h-72 bg-black/10 rounded-full blur-3xl" />
+            <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 text-center md:text-left">
               {/* Spatial coverage view — top-down, sensor-agnostic */}
-              <div className="relative w-64 h-64 md:w-80 md:h-80 mx-auto mb-8">
+              <div className="relative w-36 h-36 md:w-44 md:h-44 flex-shrink-0">
                 {/* Soft halo behind the spatial view */}
                 <div className="absolute inset-0 rounded-full bg-white/10 blur-2xl" />
 
                 {/* Static coverage rings */}
                 <div className="absolute inset-0 rounded-full border border-white/35" />
-                <div className="absolute inset-8 rounded-full border border-white/25" />
-                <div className="absolute inset-16 rounded-full border border-white/20" />
+                <div className="absolute inset-5 rounded-full border border-white/25" />
+                <div className="absolute inset-10 rounded-full border border-white/20" />
 
                 {/* Cross-hair guides */}
-                <div className="absolute top-1/2 left-2 right-2 h-px bg-white/15" />
-                <div className="absolute left-1/2 top-2 bottom-2 w-px bg-white/15" />
+                <div className="absolute top-1/2 left-1 right-1 h-px bg-white/15" />
+                <div className="absolute left-1/2 top-1 bottom-1 w-px bg-white/15" />
 
                 {/* Outgoing pulse rings (radar sweep) */}
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={`pulse-${i}`}
-                    className="absolute inset-[28%] rounded-full border-2 border-white/45"
-                    animate={{ scale: [1, 2.6], opacity: [0.55, 0] }}
+                    className="absolute inset-[30%] rounded-full border-2 border-white/45"
+                    animate={{ scale: [1, 2.4], opacity: [0.55, 0] }}
                     transition={{
                       duration: 2.8,
                       repeat: Infinity,
@@ -2117,12 +2117,12 @@ export default function App() {
                 ].map((p, i) => (
                   <motion.div
                     key={`dot-${i}`}
-                    className="absolute w-2.5 h-2.5 md:w-3 md:h-3 rounded-full"
+                    className="absolute w-1.5 h-1.5 md:w-2 md:h-2 rounded-full"
                     style={{
                       left: `${p.x}%`,
                       top: `${p.y}%`,
                       background: p.color,
-                      boxShadow: `0 0 14px ${p.color}, 0 0 0 4px rgba(255,255,255,0.18)`,
+                      boxShadow: `0 0 10px ${p.color}, 0 0 0 3px rgba(255,255,255,0.18)`,
                       transform: "translate(-50%, -50%)",
                     }}
                     animate={{ scale: [1, 1.35, 1], opacity: [0.75, 1, 0.75] }}
@@ -2132,53 +2132,54 @@ export default function App() {
 
                 {/* Central abstract device */}
                 <motion.div
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-700 border border-white/50 shadow-2xl flex items-center justify-center"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-gray-900 to-gray-700 border border-white/50 shadow-xl flex items-center justify-center"
                   animate={{ y: [0, -3, 0] }}
                   transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <div className="absolute inset-1.5 rounded-xl border border-white/15" />
+                  <div className="absolute inset-1 rounded-lg border border-white/15" />
                   <motion.span
-                    className="relative w-2 h-2 rounded-full bg-emerald-400"
+                    className="relative w-1.5 h-1.5 rounded-full bg-emerald-400"
                     animate={{ opacity: [1, 0.4, 1], scale: [1, 1.2, 1] }}
                     transition={{ duration: 1.6, repeat: Infinity }}
-                    style={{ boxShadow: "0 0 12px rgba(52,211,153,0.9)" }}
+                    style={{ boxShadow: "0 0 10px rgba(52,211,153,0.9)" }}
                   />
                 </motion.div>
-
-                {/* Floating label */}
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[10px] md:text-xs font-bold uppercase tracking-[0.22em] text-white/85">
-                  Coverage Zone
-                </div>
               </div>
 
-              <h3 className="text-3xl md:text-4xl text-white mb-4 font-black uppercase">
-                Any Sensor. One Intelligent Platform.
-              </h3>
-              <p className="text-lg md:text-xl text-yellow-100 max-w-2xl mx-auto leading-relaxed">
-                Beyond Traffic is hardware-agnostic by design. Plug into best-in-class sensors from our
-                partner ecosystem &mdash; pick the tech that fits your space, and we&apos;ll turn its
-                signals into actionable retail intelligence.
-              </p>
-              <div className="mt-8 flex justify-center gap-4 flex-wrap">
-                {[
-                  { value: "98%+", label: "Accuracy" },
-                  { value: "Any", label: "Hardware" },
-                  { value: "AI", label: "Powered" },
-                ].map((stat, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1, duration: 0.5 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    className="bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/30 hover:bg-white/30 hover:border-white/50 transition-all duration-300 cursor-pointer relative overflow-hidden"
-                  >
-                    <div className="absolute inset-0 shimmer-effect opacity-20" />
-                    <div className="text-2xl font-black text-white relative z-10">{stat.value}</div>
-                    <div className="text-sm text-yellow-200 relative z-10">{stat.label}</div>
-                  </motion.div>
-                ))}
+              {/* Right — copy + stats */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.22em] text-white/85 mb-2">
+                  Coverage Zone
+                </p>
+                <h3 className="text-xl md:text-2xl text-white mb-2 md:mb-3 font-black uppercase leading-tight">
+                  Any Sensor. One Intelligent Platform.
+                </h3>
+                <p className="text-sm md:text-base text-yellow-100 leading-relaxed">
+                  Beyond Traffic is hardware-agnostic by design. Plug into best-in-class sensors from our
+                  partner ecosystem &mdash; pick the tech that fits your space, and we&apos;ll turn its
+                  signals into actionable retail intelligence.
+                </p>
+                <div className="mt-4 md:mt-5 flex justify-center md:justify-start gap-2.5 flex-wrap">
+                  {[
+                    { value: "98%+", label: "Accuracy" },
+                    { value: "Any", label: "Hardware" },
+                    { value: "AI", label: "Powered" },
+                  ].map((stat, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.08, duration: 0.4 }}
+                      whileHover={{ scale: 1.04, y: -2 }}
+                      className="bg-white/20 backdrop-blur-sm rounded-xl px-3.5 py-1.5 border border-white/30 hover:bg-white/30 hover:border-white/50 transition-all duration-300 cursor-pointer relative overflow-hidden"
+                    >
+                      <div className="absolute inset-0 shimmer-effect opacity-20" />
+                      <div className="text-base md:text-lg font-black text-white relative z-10 leading-tight">{stat.value}</div>
+                      <div className="text-[10px] md:text-xs text-yellow-200 relative z-10 leading-tight">{stat.label}</div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>
