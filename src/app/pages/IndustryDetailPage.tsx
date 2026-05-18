@@ -8,7 +8,7 @@ import {
   ArrowDownRight,
   Minus,
   CheckCircle2,
-  Sparkles,
+  Eye,
 } from "lucide-react";
 import {
   Area,
@@ -23,7 +23,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { getIndustryBySlug, INDUSTRIES, type Industry, type IndustryChart } from "../data/industries";
+import {
+  getIndustryBySlug,
+  INDUSTRIES,
+  type Industry,
+  type IndustryChart,
+} from "../data/industries";
 
 export function IndustryDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -37,7 +42,9 @@ export function IndustryDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 bg-white">
         <div className="text-center max-w-md">
-          <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">Industry not found</h1>
+          <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">
+            Industry not found
+          </h1>
           <p className="text-gray-600 mb-6">
             We couldn&apos;t find the industry you&apos;re looking for. Browse our other industries below.
           </p>
@@ -73,39 +80,49 @@ export function IndustryDetailPage() {
 function IndustryHeader({ industry }: { industry: Industry }) {
   const Icon = industry.icon;
   return (
-    <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-lg border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 md:h-16 flex items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center shadow-md shadow-yellow-500/30">
-            <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-gray-200/60 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-2.5 gap-4">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-9 h-9 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+            <Eye className="w-5 h-5 text-white" />
           </div>
-          <span className="font-black text-base md:text-lg tracking-tight text-gray-900 group-hover:text-amber-700 transition-colors">
-            Beyond Traffic
+          <span className="text-base md:text-xl font-black uppercase tracking-tight text-gray-900">
+            Beyond Traffic<span className="text-yellow-500">.</span>
           </span>
         </Link>
 
-        <div className="hidden sm:flex items-center gap-1.5 text-[11px] md:text-xs font-semibold tracking-wide text-gray-500">
-          <Link to="/" className="hover:text-gray-900 transition-colors">
+        <div className="hidden sm:flex items-center gap-1.5 text-[11px] md:text-xs font-semibold tracking-wide text-gray-500 uppercase">
+          <Link to="/" className="hover:text-yellow-600 transition-colors">
             Home
           </Link>
           <span aria-hidden>/</span>
-          <Link to="/#industries" className="hover:text-gray-900 transition-colors">
+          <Link
+            to="/#industries"
+            className="hover:text-yellow-600 transition-colors"
+          >
             Industries
           </Link>
           <span aria-hidden>/</span>
           <span className="text-gray-900 inline-flex items-center gap-1.5">
-            <Icon className={`w-3.5 h-3.5 ${industry.accent.text}`} />
+            <Icon className="w-3.5 h-3.5 text-yellow-600" />
             {industry.shortName}
           </span>
         </div>
 
-        <Link
-          to="/#contact"
-          className={`hidden md:inline-flex items-center gap-2 bg-gradient-to-r ${industry.accent.grad} text-white px-4 py-2 rounded-full text-xs font-bold shadow-md hover:shadow-lg transition-shadow`}
+        <motion.div
+          whileHover={{ scale: 1.04, y: -1 }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          className="hidden md:flex"
         >
-          Book Demo
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
+          <Link
+            to="/#contact"
+            className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-5 py-2.5 rounded-full hover:shadow-xl hover:shadow-yellow-500/40 transition-shadow duration-300 flex items-center gap-2 group font-semibold text-sm uppercase tracking-wide"
+          >
+            Book Demo
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
       </div>
     </header>
   );
@@ -114,83 +131,87 @@ function IndustryHeader({ industry }: { industry: Industry }) {
 /* ─────────────────────────────  HERO  ────────────────────────────── */
 
 function IndustryHero({ industry }: { industry: Industry }) {
-  const Icon = industry.icon;
   return (
-    <section className={`relative overflow-hidden ${industry.accent.softBg}`}>
-      <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-50 blur-3xl pointer-events-none"
-        style={{ background: industry.accent.chart }}
-      />
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full opacity-30 blur-3xl pointer-events-none"
-        style={{ background: industry.accent.chart }}
-      />
+    <section className="relative overflow-hidden bg-white pt-8 md:pt-12 pb-12 md:pb-20 px-4 sm:px-6 lg:px-8">
+      {/* Soft yellow ambient orbs — consistent with landing page */}
+      <div className="absolute -top-20 -left-20 w-80 h-80 bg-yellow-200/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-16 pb-12 md:pb-20">
+      <div className="relative max-w-7xl mx-auto">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold text-gray-600 hover:text-yellow-700 transition-colors mb-6 uppercase tracking-wide"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Beyond Traffic
         </Link>
 
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="inline-flex items-center gap-2 mb-5"
+          transition={{ duration: 0.4, delay: 0.05 }}
+          className="mb-4 md:mb-5"
         >
-          <span
-            className={`inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-900 rounded-full px-3.5 py-1.5 text-[11px] md:text-xs font-bold uppercase tracking-[0.18em]`}
-          >
-            <Icon className={`w-4 h-4 ${industry.accent.text}`} />
-            {industry.hero.eyebrow}
-          </span>
+          <span className="stori-label">{industry.hero.eyebrow}</span>
         </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-10 items-end">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-end">
+          {/* LEFT — headline + subhead */}
           <div className="lg:col-span-7 xl:col-span-7">
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black leading-[0.95] tracking-tight text-gray-900 mb-5"
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[0.95] tracking-tight mb-5 md:mb-6"
             >
-              {industry.hero.headline}{" "}
-              <span
-                className="bg-clip-text text-transparent"
-                style={{
-                  backgroundImage: `linear-gradient(90deg, ${industry.accent.chart} 0%, #1F2937 100%)`,
-                }}
-              >
-                {industry.hero.highlight}
-              </span>
+              <span className="text-gray-900">{industry.hero.headline}</span>{" "}
+              <span className="stori-gradient">{industry.hero.highlight}</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed"
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed font-medium"
             >
               {industry.hero.subhead}
             </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-7 md:mt-8 flex flex-wrap gap-3"
+            >
+              <Link
+                to="/#contact"
+                className="group bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 text-white px-6 py-3 md:px-7 md:py-3.5 rounded-full shadow-2xl shadow-yellow-500/40 hover:shadow-yellow-500/60 transition-shadow duration-300 flex items-center gap-2 text-sm md:text-base font-semibold"
+              >
+                <span>Book a Demo</span>
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
+              </Link>
+              <Link
+                to="/#dashboard"
+                className="text-gray-800 px-5 py-3 md:px-6 md:py-3.5 rounded-full border-2 border-gray-200 hover:border-yellow-400 hover:text-yellow-700 transition-colors flex items-center gap-2 text-sm md:text-base font-semibold"
+              >
+                See Live Dashboard
+              </Link>
+            </motion.div>
           </div>
 
+          {/* RIGHT — stat cards */}
           <div className="lg:col-span-5 xl:col-span-5">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
               className="grid grid-cols-3 gap-3 md:gap-4"
             >
               {industry.hero.stats.map((s, i) => (
                 <div
                   key={i}
-                  className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl px-3 py-4 md:py-5 text-center shadow-md"
+                  className="bg-white/85 backdrop-blur-sm border border-yellow-200/70 rounded-2xl px-3 py-4 md:py-5 text-center shadow-md shadow-yellow-200/40"
                 >
-                  <div
-                    className="text-xl md:text-2xl font-black tabular-nums leading-none"
-                    style={{ color: industry.accent.chart }}
-                  >
+                  <div className="text-xl md:text-2xl font-black tabular-nums leading-none bg-gradient-to-r from-yellow-600 to-amber-700 bg-clip-text text-transparent">
                     {s.value}
                   </div>
                   <div className="mt-2 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-gray-600 leading-tight">
@@ -230,7 +251,7 @@ function IndustryKpiGrid({ industry }: { industry: Industry }) {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-14 pb-6">
       <div className="mb-6 md:mb-8">
-        <p className={`text-xs font-bold uppercase tracking-[0.22em] ${industry.accent.text} mb-2`}>
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-700 mb-2">
           Live KPIs · sample data
         </p>
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-gray-900">
@@ -245,7 +266,7 @@ function IndustryKpiGrid({ industry }: { industry: Industry }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.35, delay: i * 0.04 }}
-            className="bg-white border border-gray-200 rounded-2xl p-4 md:p-5 hover:shadow-md transition-shadow"
+            className="bg-white border border-yellow-200/70 rounded-2xl p-4 md:p-5 hover:shadow-md hover:shadow-yellow-200/40 transition-shadow"
           >
             <div className="flex items-start justify-between gap-2 mb-2">
               <p className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-gray-500">
@@ -253,14 +274,13 @@ function IndustryKpiGrid({ industry }: { industry: Industry }) {
               </p>
               {k.trend && <TrendBadge change={k.change} trend={k.trend} />}
             </div>
-            <p
-              className="text-2xl md:text-3xl font-black tabular-nums leading-none"
-              style={{ color: industry.accent.chart }}
-            >
+            <p className="text-2xl md:text-3xl font-black tabular-nums leading-none bg-gradient-to-r from-yellow-600 to-amber-700 bg-clip-text text-transparent">
               {k.value}
             </p>
             {k.caption && (
-              <p className="mt-2 text-[11px] md:text-xs text-gray-500 leading-snug">{k.caption}</p>
+              <p className="mt-2 text-[11px] md:text-xs text-gray-500 leading-snug">
+                {k.caption}
+              </p>
             )}
           </motion.div>
         ))}
@@ -296,7 +316,7 @@ function IndustryCharts({ industry }: { industry: Industry }) {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-12 md:pb-16">
       <div className="mb-6 md:mb-8">
-        <p className={`text-xs font-bold uppercase tracking-[0.22em] ${industry.accent.text} mb-2`}>
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-700 mb-2">
           Dashboard preview
         </p>
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-gray-900">
@@ -311,7 +331,7 @@ function IndustryCharts({ industry }: { industry: Industry }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.5, delay: i * 0.08 }}
-            className={`bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-sm hover:shadow-md transition-shadow ${
+            className={`bg-white border border-yellow-200/70 rounded-2xl p-4 md:p-6 shadow-sm hover:shadow-md hover:shadow-yellow-200/40 transition-shadow ${
               i === 0 ? "lg:col-span-2" : ""
             }`}
           >
@@ -320,10 +340,12 @@ function IndustryCharts({ industry }: { industry: Industry }) {
                 <h3 className="text-base md:text-lg font-black text-gray-900 leading-tight">
                   {chart.title}
                 </h3>
-                <p className="text-xs md:text-sm text-gray-500 mt-0.5">{chart.subtitle}</p>
+                <p className="text-xs md:text-sm text-gray-500 mt-0.5">
+                  {chart.subtitle}
+                </p>
               </div>
               {chart.unit && (
-                <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-gray-400 whitespace-nowrap">
+                <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-amber-700 whitespace-nowrap bg-yellow-50 border border-yellow-200 rounded-full px-2 py-0.5">
                   {chart.unit}
                 </span>
               )}
@@ -334,8 +356,14 @@ function IndustryCharts({ industry }: { industry: Industry }) {
             {chart.series && (
               <div className="mt-3 flex items-center gap-4 flex-wrap">
                 {chart.series.map((s) => (
-                  <span key={s.key} className="inline-flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-600">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: s.color }} />
+                  <span
+                    key={s.key}
+                    className="inline-flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-600"
+                  >
+                    <span
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ background: s.color }}
+                    />
                     {s.label}
                   </span>
                 ))}
@@ -363,7 +391,14 @@ function ChartBody({ chart, accent }: { chart: IndustryChart; accent: string }) 
         <AreaChart data={chart.data} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
           <defs>
             {series.map((s) => (
-              <linearGradient key={s.key} id={`grad-${chart.id}-${s.key}`} x1="0" y1="0" x2="0" y2="1">
+              <linearGradient
+                key={s.key}
+                id={`grad-${chart.id}-${s.key}`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
                 <stop offset="0%" stopColor={s.color} stopOpacity={0.42} />
                 <stop offset="100%" stopColor={s.color} stopOpacity={0.02} />
               </linearGradient>
@@ -416,16 +451,22 @@ function ChartBody({ chart, accent }: { chart: IndustryChart; accent: string }) 
     );
   }
 
-  // bar
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={chart.data} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
         <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
         <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} width={36} />
-        <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "#F9FAFB" }} />
+        <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "#FFFBEB" }} />
         {series.map((s) => (
-          <Bar key={s.key} dataKey={s.key} fill={s.color} radius={[8, 8, 0, 0]} isAnimationActive animationDuration={1100} />
+          <Bar
+            key={s.key}
+            dataKey={s.key}
+            fill={s.color}
+            radius={[8, 8, 0, 0]}
+            isAnimationActive
+            animationDuration={1100}
+          />
         ))}
       </BarChart>
     </ResponsiveContainer>
@@ -436,10 +477,10 @@ function ChartBody({ chart, accent }: { chart: IndustryChart; accent: string }) 
 
 function IndustryScenarios({ industry }: { industry: Industry }) {
   return (
-    <section className="bg-gray-50 border-y border-gray-200">
+    <section className="bg-gradient-to-b from-white via-yellow-50/40 to-white border-y border-yellow-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
         <div className="mb-8 md:mb-10 max-w-3xl">
-          <p className={`text-xs font-bold uppercase tracking-[0.22em] ${industry.accent.text} mb-2`}>
+          <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-700 mb-2">
             Operational use cases
           </p>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-gray-900">
@@ -454,18 +495,18 @@ function IndustryScenarios({ industry }: { industry: Industry }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.4, delay: i * 0.07 }}
-              className="bg-white border border-gray-200 rounded-2xl p-5 md:p-6 hover:shadow-md transition-shadow flex gap-4"
+              className="bg-white border border-yellow-200/70 rounded-2xl p-5 md:p-6 hover:shadow-md hover:shadow-yellow-200/40 transition-shadow flex gap-4"
             >
-              <div
-                className={`w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br ${industry.accent.grad} flex items-center justify-center flex-shrink-0 shadow-md`}
-              >
+              <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-yellow-500/30">
                 <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
               <div>
                 <h3 className="text-base md:text-lg font-black text-gray-900 mb-1.5 leading-tight">
                   {s.title}
                 </h3>
-                <p className="text-sm md:text-[15px] text-gray-600 leading-relaxed">{s.description}</p>
+                <p className="text-sm md:text-[15px] text-gray-600 leading-relaxed">
+                  {s.description}
+                </p>
               </div>
             </motion.div>
           ))}
@@ -478,11 +519,14 @@ function IndustryScenarios({ industry }: { industry: Industry }) {
 /* ─────────────────  EXPLORE OTHER INDUSTRIES  ────────────────── */
 
 function IndustryOtherSwitcher({ current }: { current: string }) {
-  const others = useMemo(() => INDUSTRIES.filter((i) => i.slug !== current), [current]);
+  const others = useMemo(
+    () => INDUSTRIES.filter((i) => i.slug !== current),
+    [current],
+  );
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
       <div className="mb-6 md:mb-8">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-gray-500 mb-2">
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-700 mb-2">
           Other industries we serve
         </p>
         <h2 className="text-xl md:text-2xl font-black tracking-tight text-gray-900">
@@ -496,16 +540,16 @@ function IndustryOtherSwitcher({ current }: { current: string }) {
             <Link
               key={o.slug}
               to={`/industries/${o.slug}`}
-              className="group bg-white border border-gray-200 rounded-2xl p-4 md:p-5 hover:shadow-md transition-all hover:-translate-y-0.5"
+              className="group bg-white border border-yellow-200/70 rounded-2xl p-4 md:p-5 hover:shadow-md hover:shadow-yellow-200/40 transition-all hover:-translate-y-0.5"
             >
-              <div
-                className={`w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br ${o.accent.grad} flex items-center justify-center mb-3 shadow-md`}
-              >
+              <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center mb-3 shadow-md shadow-yellow-500/30">
                 <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
-              <p className="text-sm md:text-base font-black text-gray-900 leading-tight">{o.name}</p>
-              <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-gray-500 group-hover:text-gray-900 transition-colors">
-                View
+              <p className="text-sm md:text-base font-black text-gray-900 leading-tight">
+                {o.name}
+              </p>
+              <span className="mt-2 inline-flex items-center gap-1 text-xs font-black uppercase tracking-widest text-amber-700 group-hover:gap-2 transition-all">
+                Explore
                 <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
               </span>
             </Link>
@@ -527,7 +571,7 @@ function IndustryCta({ industry }: { industry: Industry }) {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${industry.accent.grad} p-8 md:p-12 shadow-2xl`}
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-yellow-500 via-amber-500 to-yellow-500 p-8 md:p-12 shadow-2xl shadow-yellow-500/40"
         >
           <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/15 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-black/15 rounded-full blur-3xl" />
@@ -566,25 +610,48 @@ function IndustryCta({ industry }: { industry: Industry }) {
 
 function IndustryFooter() {
   return (
-    <footer className="bg-gray-900 text-gray-400 py-10 md:py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <footer className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white py-10 md:py-14 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-yellow-500/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-yellow-600/20 rounded-full blur-3xl" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center shadow-md">
-            <Sparkles className="w-5 h-5 text-white" />
+          <div className="w-11 h-11 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-yellow-500/30">
+            <Eye className="w-6 h-6 text-white" />
           </div>
           <div>
-            <p className="text-white font-black text-lg leading-none">Beyond Traffic</p>
-            <p className="text-xs mt-1">Real-time retail intelligence for the UAE.</p>
+            <p className="text-white font-black text-lg leading-none">
+              Beyond Traffic<span className="text-yellow-500">.</span>
+            </p>
+            <p className="text-xs mt-1 text-gray-400">
+              Real-time retail intelligence for the UAE.
+            </p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs md:text-sm font-semibold">
-          <Link to="/" className="hover:text-white transition-colors">Home</Link>
-          <Link to="/#features" className="hover:text-white transition-colors">Features</Link>
-          <Link to="/#hardware" className="hover:text-white transition-colors">Hardware</Link>
-          <Link to="/#pricing" className="hover:text-white transition-colors">Pricing</Link>
-          <Link to="/#contact" className="hover:text-white transition-colors">Contact</Link>
+
+        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs md:text-sm font-semibold text-gray-400 uppercase tracking-wide">
+          <Link to="/" className="hover:text-yellow-400 transition-colors">
+            Home
+          </Link>
+          <Link to="/#features" className="hover:text-yellow-400 transition-colors">
+            Features
+          </Link>
+          <Link to="/#hardware" className="hover:text-yellow-400 transition-colors">
+            Hardware
+          </Link>
+          <Link to="/#pricing" className="hover:text-yellow-400 transition-colors">
+            Pricing
+          </Link>
+          <Link to="/#contact" className="hover:text-yellow-400 transition-colors">
+            Contact
+          </Link>
         </div>
-        <p className="text-xs text-gray-500">&copy; {new Date().getFullYear()} Beyond Traffic. All rights reserved.</p>
+
+        <p className="text-xs text-gray-500">
+          &copy; {new Date().getFullYear()} Beyond Traffic. All rights reserved.
+        </p>
       </div>
     </footer>
   );
