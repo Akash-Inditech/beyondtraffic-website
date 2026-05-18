@@ -36,6 +36,7 @@ import {
   Package,
   Triangle,
   CreditCard,
+  Plane,
 } from "lucide-react";
 import {
   Area,
@@ -76,10 +77,11 @@ const NAV_DROPDOWNS = [
   {
     label: "Industry",
     items: [
-      { name: "Fashion & Apparel", href: "#industries" },
-      { name: "Shopping Malls", href: "#industries" },
-      { name: "Jewellery & Luxury", href: "#industries" },
-      { name: "Hospitality & F&B", href: "#industries" },
+      { name: "Fashion & Apparel", href: "#/industries/fashion-apparel" },
+      { name: "Shopping Malls", href: "#/industries/shopping-malls" },
+      { name: "Jewellery & Luxury", href: "#/industries/jewellery-luxury" },
+      { name: "Hospitality & F&B", href: "#/industries/hospitality-fnb" },
+      { name: "Airports & Terminals", href: "#/industries/airports" },
     ],
   },
   {
@@ -2317,6 +2319,7 @@ export default function App() {
               ]}
               trend={[18, 22, 26, 24, 30, 34, 32, 38, 44, 48, 52, 58]}
               trendLabel="Conversion · 30d"
+              to="/industries/fashion-apparel"
             />
             <IndustryCard
               icon={Building2}
@@ -2330,6 +2333,7 @@ export default function App() {
               ]}
               trend={[40, 55, 48, 62, 70, 78, 72, 85, 92, 98, 110, 122]}
               trendLabel="Daily footfall · 30d"
+              to="/industries/shopping-malls"
             />
             <IndustryCard
               icon={Gem}
@@ -2343,6 +2347,7 @@ export default function App() {
               ]}
               trend={[10, 14, 12, 18, 22, 20, 26, 28, 32, 35, 41, 47]}
               trendLabel="Window→Visit · 30d"
+              to="/industries/jewellery-luxury"
             />
             <IndustryCard
               icon={UtensilsCrossed}
@@ -2356,6 +2361,21 @@ export default function App() {
               ]}
               trend={[60, 68, 64, 72, 80, 76, 84, 88, 82, 90, 86, 78]}
               trendLabel="Avg occupancy · 30d"
+              to="/industries/hospitality-fnb"
+            />
+            <IndustryCard
+              icon={Plane}
+              title="Airports & Terminals"
+              focus="Queue & dwell intelligence, gate-area occupancy, retail capture, terminal-wide passenger flow"
+              delay={0.4}
+              kpis={[
+                { label: "Avg wait", value: "-3 min" },
+                { label: "Retail capture", value: "+2.8 pts" },
+                { label: "Pax / hr", value: "2,840" },
+              ]}
+              trend={[24, 32, 48, 62, 58, 71, 84, 92, 105, 118, 132, 148]}
+              trendLabel="Pax flow · 30d"
+              to="/industries/airports"
             />
           </div>
 

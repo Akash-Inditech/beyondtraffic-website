@@ -1,5 +1,6 @@
 ﻿import { motion } from "motion/react";
-import { LucideIcon, TrendingUp, Activity } from "lucide-react";
+import { Link } from "react-router";
+import { LucideIcon, TrendingUp, Activity, ArrowRight } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 interface IndustryKpi {
@@ -16,6 +17,8 @@ interface IndustryCardProps {
   kpis?: IndustryKpi[];
   trend?: number[];
   trendLabel?: string;
+  /** If provided, the card becomes a router Link to this destination */
+  to?: string;
 }
 
 const defaultTrend = [12, 18, 14, 22, 28, 24, 34, 41, 38, 47, 52, 58];
@@ -29,6 +32,7 @@ export function IndustryCard({
   kpis,
   trend,
   trendLabel = "30-day trend",
+  to,
 }: IndustryCardProps) {
   const gradients = [
     { bg: "from-yellow-50 via-amber-50 to-yellow-100", shadow: "shadow-yellow-200/50", text: "text-gray-900" },
@@ -41,14 +45,16 @@ export function IndustryCard({
 
   const chartData = (trend ?? defaultTrend).map((v, i) => ({ i, v }));
 
-  return (
+  const cardClasses = `group block bg-gradient-to-br ${gradient.bg} rounded-3xl p-8 md:p-10 hover:shadow-2xl ${gradient.shadow} transition-all cursor-pointer ${gradient.text} relative overflow-hidden border border-yellow-200`;
+
+  const Inner = (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4, delay }}
       whileHover={{ y: -8, scale: 1.02 }}
-      className={`group bg-gradient-to-br ${gradient.bg} rounded-3xl p-8 md:p-10 hover:shadow-2xl ${gradient.shadow} transition-all cursor-pointer ${gradient.text} relative overflow-hidden border border-yellow-200`}
+      className={cardClasses}
     >
       <div className="absolute top-0 right-0 w-48 h-48 bg-yellow-200/20 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-amber-200/20 rounded-full blur-3xl" />
@@ -115,11 +121,28 @@ export function IndustryCard({
           <span className="font-bold">Focus:</span> {focus}
         </p>
 
-        <div className="flex items-center gap-1.5 mt-4 text-[10px] font-black uppercase tracking-widest text-amber-700">
-          <TrendingUp className="w-3 h-3" />
-          Beyond Traffic deployments active
+        <div className="flex items-center justify-between mt-4 gap-3">
+          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-700">
+            <TrendingUp className="w-3 h-3" />
+            Beyond Traffic deployments active
+          </div>
+          {to && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-widest text-amber-700 group-hover:gap-2 transition-all">
+              Explore
+              <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          )}
         </div>
       </div>
     </motion.div>
   );
+
+  if (to) {
+    return (
+      <Link to={to} className="block">
+        {Inner}
+      </Link>
+    );
+  }
+  return Inner;
 }
