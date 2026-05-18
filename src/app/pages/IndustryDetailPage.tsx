@@ -1,17 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   ArrowDownRight,
+  ChevronDown,
+  Menu,
   Minus,
   CheckCircle2,
   Eye,
   Activity,
   Radio,
+  X,
 } from "lucide-react";
+import { NAV_DROPDOWNS, MOBILE_NAV_LINKS } from "../data/navigation";
 import {
   Area,
   AreaChart,
@@ -64,7 +68,7 @@ export function IndustryDetailPage() {
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      <IndustryHeader industry={industry} />
+      <SiteHeader />
       <IndustryHero industry={industry} />
       <IndustryTodayPulse industry={industry} />
       <IndustryIntro industry={industry} />
@@ -88,53 +92,180 @@ function scrollToDashboard() {
 
 /* ─────────────────────────────  HEADER  ──────────────────────────── */
 
-function IndustryHeader({ industry }: { industry: Industry }) {
-  const Icon = industry.icon;
+/**
+ * Shared site header used on the industry pages. Matches the home-page
+ * header one-to-one (logo + Platform/Industry/Resources dropdowns +
+ * Pricing + Book Demo + mobile menu) so the navigation feels identical
+ * across the whole site.
+ */
+function SiteHeader() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-gray-200/60 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-2.5 gap-4">
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/80 backdrop-blur-2xl border-b border-gray-200/60 shadow-[0_8px_30px_rgba(0,0,0,0.04)]"
+          : "bg-white/70 backdrop-blur-md border-b border-transparent"
+      }`}
+    >
+      <div
+        className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center transition-all duration-300 ${
+          scrolled ? "py-2.5" : "py-4"
+        }`}
+      >
+        {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-            <Eye className="w-5 h-5 text-white" />
+          <div
+            className={`bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
+              scrolled ? "w-9 h-9" : "w-10 h-10"
+            }`}
+          >
+            <Eye className={`text-white transition-all ${scrolled ? "w-5 h-5" : "w-6 h-6"}`} />
           </div>
-          <span className="text-base md:text-xl font-black uppercase tracking-tight text-gray-900">
+          <span className="text-xl font-black uppercase tracking-tight text-gray-900">
             Beyond Traffic<span className="text-yellow-500">.</span>
           </span>
         </Link>
 
-        <div className="hidden sm:flex items-center gap-1.5 text-[11px] md:text-xs font-semibold tracking-wide text-gray-500 uppercase">
-          <Link to="/" className="hover:text-yellow-600 transition-colors">
-            Home
-          </Link>
-          <span aria-hidden>/</span>
-          <Link
-            to="/#industries"
-            className="hover:text-yellow-600 transition-colors"
+        {/* Desktop nav */}
+        <nav className="hidden md:flex gap-1 items-center">
+          {NAV_DROPDOWNS.map((dropdown) => (
+            <div
+              key={dropdown.label}
+              className="relative"
+              onMouseEnter={() => setActiveDropdown(dropdown.label)}
+              onMouseLeave={() => setActiveDropdown(null)}
+            >
+              <button
+                className={`px-4 py-2 rounded-full transition-all text-sm font-semibold flex items-center gap-1 uppercase tracking-wide ${
+                  activeDropdown === dropdown.label
+                    ? "text-yellow-600 bg-yellow-50"
+                    : "text-gray-700 hover:text-yellow-600 hover:bg-yellow-50/60"
+                }`}
+              >
+                {dropdown.label}
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-300 ${
+                    activeDropdown === dropdown.label ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              <AnimatePresence>
+                {activeDropdown === dropdown.label && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute top-full left-0 pt-3 min-w-[280px]"
+                  >
+                    <div className="bg-white/95 backdrop-blur-2xl border border-gray-200/80 text-gray-900 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] p-2 overflow-hidden">
+                      {dropdown.items.map((item, idx) => (
+                        <motion.a
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setActiveDropdown(null)}
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.04, duration: 0.2 }}
+                          className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl hover:bg-yellow-50 transition-colors group/item"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                            <span className="font-semibold text-sm group-hover/item:text-yellow-700 transition-colors">
+                              {item.name}
+                            </span>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-gray-400 opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 group-hover/item:text-yellow-600 transition-all" />
+                        </motion.a>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+          <a
+            href="#pricing"
+            className="px-4 py-2 text-gray-700 hover:text-yellow-600 hover:bg-yellow-50/60 rounded-full transition-all text-sm font-semibold uppercase tracking-wide"
           >
-            Industries
-          </Link>
-          <span aria-hidden>/</span>
-          <span className="text-gray-900 inline-flex items-center gap-1.5">
-            <Icon className="w-3.5 h-3.5 text-yellow-600" />
-            {industry.shortName}
-          </span>
-        </div>
+            Pricing
+          </a>
+        </nav>
 
-        <motion.div
-          whileHover={{ scale: 1.04, y: -1 }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          className="hidden md:flex"
-        >
-          <Link
-            to="/#contact"
-            className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-5 py-2.5 rounded-full hover:shadow-xl hover:shadow-yellow-500/40 transition-shadow duration-300 flex items-center gap-2 group font-semibold text-sm uppercase tracking-wide"
+        {/* Right actions */}
+        <div className="flex items-center gap-3">
+          <motion.a
+            href="#contact"
+            whileHover={{ scale: 1.04, y: -1 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className="hidden md:flex bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-5 py-2.5 rounded-full hover:shadow-xl hover:shadow-yellow-500/40 transition-shadow duration-300 items-center gap-2 group font-semibold text-sm uppercase tracking-wide"
           >
             Book Demo
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </motion.div>
+          </motion.a>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+            className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-yellow-50 transition-colors"
+          >
+            <motion.div animate={{ rotate: mobileMenuOpen ? 90 : 0 }} transition={{ duration: 0.2 }}>
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </motion.div>
+          </button>
+        </div>
       </div>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-2xl border-b border-gray-200/70 shadow-xl overflow-hidden"
+          >
+            <div className="px-4 py-5 space-y-1">
+              {MOBILE_NAV_LINKS.map((link, idx) => (
+                <motion.a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05, duration: 0.25 }}
+                  className="flex items-center justify-between px-3 py-3 rounded-xl text-gray-800 hover:bg-yellow-50 hover:text-yellow-700 transition-colors font-semibold uppercase tracking-wide text-sm"
+                >
+                  {link.name}
+                  <ArrowRight className="w-4 h-4 text-gray-400" />
+                </motion.a>
+              ))}
+              <motion.a
+                href="#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: MOBILE_NAV_LINKS.length * 0.05, duration: 0.25 }}
+                className="mt-3 w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-yellow-500/30 transition-all flex items-center justify-center gap-2 group font-semibold uppercase tracking-wide text-sm"
+              >
+                Book Demo
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </motion.a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

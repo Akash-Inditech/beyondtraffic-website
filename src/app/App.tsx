@@ -62,49 +62,7 @@ import { MallAnalytics } from "./components/MallAnalytics";
 import { RetailProblemViz } from "./components/RetailProblemViz";
 import { RetailSceneStripe } from "./components/RetailSceneStripe";
 
-const NAV_DROPDOWNS = [
-  {
-    label: "Platform",
-    items: [
-      { name: "Live Dashboard", href: "#dashboard" },
-      { name: "Key Features", href: "#features" },
-      { name: "Mall Analytics", href: "#mall-analytics" },
-      { name: "In-Store Analytics", href: "#analytics" },
-      { name: "Hardware & Sensors", href: "#hardware" },
-      { name: "Integrations", href: "#integrations" },
-    ],
-  },
-  {
-    label: "Industry",
-    items: [
-      { name: "Fashion & Apparel", href: "#/industries/fashion-apparel" },
-      { name: "Shopping Malls", href: "#/industries/shopping-malls" },
-      { name: "Jewellery & Luxury", href: "#/industries/jewellery-luxury" },
-      { name: "Hospitality & F&B", href: "#/industries/hospitality-fnb" },
-      { name: "Airports & Terminals", href: "#/industries/airports" },
-    ],
-  },
-  {
-    label: "Resources",
-    items: [
-      { name: "FAQ", href: "#faq" },
-      { name: "Testimonials", href: "#testimonials" },
-      { name: "Contact", href: "#contact" },
-    ],
-  },
-];
-
-const MOBILE_NAV_LINKS = [
-  { name: "Dashboard", href: "#dashboard" },
-  { name: "Features", href: "#features" },
-  { name: "Mall Analytics", href: "#mall-analytics" },
-  { name: "In-Store Analytics", href: "#analytics" },
-  { name: "Hardware", href: "#hardware" },
-  { name: "Industries", href: "#industries" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "Testimonials", href: "#testimonials" },
-  { name: "FAQ", href: "#faq" },
-];
+import { NAV_DROPDOWNS, MOBILE_NAV_LINKS } from "./data/navigation";
 
 export default function App() {
   const [formData, setFormData] = useState({
