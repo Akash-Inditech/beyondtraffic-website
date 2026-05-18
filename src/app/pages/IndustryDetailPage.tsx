@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { motion } from "motion/react";
 import {
@@ -9,6 +9,8 @@ import {
   Minus,
   CheckCircle2,
   Eye,
+  Activity,
+  Radio,
 } from "lucide-react";
 import {
   Area,
@@ -64,6 +66,7 @@ export function IndustryDetailPage() {
     <div className="min-h-screen bg-white text-gray-900">
       <IndustryHeader industry={industry} />
       <IndustryHero industry={industry} />
+      <IndustryTodayPulse industry={industry} />
       <IndustryIntro industry={industry} />
       <IndustryKpiGrid industry={industry} />
       <IndustryCharts industry={industry} />
@@ -73,6 +76,14 @@ export function IndustryDetailPage() {
       <IndustryFooter />
     </div>
   );
+}
+
+/* ─────────────────────  utility — in-page scroll  ─────────────────── */
+
+function scrollToDashboard() {
+  document
+    .getElementById("industry-dashboard")
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* ─────────────────────────────  HEADER  ──────────────────────────── */
@@ -132,7 +143,7 @@ function IndustryHeader({ industry }: { industry: Industry }) {
 
 function IndustryHero({ industry }: { industry: Industry }) {
   return (
-    <section className="relative overflow-hidden bg-white pt-8 md:pt-12 pb-12 md:pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-white pt-8 md:pt-12 pb-12 md:pb-16 px-4 sm:px-6 lg:px-8">
       {/* Soft yellow ambient orbs — consistent with landing page */}
       <div className="absolute -top-20 -left-20 w-80 h-80 bg-yellow-200/40 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
@@ -155,9 +166,9 @@ function IndustryHero({ industry }: { industry: Industry }) {
           <span className="stori-label">{industry.hero.eyebrow}</span>
         </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-end">
-          {/* LEFT — headline + subhead */}
-          <div className="lg:col-span-7 xl:col-span-7">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-start">
+          {/* LEFT — headline + subhead + CTAs + stats */}
+          <div className="lg:col-span-6 xl:col-span-7">
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -167,6 +178,7 @@ function IndustryHero({ industry }: { industry: Industry }) {
               <span className="text-gray-900">{industry.hero.headline}</span>{" "}
               <span className="stori-gradient">{industry.hero.highlight}</span>
             </motion.h1>
+
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -189,41 +201,298 @@ function IndustryHero({ industry }: { industry: Industry }) {
                 <span>Book a Demo</span>
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
               </Link>
-              <Link
-                to="/#dashboard"
+              <button
+                type="button"
+                onClick={scrollToDashboard}
                 className="text-gray-800 px-5 py-3 md:px-6 md:py-3.5 rounded-full border-2 border-gray-200 hover:border-yellow-400 hover:text-yellow-700 transition-colors flex items-center gap-2 text-sm md:text-base font-semibold"
               >
                 See Live Dashboard
-              </Link>
+              </button>
             </motion.div>
-          </div>
 
-          {/* RIGHT — stat cards */}
-          <div className="lg:col-span-5 xl:col-span-5">
+            {/* Hero stat strip under the CTAs */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.25 }}
-              className="grid grid-cols-3 gap-3 md:gap-4"
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-8 md:mt-10 grid grid-cols-3 gap-3 md:gap-4 max-w-lg"
             >
               {industry.hero.stats.map((s, i) => (
                 <div
                   key={i}
-                  className="bg-white/85 backdrop-blur-sm border border-yellow-200/70 rounded-2xl px-3 py-4 md:py-5 text-center shadow-md shadow-yellow-200/40"
+                  className="bg-white/85 backdrop-blur-sm border border-yellow-200/70 rounded-2xl px-3 py-3 md:py-4 text-center shadow-sm shadow-yellow-200/40"
                 >
-                  <div className="text-xl md:text-2xl font-black tabular-nums leading-none bg-gradient-to-r from-yellow-600 to-amber-700 bg-clip-text text-transparent">
+                  <div className="text-lg md:text-xl font-black tabular-nums leading-none bg-gradient-to-r from-yellow-600 to-amber-700 bg-clip-text text-transparent">
                     {s.value}
                   </div>
-                  <div className="mt-2 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-gray-600 leading-tight">
+                  <div className="mt-1.5 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-gray-600 leading-tight">
                     {s.label}
                   </div>
                 </div>
               ))}
             </motion.div>
           </div>
+
+          {/* RIGHT — live dashboard panel */}
+          <div className="lg:col-span-6 xl:col-span-5">
+            <IndustryLiveDashboard industry={industry} />
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+/* ───────────────────  LIVE DASHBOARD HERO PANEL  ───────────────────── */
+
+function IndustryLiveDashboard({ industry }: { industry: Industry }) {
+  const Icon = industry.icon;
+  const sparkData = industry.live.sparkline.map((v, i) => ({ i, v }));
+  const TrendIcon =
+    industry.live.delta.trend === "up"
+      ? ArrowUpRight
+      : industry.live.delta.trend === "down"
+        ? ArrowDownRight
+        : Minus;
+  const trendColor =
+    industry.live.delta.trend === "up"
+      ? "#059669"
+      : industry.live.delta.trend === "down"
+        ? "#DC2626"
+        : "#6B7280";
+
+  // Live ticking clock for HUD authenticity
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const clock = now.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      className="relative bg-white rounded-2xl md:rounded-[24px] border border-gray-200/80 shadow-2xl shadow-yellow-300/20 overflow-hidden"
+    >
+      {/* Top status bar */}
+      <div className="flex items-center justify-between px-4 md:px-5 py-3 border-b border-gray-100 bg-gradient-to-r from-yellow-50/60 via-white to-amber-50/60">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-60" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+          </span>
+          <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.16em] text-gray-900">
+            Live · {industry.live.sceneName}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] md:text-[11px] font-mono font-semibold text-gray-600 tabular-nums">
+            {clock}
+          </span>
+          <div className="flex items-center gap-1 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+            <Radio className="w-3 h-3 text-emerald-600" />
+            <span className="text-[9px] font-black uppercase tracking-wider text-emerald-700">
+              OK
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Primary metric */}
+      <div className="px-4 md:px-6 pt-5 md:pt-6 pb-3">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.18em] text-gray-500 mb-2">
+              {industry.live.primary.label}
+            </p>
+            <p className="text-4xl md:text-5xl xl:text-6xl font-black tabular-nums leading-none bg-gradient-to-r from-yellow-600 via-amber-600 to-yellow-700 bg-clip-text text-transparent">
+              {industry.live.primary.value}
+            </p>
+            <div
+              className="mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold"
+              style={{ background: `${trendColor}14`, color: trendColor }}
+            >
+              <TrendIcon className="w-3.5 h-3.5" />
+              <span>{industry.live.delta.value}</span>
+              <span className="text-gray-400 font-semibold">vs yesterday</span>
+            </div>
+          </div>
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center shadow-md shadow-yellow-500/30 flex-shrink-0">
+            <Icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
+          </div>
+        </div>
+      </div>
+
+      {/* Sparkline */}
+      <div className="px-4 md:px-6 pb-3">
+        <div className="h-24 md:h-28">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={sparkData} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id={`live-spark-${industry.slug}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={industry.accent.chart} stopOpacity={0.55} />
+                  <stop offset="100%" stopColor={industry.accent.chart} stopOpacity={0.03} />
+                </linearGradient>
+              </defs>
+              <Area
+                type="monotone"
+                dataKey="v"
+                stroke={industry.accent.chart}
+                strokeWidth={2.5}
+                fill={`url(#live-spark-${industry.slug})`}
+                isAnimationActive
+                animationDuration={1400}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex items-center justify-between text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-gray-400 -mt-1">
+          <span className="inline-flex items-center gap-1">
+            <Activity className="w-3 h-3" />
+            Last 12 hours
+          </span>
+          <span>Auto-refresh · 30s</span>
+        </div>
+      </div>
+
+      {/* Mini stat tiles */}
+      <div className="grid grid-cols-3 border-t border-gray-100 bg-gradient-to-b from-white to-gray-50/40">
+        {industry.live.miniStats.map((s, i) => (
+          <div
+            key={s.label}
+            className={`px-3 md:px-4 py-3 md:py-4 text-center ${
+              i !== industry.live.miniStats.length - 1 ? "border-r border-gray-100" : ""
+            }`}
+          >
+            <p className="text-sm md:text-base font-black tabular-nums leading-tight text-gray-900">
+              {s.value}
+            </p>
+            <p className="mt-1 text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-gray-500 leading-tight">
+              {s.label}
+            </p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ────────────────────────  TODAY'S PULSE  ────────────────────────── */
+
+function IndustryTodayPulse({ industry }: { industry: Industry }) {
+  return (
+    <section className="bg-gradient-to-b from-white via-yellow-50/40 to-white border-y border-yellow-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="flex items-center justify-between mb-4 md:mb-6 flex-wrap gap-3">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-700 mb-1">
+              Today&apos;s pulse
+            </p>
+            <h3 className="text-lg md:text-xl font-black text-gray-900 tracking-tight">
+              How {industry.shortName.toLowerCase()} is performing right now.
+            </h3>
+          </div>
+          <span className="inline-flex items-center gap-2 bg-white border border-yellow-200 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-700 shadow-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            Live · sample data
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <PulseTile
+            label={industry.live.primary.label}
+            value={industry.live.primary.value}
+            delta={industry.live.delta.value}
+            trend={industry.live.delta.trend}
+            accentColor={industry.accent.chart}
+            sparkline={industry.live.sparkline}
+          />
+          {industry.live.miniStats.map((s) => (
+            <PulseTile
+              key={s.label}
+              label={s.label}
+              value={s.value}
+              accentColor={industry.accent.chart}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PulseTile({
+  label,
+  value,
+  delta,
+  trend,
+  accentColor,
+  sparkline,
+}: {
+  label: string;
+  value: string;
+  delta?: string;
+  trend?: "up" | "down" | "flat";
+  accentColor: string;
+  sparkline?: number[];
+}) {
+  const TrendIcon = trend === "up" ? ArrowUpRight : trend === "down" ? ArrowDownRight : Minus;
+  const trendColor =
+    trend === "up" ? "#059669" : trend === "down" ? "#DC2626" : "#6B7280";
+  const sparkData = (sparkline ?? []).map((v, i) => ({ i, v }));
+  return (
+    <div className="bg-white border border-yellow-200/70 rounded-2xl p-4 md:p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <p className="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-gray-500 leading-tight">
+          {label}
+        </p>
+        {delta && trend && (
+          <span
+            className="inline-flex items-center gap-1 text-[10px] font-bold rounded-full px-1.5 py-0.5"
+            style={{ background: `${trendColor}14`, color: trendColor }}
+          >
+            <TrendIcon className="w-3 h-3" />
+            {delta}
+          </span>
+        )}
+      </div>
+      <p className="text-xl md:text-2xl font-black tabular-nums leading-none bg-gradient-to-r from-yellow-600 to-amber-700 bg-clip-text text-transparent">
+        {value}
+      </p>
+      {sparkline && sparkline.length > 0 && (
+        <div className="h-9 -mx-1 mt-3">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={sparkData} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id={`pulse-${label.replace(/\s+/g, "")}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={accentColor} stopOpacity={0.45} />
+                  <stop offset="100%" stopColor={accentColor} stopOpacity={0.02} />
+                </linearGradient>
+              </defs>
+              <Area
+                type="monotone"
+                dataKey="v"
+                stroke={accentColor}
+                strokeWidth={2}
+                fill={`url(#pulse-${label.replace(/\s+/g, "")})`}
+                isAnimationActive
+                animationDuration={1200}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -314,7 +583,10 @@ function TrendBadge({
 
 function IndustryCharts({ industry }: { industry: Industry }) {
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-12 md:pb-16">
+    <section
+      id="industry-dashboard"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-12 md:pb-16 scroll-mt-24"
+    >
       <div className="mb-6 md:mb-8">
         <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-700 mb-2">
           Dashboard preview
@@ -592,12 +864,13 @@ function IndustryCta({ industry }: { industry: Industry }) {
                 Book Demo
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link
-                to="/"
+              <button
+                type="button"
+                onClick={scrollToDashboard}
                 className="bg-white/10 backdrop-blur-sm text-white border border-white/30 px-5 py-3 md:px-6 md:py-3.5 rounded-full font-bold text-sm md:text-base hover:bg-white/20 transition-colors inline-flex items-center gap-2"
               >
-                Platform overview
-              </Link>
+                See Live Dashboard
+              </button>
             </div>
           </div>
         </motion.div>

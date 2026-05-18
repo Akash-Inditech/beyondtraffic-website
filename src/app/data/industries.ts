@@ -52,6 +52,14 @@ export type Industry = {
     subhead: string;
     stats: { value: string; label: string }[];
   };
+  /** Live-style hero panel content (right column of the hero) */
+  live: {
+    sceneName: string;
+    primary: { value: string; label: string };
+    delta: { value: string; trend: "up" | "down" | "flat" };
+    sparkline: number[];
+    miniStats: { value: string; label: string }[];
+  };
   intro: string;
   kpis: IndustryKpi[];
   charts: IndustryChart[];
@@ -84,6 +92,17 @@ export const INDUSTRIES: Industry[] = [
         { value: "+24%", label: "Avg. capture lift" },
         { value: "98%", label: "Counting accuracy" },
         { value: "40+", label: "UAE stores live" },
+      ],
+    },
+    live: {
+      sceneName: "All Stores · Live",
+      primary: { value: "1,284", label: "Walk-ins today" },
+      delta: { value: "+18.2%", trend: "up" },
+      sparkline: [28, 46, 84, 102, 96, 118, 134, 162, 186, 173, 142, 98],
+      miniStats: [
+        { value: "27.8%", label: "Conv. rate" },
+        { value: "8m 42s", label: "Avg. dwell" },
+        { value: "61%", label: "Fit-room conv." },
       ],
     },
     intro:
@@ -201,6 +220,17 @@ export const INDUSTRIES: Industry[] = [
         { value: "98.4%", label: "Anchor capture accuracy" },
       ],
     },
+    live: {
+      sceneName: "Mall-Wide · Live",
+      primary: { value: "48,712", label: "Visitors today" },
+      delta: { value: "+9.4%", trend: "up" },
+      sparkline: [1240, 2380, 3920, 4810, 4220, 4640, 5180, 5740, 6320, 5810, 4720, 3140, 1860],
+      miniStats: [
+        { value: "41.2%", label: "Anchor capture" },
+        { value: "1h 18m", label: "Avg. dwell" },
+        { value: "85", label: "Tenants live" },
+      ],
+    },
     intro:
       "Mall operators need to know more than total footfall. Beyond Traffic gives mall management granular visibility into entrance flow, anchor-store capture, food-court occupancy, and zone-level dwell — the data points that drive tenant negotiations, leasing decisions, and common-area programming.",
     kpis: [
@@ -311,6 +341,17 @@ export const INDUSTRIES: Industry[] = [
         { value: "100%", label: "Privacy-compliant" },
         { value: "<3s", label: "VIP detection" },
         { value: "98%", label: "Group identification" },
+      ],
+    },
+    live: {
+      sceneName: "Boutique · Live",
+      primary: { value: "28", label: "Engaged consultations" },
+      delta: { value: "+6", trend: "up" },
+      sparkline: [12, 18, 24, 31, 28, 34, 41, 48, 52, 44, 32],
+      miniStats: [
+        { value: "47s", label: "Window dwell" },
+        { value: "14m 22s", label: "Interaction" },
+        { value: "1 : 3", label: "Staff : guest" },
       ],
     },
     intro:
@@ -431,6 +472,17 @@ export const INDUSTRIES: Industry[] = [
         { value: "24/7", label: "Venue monitoring" },
       ],
     },
+    live: {
+      sceneName: "All Venues · Live",
+      primary: { value: "94%", label: "Peak occupancy now" },
+      delta: { value: "Fri 20:00", trend: "up" },
+      sparkline: [42, 78, 65, 38, 24, 32, 58, 86, 94, 89, 72, 48],
+      miniStats: [
+        { value: "9", label: "In queue" },
+        { value: "6m 12s", label: "Avg. wait" },
+        { value: "3.8x", label: "Table turns" },
+      ],
+    },
     intro:
       "F&B operations live and die by throughput. Beyond Traffic gives venue managers a live pulse on queue length, table turn-time, peak occupancy, and group size — so kitchens get prep-warnings, hosts seat guests faster, and ops teams staff every shift right.",
     kpis: [
@@ -549,6 +601,17 @@ export const INDUSTRIES: Industry[] = [
         { value: "<60s", label: "Queue alert latency" },
         { value: "98%", label: "Counting accuracy" },
         { value: "T1–T3", label: "Multi-terminal ready" },
+      ],
+    },
+    live: {
+      sceneName: "Terminal 1 · Live",
+      primary: { value: "2,840", label: "Pax / hour now" },
+      delta: { value: "Peak", trend: "up" },
+      sparkline: [1240, 2640, 2840, 2480, 2920, 3120, 2780, 1860],
+      miniStats: [
+        { value: "11 min", label: "SEC queue" },
+        { value: "78%", label: "Gate occ." },
+        { value: "34.6%", label: "Retail capture" },
       ],
     },
     intro:
