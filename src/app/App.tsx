@@ -2077,62 +2077,92 @@ export default function App() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
             <div className="relative z-10 text-center">
-              {/* 3D Camera Graphic */}
-              <motion.div
-                className="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-8"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <motion.div
-                  className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-3xl border-4 border-white/30 flex items-center justify-center"
-                  whileHover={{ scale: 1.05, rotate: [0, -5, 5, 0] }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <div className="flex gap-6">
-                    <motion.div
-                      className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-gray-900 to-black rounded-full border-4 border-white/40 relative shadow-2xl"
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-full" />
-                      <motion.div
-                        className="absolute top-2 left-2 w-4 h-4 bg-white/40 rounded-full blur-sm"
-                        animate={{ opacity: [0.4, 1, 0.4] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
-                    </motion.div>
-                    <motion.div
-                      className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-gray-900 to-black rounded-full border-4 border-white/40 relative shadow-2xl"
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-full" />
-                      <motion.div
-                        className="absolute top-2 left-2 w-4 h-4 bg-white/40 rounded-full blur-sm"
-                        animate={{ opacity: [0.4, 1, 0.4] }}
-                        transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                      />
-                    </motion.div>
-                  </div>
+              {/* Spatial coverage view — top-down, sensor-agnostic */}
+              <div className="relative w-64 h-64 md:w-80 md:h-80 mx-auto mb-8">
+                {/* Soft halo behind the spatial view */}
+                <div className="absolute inset-0 rounded-full bg-white/10 blur-2xl" />
+
+                {/* Static coverage rings */}
+                <div className="absolute inset-0 rounded-full border border-white/35" />
+                <div className="absolute inset-8 rounded-full border border-white/25" />
+                <div className="absolute inset-16 rounded-full border border-white/20" />
+
+                {/* Cross-hair guides */}
+                <div className="absolute top-1/2 left-2 right-2 h-px bg-white/15" />
+                <div className="absolute left-1/2 top-2 bottom-2 w-px bg-white/15" />
+
+                {/* Outgoing pulse rings (radar sweep) */}
+                {[0, 1, 2].map((i) => (
                   <motion.div
-                    className="absolute -top-4 -right-4 w-3 h-3 bg-green-400 rounded-full shadow-lg shadow-green-400/50"
-                    animate={{
-                      scale: [1, 1.3, 1],
-                      opacity: [1, 0.7, 1],
+                    key={`pulse-${i}`}
+                    className="absolute inset-[28%] rounded-full border-2 border-white/45"
+                    animate={{ scale: [1, 2.6], opacity: [0.55, 0] }}
+                    transition={{
+                      duration: 2.8,
+                      repeat: Infinity,
+                      delay: i * 0.93,
+                      ease: "easeOut",
                     }}
-                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                ))}
+
+                {/* Tracked-person dots scattered across the coverage zone */}
+                {[
+                  { x: 28, y: 32, color: "#EC4899", delay: 0 },
+                  { x: 72, y: 30, color: "#3B82F6", delay: 0.3 },
+                  { x: 62, y: 68, color: "#A855F7", delay: 0.6 },
+                  { x: 32, y: 70, color: "#3B82F6", delay: 0.9 },
+                  { x: 80, y: 58, color: "#EC4899", delay: 1.2 },
+                  { x: 22, y: 52, color: "#A855F7", delay: 1.5 },
+                ].map((p, i) => (
+                  <motion.div
+                    key={`dot-${i}`}
+                    className="absolute w-2.5 h-2.5 md:w-3 md:h-3 rounded-full"
+                    style={{
+                      left: `${p.x}%`,
+                      top: `${p.y}%`,
+                      background: p.color,
+                      boxShadow: `0 0 14px ${p.color}, 0 0 0 4px rgba(255,255,255,0.18)`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                    animate={{ scale: [1, 1.35, 1], opacity: [0.75, 1, 0.75] }}
+                    transition={{ duration: 2.2, repeat: Infinity, delay: p.delay }}
+                  />
+                ))}
+
+                {/* Central abstract device */}
+                <motion.div
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-700 border border-white/50 shadow-2xl flex items-center justify-center"
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <div className="absolute inset-1.5 rounded-xl border border-white/15" />
+                  <motion.span
+                    className="relative w-2 h-2 rounded-full bg-emerald-400"
+                    animate={{ opacity: [1, 0.4, 1], scale: [1, 1.2, 1] }}
+                    transition={{ duration: 1.6, repeat: Infinity }}
+                    style={{ boxShadow: "0 0 12px rgba(52,211,153,0.9)" }}
                   />
                 </motion.div>
-              </motion.div>
+
+                {/* Floating label */}
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[10px] md:text-xs font-bold uppercase tracking-[0.22em] text-white/85">
+                  Coverage Zone
+                </div>
+              </div>
+
               <h3 className="text-3xl md:text-4xl text-white mb-4 font-black uppercase">
-                Premium 3D Stereo Vision Sensor
+                Any Sensor. One Intelligent Platform.
               </h3>
               <p className="text-lg md:text-xl text-yellow-100 max-w-2xl mx-auto leading-relaxed">
-                Enterprise-grade hardware designed for the harshest retail environments. Sleek, unobtrusive,
-                and incredibly powerful.
+                Beyond Traffic is hardware-agnostic by design. Plug into best-in-class sensors from our
+                partner ecosystem &mdash; pick the tech that fits your space, and we&apos;ll turn its
+                signals into actionable retail intelligence.
               </p>
               <div className="mt-8 flex justify-center gap-4 flex-wrap">
                 {[
                   { value: "98%+", label: "Accuracy" },
-                  { value: "3D", label: "Vision" },
+                  { value: "Any", label: "Hardware" },
                   { value: "AI", label: "Powered" },
                 ].map((stat, i) => (
                   <motion.div
