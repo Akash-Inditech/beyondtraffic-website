@@ -409,7 +409,7 @@ export function LiveDashboardPreview() {
                   </div>
 
                   <div className="absolute bottom-2 right-2 text-[9px] font-mono text-yellow-300/80 bg-black/40 px-1.5 py-0.5 rounded">
-                    98.4% ACC
+                    95% ACC
                   </div>
                 </div>
 
@@ -619,7 +619,7 @@ export function LiveDashboardPreview() {
           >
             <Activity className="w-4 h-4" />
             <span className="text-xs font-black uppercase tracking-wider">
-              98%+ Accuracy
+              95%+ Accuracy
             </span>
           </motion.div>
 

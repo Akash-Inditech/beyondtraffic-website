@@ -176,7 +176,7 @@ export function HeroTrackingScene() {
                 {scene.detectedCount}
               </motion.p>
             </AnimatePresence>
-            <p className="text-[10px] md:text-[11px] font-bold text-white/80 mt-1.5">98.4% accuracy</p>
+            <p className="text-[10px] md:text-[11px] font-bold text-white/80 mt-1.5">95% accuracy</p>
           </div>
         </div>
       </div>

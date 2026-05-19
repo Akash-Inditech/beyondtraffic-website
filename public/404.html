@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Beyond Traffic</title>
+    <!--
+      GitHub Pages SPA fallback. When a visitor hits a deep route like
+      /industries/airports, GitHub Pages can't find that file and serves
+      this 404. We rewrite the URL into ?/industries/airports format,
+      then index.html picks it back up and BrowserRouter routes normally.
+
+      pathSegmentsToKeep = 1 corresponds to the /beyondtraffic-website/
+      sub-path that Vite's `base` config sets in production.
+    -->
+    <script>
+      (function () {
+        var pathSegmentsToKeep = 1;
+        var l = window.location;
+        l.replace(
+          l.protocol +
+            "//" +
+            l.hostname +
+            (l.port ? ":" + l.port : "") +
+            l.pathname.split("/").slice(0, 1 + pathSegmentsToKeep).join("/") +
+            "/?/" +
+            l.pathname
+              .slice(1)
+              .split("/")
+              .slice(pathSegmentsToKeep)
+              .join("/")
+              .replace(/&/g, "~and~") +
+            (l.search ? "&" + l.search.slice(1).replace(/&/g, "~and~") : "") +
+            l.hash,
+        );
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

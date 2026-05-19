@@ -156,7 +156,7 @@ export default function App() {
     {
       question: "How accurate is the Beyond Traffic people counting system?",
       answer:
-        "Beyond Traffic achieves 98%+ accuracy using 3D stereo vision technology that filters out carts, shadows, and mannequins, ensuring you get reliable data for critical business decisions.",
+        "Beyond Traffic achieves 95%+ accuracy using 3D stereo vision technology that filters out carts, shadows, and mannequins, ensuring you get reliable data for critical business decisions.",
     },
     {
       question: "Does it track customer demographics?",
@@ -549,7 +549,7 @@ export default function App() {
                 </span>
                 <span className="hidden sm:flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
-                  98% Accuracy
+                  95% Accuracy
                 </span>
                 <span className="hidden md:flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
@@ -801,7 +801,7 @@ export default function App() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-6 md:mb-8 pb-6 md:pb-8 border-b border-white/10">
             {[
               { value: "1M+", label: "Visitors tracked daily" },
-              { value: "98%", label: "Counting accuracy" },
+              { value: "95%", label: "Counting accuracy" },
               { value: "50+", label: "UAE stores live" },
               { value: "24/7", label: "Real-time monitoring" },
             ].map((stat, index) => (
@@ -1946,7 +1946,7 @@ export default function App() {
                 className="hidden md:flex absolute -top-3 -right-3 bg-gradient-to-br from-yellow-500 to-amber-600 text-white px-3 py-1.5 rounded-xl shadow-xl shadow-amber-500/30 items-center gap-1.5 z-30"
               >
                 <Activity className="w-3.5 h-3.5" />
-                <span className="text-[11px] font-black uppercase tracking-wider">98.4% accurate</span>
+                <span className="text-[11px] font-black uppercase tracking-wider">95% accurate</span>
               </motion.div>
             </div>
           </div>
@@ -2017,7 +2017,7 @@ export default function App() {
               {
                 icon: CheckCircle2,
                 title: "Industry-Leading Accuracy",
-                description: "98%+ accuracy with intelligent filtering.",
+                description: "95%+ accuracy with intelligent filtering.",
               },
               {
                 icon: Users,
@@ -2151,7 +2151,7 @@ export default function App() {
                 </p>
                 <div className="mt-4 md:mt-5 flex justify-center md:justify-start gap-2.5 flex-wrap">
                   {[
-                    { value: "98%+", label: "Accuracy" },
+                    { value: "95%+", label: "Accuracy" },
                     { value: "Any", label: "Hardware" },
                     { value: "AI", label: "Powered" },
                   ].map((stat, i) => (
@@ -2630,7 +2630,7 @@ export default function App() {
                 name: "Lisa Chen",
                 role: "Store Owner",
                 company: "Boutique Chain, Sharjah",
-                metric: "98.4%",
+                metric: "95%",
                 metricLabel: "Counting accuracy",
               },
             ].map((testimonial, i) => (

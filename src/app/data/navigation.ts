@@ -22,11 +22,11 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
   {
     label: "Industry",
     items: [
-      { name: "Fashion & Apparel", href: "#/industries/fashion-apparel" },
-      { name: "Shopping Malls", href: "#/industries/shopping-malls" },
-      { name: "Jewellery & Luxury", href: "#/industries/jewellery-luxury" },
-      { name: "Hospitality & F&B", href: "#/industries/hospitality-fnb" },
-      { name: "Airports & Terminals", href: "#/industries/airports" },
+      { name: "Fashion & Apparel", href: "/industries/fashion-apparel" },
+      { name: "Shopping Malls", href: "/industries/shopping-malls" },
+      { name: "Jewellery & Luxury", href: "/industries/jewellery-luxury" },
+      { name: "Hospitality & F&B", href: "/industries/hospitality-fnb" },
+      { name: "Airports & Terminals", href: "/industries/airports" },
     ],
   },
   {
@@ -55,19 +55,17 @@ export const MOBILE_NAV_LINKS: NavItem[] = [
  * Convert a navigation `href` string into a value suitable for react-router's
  * <Link to=...>.
  *
- * Three classes of href exist in the nav data:
- *   1. `#/foo/bar` — HashRouter route (strip the leading `#`).
- *   2. `#section`  — an anchor on the home page (navigate to `/`,
- *                    deliver `#section` so the home page can scroll).
- *   3. Anything else — leave as-is.
+ * Two classes of href exist in the nav data:
+ *   1. `/foo/bar` — a real route; pass through as-is.
+ *   2. `#section` — an anchor on the home page; navigate to `/` and deliver
+ *                   the hash so the home page's scroll effect can react.
  *
- * Pair with `useScrollToHash()` on the home page to actually scroll when
- * the hash arrives.
+ * Anything else is returned untouched.
  */
 export function hrefToLinkTo(href: string):
   | string
   | { pathname: string; hash?: string } {
-  if (href.startsWith("#/")) return href.slice(1);
+  if (href.startsWith("/")) return href;
   if (href.startsWith("#")) return { pathname: "/", hash: href };
   return href;
 }

@@ -90,7 +90,7 @@ export const INDUSTRIES: Industry[] = [
         "Measure capture rate, dwell time, and fitting-room conversion across every store. Know exactly when to add staff and which displays earn their floor space.",
       stats: [
         { value: "+24%", label: "Avg. capture lift" },
-        { value: "98%", label: "Counting accuracy" },
+        { value: "95%", label: "Counting accuracy" },
         { value: "40+", label: "UAE stores live" },
       ],
     },
@@ -217,7 +217,7 @@ export const INDUSTRIES: Industry[] = [
       stats: [
         { value: "3D", label: "Multi-zone tracking" },
         { value: "12+", label: "Mall deployments" },
-        { value: "98.4%", label: "Anchor capture accuracy" },
+        { value: "95%", label: "Anchor capture accuracy" },
       ],
     },
     live: {
@@ -340,7 +340,7 @@ export const INDUSTRIES: Industry[] = [
       stats: [
         { value: "100%", label: "Privacy-compliant" },
         { value: "<3s", label: "VIP detection" },
-        { value: "98%", label: "Group identification" },
+        { value: "95%", label: "Group identification" },
       ],
     },
     live: {
@@ -599,7 +599,7 @@ export const INDUSTRIES: Industry[] = [
         "Real-time passenger flow across security, check-in, gates, retail, and lounges. Built for airport operators, ground handlers, and concessionaires who need to predict throughput, not just measure it.",
       stats: [
         { value: "<60s", label: "Queue alert latency" },
-        { value: "98%", label: "Counting accuracy" },
+        { value: "95%", label: "Counting accuracy" },
         { value: "T1–T3", label: "Multi-terminal ready" },
       ],
     },
