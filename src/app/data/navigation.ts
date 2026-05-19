@@ -50,3 +50,24 @@ export const MOBILE_NAV_LINKS: NavItem[] = [
   { name: "Testimonials", href: "#testimonials" },
   { name: "FAQ", href: "#faq" },
 ];
+
+/**
+ * Convert a navigation `href` string into a value suitable for react-router's
+ * <Link to=...>.
+ *
+ * Three classes of href exist in the nav data:
+ *   1. `#/foo/bar` — HashRouter route (strip the leading `#`).
+ *   2. `#section`  — an anchor on the home page (navigate to `/`,
+ *                    deliver `#section` so the home page can scroll).
+ *   3. Anything else — leave as-is.
+ *
+ * Pair with `useScrollToHash()` on the home page to actually scroll when
+ * the hash arrives.
+ */
+export function hrefToLinkTo(href: string):
+  | string
+  | { pathname: string; hash?: string } {
+  if (href.startsWith("#/")) return href.slice(1);
+  if (href.startsWith("#")) return { pathname: "/", hash: href };
+  return href;
+}

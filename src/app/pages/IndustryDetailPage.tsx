@@ -15,7 +15,7 @@ import {
   Radio,
   X,
 } from "lucide-react";
-import { NAV_DROPDOWNS, MOBILE_NAV_LINKS } from "../data/navigation";
+import { NAV_DROPDOWNS, MOBILE_NAV_LINKS, hrefToLinkTo } from "../data/navigation";
 import {
   Area,
   AreaChart,
@@ -170,23 +170,26 @@ function SiteHeader() {
                   >
                     <div className="bg-white/95 backdrop-blur-2xl border border-gray-200/80 text-gray-900 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] p-2 overflow-hidden">
                       {dropdown.items.map((item, idx) => (
-                        <motion.a
+                        <motion.div
                           key={item.name}
-                          href={item.href}
-                          onClick={() => setActiveDropdown(null)}
                           initial={{ opacity: 0, x: -8 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: idx * 0.04, duration: 0.2 }}
-                          className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl hover:bg-yellow-50 transition-colors group/item"
                         >
-                          <div className="flex items-center gap-3">
-                            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
-                            <span className="font-semibold text-sm group-hover/item:text-yellow-700 transition-colors">
-                              {item.name}
-                            </span>
-                          </div>
-                          <ArrowRight className="w-4 h-4 text-gray-400 opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 group-hover/item:text-yellow-600 transition-all" />
-                        </motion.a>
+                          <Link
+                            to={hrefToLinkTo(item.href)}
+                            onClick={() => setActiveDropdown(null)}
+                            className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl hover:bg-yellow-50 transition-colors group/item"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                              <span className="font-semibold text-sm group-hover/item:text-yellow-700 transition-colors">
+                                {item.name}
+                              </span>
+                            </div>
+                            <ArrowRight className="w-4 h-4 text-gray-400 opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 group-hover/item:text-yellow-600 transition-all" />
+                          </Link>
+                        </motion.div>
                       ))}
                     </div>
                   </motion.div>
@@ -194,26 +197,30 @@ function SiteHeader() {
               </AnimatePresence>
             </div>
           ))}
-          <a
-            href="#pricing"
+          <Link
+            to={hrefToLinkTo("#pricing")}
             className="px-4 py-2 text-gray-700 hover:text-yellow-600 hover:bg-yellow-50/60 rounded-full transition-all text-sm font-semibold uppercase tracking-wide"
           >
             Pricing
-          </a>
+          </Link>
         </nav>
 
         {/* Right actions */}
         <div className="flex items-center gap-3">
-          <motion.a
-            href="#contact"
+          <motion.div
             whileHover={{ scale: 1.04, y: -1 }}
             whileTap={{ scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            className="hidden md:flex bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-5 py-2.5 rounded-full hover:shadow-xl hover:shadow-yellow-500/40 transition-shadow duration-300 items-center gap-2 group font-semibold text-sm uppercase tracking-wide"
+            className="hidden md:flex"
           >
-            Book Demo
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </motion.a>
+            <Link
+              to={hrefToLinkTo("#contact")}
+              className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-5 py-2.5 rounded-full hover:shadow-xl hover:shadow-yellow-500/40 transition-shadow duration-300 flex items-center gap-2 group font-semibold text-sm uppercase tracking-wide"
+            >
+              Book Demo
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </motion.div>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
@@ -238,30 +245,36 @@ function SiteHeader() {
           >
             <div className="px-4 py-5 space-y-1">
               {MOBILE_NAV_LINKS.map((link, idx) => (
-                <motion.a
+                <motion.div
                   key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05, duration: 0.25 }}
-                  className="flex items-center justify-between px-3 py-3 rounded-xl text-gray-800 hover:bg-yellow-50 hover:text-yellow-700 transition-colors font-semibold uppercase tracking-wide text-sm"
                 >
-                  {link.name}
-                  <ArrowRight className="w-4 h-4 text-gray-400" />
-                </motion.a>
+                  <Link
+                    to={hrefToLinkTo(link.href)}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-3 py-3 rounded-xl text-gray-800 hover:bg-yellow-50 hover:text-yellow-700 transition-colors font-semibold uppercase tracking-wide text-sm"
+                  >
+                    {link.name}
+                    <ArrowRight className="w-4 h-4 text-gray-400" />
+                  </Link>
+                </motion.div>
               ))}
-              <motion.a
-                href="#contact"
-                onClick={() => setMobileMenuOpen(false)}
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: MOBILE_NAV_LINKS.length * 0.05, duration: 0.25 }}
-                className="mt-3 w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-yellow-500/30 transition-all flex items-center justify-center gap-2 group font-semibold uppercase tracking-wide text-sm"
               >
-                Book Demo
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </motion.a>
+                <Link
+                  to={hrefToLinkTo("#contact")}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mt-3 w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-yellow-500/30 transition-all flex items-center justify-center gap-2 group font-semibold uppercase tracking-wide text-sm"
+                >
+                  Book Demo
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         )}
@@ -326,7 +339,7 @@ function IndustryHero({ industry }: { industry: Industry }) {
               className="mt-7 md:mt-8 flex flex-wrap gap-3"
             >
               <Link
-                to="/#contact"
+                to={hrefToLinkTo("#contact")}
                 className="group bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 text-white px-6 py-3 md:px-7 md:py-3.5 rounded-full shadow-2xl shadow-yellow-500/40 hover:shadow-yellow-500/60 transition-shadow duration-300 flex items-center gap-2 text-sm md:text-base font-semibold"
               >
                 <span>Book a Demo</span>
@@ -989,7 +1002,7 @@ function IndustryCta({ industry }: { industry: Industry }) {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                to="/#contact"
+                to={hrefToLinkTo("#contact")}
                 className="bg-white text-gray-900 px-5 py-3 md:px-6 md:py-3.5 rounded-full font-bold text-sm md:text-base shadow-lg hover:shadow-xl transition-shadow inline-flex items-center gap-2"
               >
                 Book Demo
@@ -1039,16 +1052,16 @@ function IndustryFooter() {
           <Link to="/" className="hover:text-yellow-400 transition-colors">
             Home
           </Link>
-          <Link to="/#features" className="hover:text-yellow-400 transition-colors">
+          <Link to={hrefToLinkTo("#features")} className="hover:text-yellow-400 transition-colors">
             Features
           </Link>
-          <Link to="/#hardware" className="hover:text-yellow-400 transition-colors">
+          <Link to={hrefToLinkTo("#hardware")} className="hover:text-yellow-400 transition-colors">
             Hardware
           </Link>
-          <Link to="/#pricing" className="hover:text-yellow-400 transition-colors">
+          <Link to={hrefToLinkTo("#pricing")} className="hover:text-yellow-400 transition-colors">
             Pricing
           </Link>
-          <Link to="/#contact" className="hover:text-yellow-400 transition-colors">
+          <Link to={hrefToLinkTo("#contact")} className="hover:text-yellow-400 transition-colors">
             Contact
           </Link>
         </div>

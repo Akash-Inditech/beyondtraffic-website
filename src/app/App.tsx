@@ -62,7 +62,8 @@ import { MallAnalytics } from "./components/MallAnalytics";
 import { RetailProblemViz } from "./components/RetailProblemViz";
 import { RetailSceneStripe } from "./components/RetailSceneStripe";
 
-import { NAV_DROPDOWNS, MOBILE_NAV_LINKS } from "./data/navigation";
+import { Link, useLocation } from "react-router";
+import { NAV_DROPDOWNS, MOBILE_NAV_LINKS, hrefToLinkTo } from "./data/navigation";
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -97,6 +98,22 @@ export default function App() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // When we arrive on the home page with a hash (e.g. landing from an
+  // industry page's "Live Dashboard" dropdown), scroll the target into view.
+  const location = useLocation();
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.replace(/^#/, "");
+    if (!id) return;
+    // Defer a tick so the section has mounted.
+    const handle = window.setTimeout(() => {
+      document
+        .getElementById(id)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+    return () => window.clearTimeout(handle);
+  }, [location.hash, location.pathname]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -252,23 +269,23 @@ export default function App() {
             scrolled ? "py-2.5" : "py-4"
           }`}
         >
-          <motion.a
-            href="#"
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 group"
           >
-            <div
-              className={`bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
-                scrolled ? "w-9 h-9" : "w-10 h-10"
-              }`}
-            >
-              <Eye className={`text-white transition-all ${scrolled ? "w-5 h-5" : "w-6 h-6"}`} />
-            </div>
-            <span className="text-xl font-black uppercase tracking-tight text-gray-900">
-              Beyond Traffic<span className="text-yellow-500">.</span>
-            </span>
-          </motion.a>
+            <Link to="/" className="flex items-center gap-3 group">
+              <div
+                className={`bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
+                  scrolled ? "w-9 h-9" : "w-10 h-10"
+                }`}
+              >
+                <Eye className={`text-white transition-all ${scrolled ? "w-5 h-5" : "w-6 h-6"}`} />
+              </div>
+              <span className="text-xl font-black uppercase tracking-tight text-gray-900">
+                Beyond Traffic<span className="text-yellow-500">.</span>
+              </span>
+            </Link>
+          </motion.div>
 
           <nav className="hidden md:flex gap-1 items-center">
             {NAV_DROPDOWNS.map((dropdown) => (
@@ -303,23 +320,26 @@ export default function App() {
                     >
                       <div className="bg-white/95 backdrop-blur-2xl border border-gray-200/80 text-gray-900 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.12)] p-2 overflow-hidden">
                         {dropdown.items.map((item, idx) => (
-                          <motion.a
+                          <motion.div
                             key={item.name}
-                            href={item.href}
-                            onClick={() => setActiveDropdown(null)}
                             initial={{ opacity: 0, x: -8 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.04, duration: 0.2 }}
-                            className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl hover:bg-yellow-50 transition-colors group/item"
                           >
-                            <div className="flex items-center gap-3">
-                              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
-                              <span className="font-semibold text-sm group-hover/item:text-yellow-700 transition-colors">
-                                {item.name}
-                              </span>
-                            </div>
-                            <ArrowRight className="w-4 h-4 text-gray-400 opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 group-hover/item:text-yellow-600 transition-all" />
-                          </motion.a>
+                            <Link
+                              to={hrefToLinkTo(item.href)}
+                              onClick={() => setActiveDropdown(null)}
+                              className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl hover:bg-yellow-50 transition-colors group/item"
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                                <span className="font-semibold text-sm group-hover/item:text-yellow-700 transition-colors">
+                                  {item.name}
+                                </span>
+                              </div>
+                              <ArrowRight className="w-4 h-4 text-gray-400 opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 group-hover/item:text-yellow-600 transition-all" />
+                            </Link>
+                          </motion.div>
                         ))}
                       </div>
                     </motion.div>
@@ -327,25 +347,29 @@ export default function App() {
                 </AnimatePresence>
               </div>
             ))}
-            <a
-              href="#pricing"
+            <Link
+              to={hrefToLinkTo("#pricing")}
               className="px-4 py-2 text-gray-700 hover:text-yellow-600 hover:bg-yellow-50/60 rounded-full transition-all text-sm font-semibold uppercase tracking-wide"
             >
               Pricing
-            </a>
+            </Link>
           </nav>
 
           <div className="flex items-center gap-3">
-            <motion.a
-              href="#contact"
+            <motion.div
               whileHover={{ scale: 1.04, y: -1 }}
               whileTap={{ scale: 0.96 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="hidden md:flex bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-5 py-2.5 rounded-full hover:shadow-xl hover:shadow-yellow-500/40 transition-shadow duration-300 items-center gap-2 group font-semibold text-sm uppercase tracking-wide"
+              className="hidden md:flex"
             >
-              Book Demo
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </motion.a>
+              <Link
+                to={hrefToLinkTo("#contact")}
+                className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-5 py-2.5 rounded-full hover:shadow-xl hover:shadow-yellow-500/40 transition-shadow duration-300 flex items-center gap-2 group font-semibold text-sm uppercase tracking-wide"
+              >
+                Book Demo
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
@@ -373,30 +397,36 @@ export default function App() {
             >
               <div className="px-4 py-5 space-y-1">
                 {MOBILE_NAV_LINKS.map((link, idx) => (
-                  <motion.a
+                  <motion.div
                     key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05, duration: 0.25 }}
-                    className="flex items-center justify-between px-3 py-3 rounded-xl text-gray-800 hover:bg-yellow-50 hover:text-yellow-700 transition-colors font-semibold uppercase tracking-wide text-sm"
                   >
-                    {link.name}
-                    <ArrowRight className="w-4 h-4 text-gray-400" />
-                  </motion.a>
+                    <Link
+                      to={hrefToLinkTo(link.href)}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between px-3 py-3 rounded-xl text-gray-800 hover:bg-yellow-50 hover:text-yellow-700 transition-colors font-semibold uppercase tracking-wide text-sm"
+                    >
+                      {link.name}
+                      <ArrowRight className="w-4 h-4 text-gray-400" />
+                    </Link>
+                  </motion.div>
                 ))}
-                <motion.a
-                  href="#contact"
-                  onClick={() => setMobileMenuOpen(false)}
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: MOBILE_NAV_LINKS.length * 0.05, duration: 0.25 }}
-                  className="mt-3 w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-yellow-500/30 transition-all flex items-center justify-center gap-2 group font-semibold uppercase tracking-wide text-sm"
                 >
-                  Book Demo
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </motion.a>
+                  <Link
+                    to={hrefToLinkTo("#contact")}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mt-3 w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-yellow-500/30 transition-all flex items-center justify-center gap-2 group font-semibold uppercase tracking-wide text-sm"
+                  >
+                    Book Demo
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
           )}
