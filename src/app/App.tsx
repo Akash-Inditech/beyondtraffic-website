@@ -65,6 +65,10 @@ import { RetailSceneStripe } from "./components/RetailSceneStripe";
 import { Link, useLocation } from "react-router";
 import { NAV_DROPDOWNS, MOBILE_NAV_LINKS, hrefToLinkTo } from "./data/navigation";
 
+// react-router Link wrapped in motion so we can use whileHover / whileTap /
+// transition props the same way we used on plain <motion.a> anchors.
+const MotionLink = motion(Link);
+
 export default function App() {
   const [formData, setFormData] = useState({
     name: "",
@@ -99,13 +103,15 @@ export default function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // When we arrive on the home page with a hash (e.g. landing from an
-  // industry page's "Live Dashboard" dropdown), scroll the target into view.
+  // Pathname-driven scroll: when the URL is /hardware, /features, etc.
+  // scroll the matching DOM id into view. Plain "/" resets to top.
   const location = useLocation();
   useEffect(() => {
-    if (!location.hash) return;
-    const id = location.hash.replace(/^#/, "");
-    if (!id) return;
+    const id = location.pathname.replace(/^\//, "");
+    if (!id) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+      return;
+    }
     // Defer a tick so the section has mounted.
     const handle = window.setTimeout(() => {
       document
@@ -113,7 +119,7 @@ export default function App() {
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 80);
     return () => window.clearTimeout(handle);
-  }, [location.hash, location.pathname]);
+  }, [location.pathname]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -515,8 +521,8 @@ export default function App() {
                 transition={{ duration: 0.7, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
                 className="flex gap-3 flex-wrap items-center"
               >
-                <motion.a
-                  href="#contact"
+                <MotionLink
+                  to="/contact"
                   whileHover={{ scale: 1.04, y: -3 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -524,16 +530,16 @@ export default function App() {
                 >
                   <span className="relative z-10">Stop Guessing, Start Tracking</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300 relative z-10" />
-                </motion.a>
-                <motion.a
-                  href="#dashboard"
+                </MotionLink>
+                <MotionLink
+                  to="/dashboard"
                   whileHover={{ scale: 1.04, y: -3 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   className="text-gray-800 px-5 py-3 md:px-6 md:py-3.5 rounded-full border-2 border-gray-200 hover:border-gray-400 transition-colors flex items-center gap-2 text-sm md:text-base font-semibold"
                 >
                   See Live Dashboard
-                </motion.a>
+                </MotionLink>
               </motion.div>
 
               {/* Trust micro-bar under CTAs */}
@@ -2259,13 +2265,13 @@ export default function App() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-12 md:mt-16 flex justify-center"
           >
-            <a
-              href="#contact"
+            <Link
+              to="/contact"
               className="stori-cta inline-flex items-center gap-2 px-7 py-3 rounded-full text-sm md:text-base font-semibold transition-all hover:scale-[1.02]"
             >
               Talk to integrations team
               <ArrowRight className="w-4 h-4" />
-            </a>
+            </Link>
           </motion.div>
         </div>
       </section>
@@ -2466,14 +2472,14 @@ export default function App() {
                     </li>
                   ))}
                 </ul>
-                <motion.a
-                  href="#contact"
+                <MotionLink
+                  to="/contact"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="block w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white text-center px-6 py-4 rounded-2xl font-bold hover:shadow-2xl hover:shadow-yellow-500/50 transition-all"
                 >
                   Get Started
-                </motion.a>
+                </MotionLink>
               </div>
             </motion.div>
 
@@ -2514,14 +2520,14 @@ export default function App() {
                     </li>
                   ))}
                 </ul>
-                <motion.a
-                  href="#contact"
+                <MotionLink
+                  to="/contact"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="block w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white text-center px-6 py-4 rounded-2xl font-bold hover:shadow-2xl hover:shadow-yellow-500/50 transition-all"
                 >
                   Get Started
-                </motion.a>
+                </MotionLink>
               </div>
             </motion.div>
 
@@ -2557,14 +2563,14 @@ export default function App() {
                     </li>
                   ))}
                 </ul>
-                <motion.a
-                  href="#contact"
+                <MotionLink
+                  to="/contact"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="block w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white text-center px-6 py-4 rounded-2xl font-bold hover:shadow-2xl hover:shadow-yellow-500/50 transition-all"
                 >
                   Contact Sales
-                </motion.a>
+                </MotionLink>
               </div>
             </motion.div>
           </div>
@@ -2951,19 +2957,19 @@ export default function App() {
               <h4 className="mb-6 text-lg font-semibold">Platform</h4>
               <ul className="space-y-3 text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/dashboard" className="hover:text-yellow-400 transition-colors">
                     Footfall Counter
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#features" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/features" className="hover:text-yellow-400 transition-colors">
                     Features
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/hardware" className="hover:text-yellow-400 transition-colors">
                     People counting sensor
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -2971,29 +2977,29 @@ export default function App() {
               <h4 className="mb-6 text-lg font-semibold">Industries</h4>
               <ul className="space-y-3 text-gray-400">
                 <li>
-                  <a href="#industries" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/industries/fashion-apparel" className="hover:text-yellow-400 transition-colors">
                     Fashion
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#industries" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/industries/shopping-malls" className="hover:text-yellow-400 transition-colors">
                     Malls
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#industries" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/industries/hospitality-fnb" className="hover:text-yellow-400 transition-colors">
                     Hospitality
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#industries" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/industries/hospitality-fnb" className="hover:text-yellow-400 transition-colors">
                     F&B
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#industries" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/industries/jewellery-luxury" className="hover:text-yellow-400 transition-colors">
                     Jewelry
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -3001,19 +3007,19 @@ export default function App() {
               <h4 className="mb-6 text-lg font-semibold">Resources</h4>
               <ul className="space-y-3 text-gray-400">
                 <li>
-                  <a href="#faq" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/faq" className="hover:text-yellow-400 transition-colors">
                     FAQ
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#testimonials" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/testimonials" className="hover:text-yellow-400 transition-colors">
                     Testimonials
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-yellow-400 transition-colors">
+                  <Link to="/contact" className="hover:text-yellow-400 transition-colors">
                     Blog
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
