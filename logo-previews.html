@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logo Previews · Beyond Traffic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --gold-50: #fffbeb;
+        --gold-100: #fef3c7;
+        --gold-200: #fde68a;
+        --gold-400: #facc15;
+        --gold-500: #f5c518;
+        --gold-600: #d4a613;
+        --gold-700: #a16207;
+        --amber-600: #d97706;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-900: #111827;
+        --gold-grad: linear-gradient(135deg, #f5c518 0%, #d97706 100%);
+        --gold-text-grad: linear-gradient(
+          90deg,
+          #6b5a0f 0%,
+          #b8861b 35%,
+          #f5c518 70%,
+          #f5c518 100%
+        );
+        --shadow-gold: 0 8px 22px -8px rgba(245, 197, 24, 0.55);
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(180deg, #ffffff 0%, #fffbeb44 50%, #ffffff 100%);
+        font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Roboto", sans-serif;
+        color: var(--gray-900);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+      }
+
+      header.intro {
+        margin-bottom: 32px;
+      }
+      header.intro .eyebrow {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #a16207;
+        margin-bottom: 12px;
+      }
+      header.intro h1 {
+        font-size: clamp(28px, 4vw, 44px);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
+        margin: 0 0 12px;
+      }
+      header.intro h1 .accent {
+        background: var(--gold-text-grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+      }
+      header.intro p {
+        font-size: 16px;
+        color: var(--gray-600);
+        max-width: 640px;
+        line-height: 1.55;
+        margin: 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+      @media (max-width: 760px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: #ffffff;
+        border: 1px solid rgba(253, 230, 138, 0.7);
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+      }
+      .card:hover {
+        box-shadow: 0 16px 36px -16px rgba(245, 197, 24, 0.35);
+        transform: translateY(-2px);
+      }
+      .card.full {
+        grid-column: 1 / -1;
+      }
+
+      .card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      .num {
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        color: #a16207;
+        font-weight: 900;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .card-name {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gray-400);
+        text-align: right;
+        line-height: 1.2;
+      }
+
+      /* Header strip preview (white) */
+      .strip {
+        background: #ffffff;
+        border: 1px solid #f3f4f6;
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+      }
+      /* Footer strip preview (dark) */
+      .strip.dark {
+        background: linear-gradient(135deg, #111827 0%, #000000 50%, #111827 100%);
+        border-color: transparent;
+        margin-bottom: 14px;
+      }
+      .strip.dark .wordmark {
+        color: #ffffff;
+      }
+
+      /* Brand wordmark */
+      .wordmark {
+        font-size: 19px;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        text-transform: uppercase;
+        color: var(--gray-900);
+        line-height: 1;
+      }
+      .wordmark .dot {
+        color: var(--gold-500);
+      }
+
+      /* Square mark (gradient yellow rounded square) */
+      .mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--gold-grad);
+        box-shadow: var(--shadow-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .mark.circle {
+        border-radius: 999px;
+      }
+      .mark svg {
+        width: 22px;
+        height: 22px;
+        color: #ffffff;
+        stroke: currentColor;
+        stroke-width: 2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .mark.filled svg {
+        fill: currentColor;
+        stroke: none;
+      }
+      .mark .monogram {
+        color: #ffffff;
+        font-weight: 900;
+        font-size: 15px;
+        letter-spacing: -0.02em;
+        line-height: 1;
+      }
+
+      .rationale {
+        font-size: 13px;
+        color: var(--gray-600);
+        line-height: 1.55;
+        margin: 0;
+      }
+
+      /* Footer CTA */
+      .cta {
+        margin-top: 28px;
+        background: var(--gold-grad);
+        color: #ffffff;
+        border-radius: 22px;
+        padding: 26px 28px;
+        box-shadow: 0 24px 48px -20px rgba(245, 197, 24, 0.5);
+      }
+      .cta .label {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        opacity: 0.9;
+        margin-bottom: 6px;
+      }
+      .cta h2 {
+        font-size: 22px;
+        font-weight: 900;
+        margin: 0 0 6px;
+      }
+      .cta p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.92;
+      }
+
+      /* Wordmark-only card */
+      .wordmark-only {
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="intro">
+        <div class="eyebrow">Logo preview · pick one</div>
+        <h1>
+          Pick a logo for
+          <span class="accent">Beyond Traffic.</span>
+        </h1>
+        <p>
+          Twelve concepts rendered at header scale (white) and footer scale
+          (dark). Tell me which number to ship (e.g. &quot;go with #4&quot;) and
+          I&apos;ll wire it into the live header, footer, and chat assistant.
+        </p>
+      </header>
+
+      <div class="grid">
+        <!-- 1. EYE (CURRENT) -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">1</span>
+            <span class="card-name">Eye · current</span>
+          </div>
+          <div class="strip">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Existing logo. Says &quot;we see / vision&quot; but doesn&apos;t
+            immediately read as people-counting.
+          </p>
+        </div>
+
+        <!-- 2. FOOTPRINTS -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">2</span>
+            <span class="card-name">Footprints · tracking</span>
+          </div>
+          <div class="strip">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 16v-2.38c0-.97.16-1.92.4-2.85.27-1.06.4-2.16.4-3.27v0a2 2 0 1 1 4 0v.27a8 8 0 0 1-.55 2.9L7 14v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1z" />
+                <path d="M16 16v-2.38c0-.97.16-1.92.4-2.85.27-1.06.4-2.16.4-3.27v0a2 2 0 1 1 4 0v.27a8 8 0 0 1-.55 2.9L19 14v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1z" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 16v-2.38c0-.97.16-1.92.4-2.85.27-1.06.4-2.16.4-3.27v0a2 2 0 1 1 4 0v.27a8 8 0 0 1-.55 2.9L7 14v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1z" />
+                <path d="M16 16v-2.38c0-.97.16-1.92.4-2.85.27-1.06.4-2.16.4-3.27v0a2 2 0 1 1 4 0v.27a8 8 0 0 1-.55 2.9L19 14v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1z" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Most literal read of &quot;people counting / footfall&quot;.
+            Friendly, lower-tech feel.
+          </p>
+        </div>
+
+        <!-- 3. RADAR -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">3</span>
+            <span class="card-name">Radar · scan</span>
+          </div>
+          <div class="strip">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path d="M4.93 19.07A10 10 0 0 1 19.07 4.93" />
+                <path d="M7.76 16.24a6 6 0 0 1 8.48-8.48" />
+                <circle cx="12" cy="12" r="2" fill="#fff" stroke="none" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path d="M4.93 19.07A10 10 0 0 1 19.07 4.93" />
+                <path d="M7.76 16.24a6 6 0 0 1 8.48-8.48" />
+                <circle cx="12" cy="12" r="2" fill="#fff" stroke="none" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Spatial awareness and sensing. Slightly security/airport-coded —
+            good fit since Airports is now an industry.
+          </p>
+        </div>
+
+        <!-- 4. BAR CHART -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">4</span>
+            <span class="card-name">Bar chart · analytics</span>
+          </div>
+          <div class="strip">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <line x1="5" y1="20" x2="5" y2="12" />
+                <line x1="12" y1="20" x2="12" y2="6" />
+                <line x1="19" y1="20" x2="19" y2="14" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <line x1="5" y1="20" x2="5" y2="12" />
+                <line x1="12" y1="20" x2="12" y2="6" />
+                <line x1="19" y1="20" x2="19" y2="14" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Reads as data / dashboard. Most BI-tool-coded, premium.
+          </p>
+        </div>
+
+        <!-- 5. PULSE -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">5</span>
+            <span class="card-name">Pulse · live</span>
+          </div>
+          <div class="strip">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <polyline points="3 12 7 12 10 5 14 19 17 12 21 12" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <polyline points="3 12 7 12 10 5 14 19 17 12 21 12" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Real-time / heartbeat. Pairs well with the &quot;LIVE&quot; pills
+            already in your UI.
+          </p>
+        </div>
+
+        <!-- 6. PEOPLE -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">6</span>
+            <span class="card-name">People · direct</span>
+          </div>
+          <div class="strip">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Direct visual of &quot;people&quot;. Plain but on-the-nose for
+            people-counting.
+          </p>
+        </div>
+
+        <!-- 7. BT MONOGRAM (CIRCLE) -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">7</span>
+            <span class="card-name">BT monogram · circle</span>
+          </div>
+          <div class="strip">
+            <div class="mark circle">
+              <span class="monogram">BT</span>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark circle">
+              <span class="monogram">BT</span>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            No icon library — custom letterform in a circle. Stronger brand-mark
+            feel, scales well as favicon.
+          </p>
+        </div>
+
+        <!-- 8. CUSTOM PERSON + TRACKING RING -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">8</span>
+            <span class="card-name">Person + tracking ring · bespoke</span>
+          </div>
+          <div class="strip">
+            <div class="mark filled">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="7" r="3" />
+                <path
+                  d="M5 21c0-3.866 3.134-7 7-7s7 3.134 7 7"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                />
+                <ellipse
+                  cx="12"
+                  cy="21"
+                  rx="9"
+                  ry="1.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  opacity="0.55"
+                />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark filled">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="7" r="3" />
+                <path
+                  d="M5 21c0-3.866 3.134-7 7-7s7 3.134 7 7"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                />
+                <ellipse
+                  cx="12"
+                  cy="21"
+                  rx="9"
+                  ry="1.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  opacity="0.55"
+                />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Person figure with a tracking ring underneath — &quot;we track every
+            person&quot;. Most bespoke, hardest to confuse with another brand.
+          </p>
+        </div>
+
+        <!-- 9. SPARKLES -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">9</span>
+            <span class="card-name">Sparkles · premium</span>
+          </div>
+          <div class="strip">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"
+                />
+                <path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"
+                />
+                <path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Soft, premium, retail-luxury feel. Less literal but pairs with your
+            gold palette.
+          </p>
+        </div>
+
+        <!-- 10. TARGET -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">10</span>
+            <span class="card-name">Target · precision</span>
+          </div>
+          <div class="strip">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" fill="#fff" stroke="none" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" fill="#fff" stroke="none" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Crosshair / target. Says &quot;precision tracking&quot;, accuracy.
+            Bold and modern.
+          </p>
+        </div>
+
+        <!-- 11. STACKED PEOPLE BARS (custom) -->
+        <div class="card">
+          <div class="card-head">
+            <span class="num">11</span>
+            <span class="card-name">Bars + heads · custom</span>
+          </div>
+          <div class="strip">
+            <div class="mark filled">
+              <svg viewBox="0 0 24 24">
+                <rect x="3.5" y="14" width="4" height="6.5" rx="1" />
+                <rect x="10" y="10" width="4" height="10.5" rx="1" />
+                <rect x="16.5" y="6" width="4" height="14.5" rx="1" />
+                <circle cx="5.5" cy="11.5" r="1.6" />
+                <circle cx="12" cy="7.5" r="1.6" />
+                <circle cx="18.5" cy="3.5" r="1.6" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <div class="strip dark">
+            <div class="mark filled">
+              <svg viewBox="0 0 24 24">
+                <rect x="3.5" y="14" width="4" height="6.5" rx="1" />
+                <rect x="10" y="10" width="4" height="10.5" rx="1" />
+                <rect x="16.5" y="6" width="4" height="14.5" rx="1" />
+                <circle cx="5.5" cy="11.5" r="1.6" />
+                <circle cx="12" cy="7.5" r="1.6" />
+                <circle cx="18.5" cy="3.5" r="1.6" />
+              </svg>
+            </div>
+            <span class="wordmark">Beyond Traffic<span class="dot">.</span></span>
+          </div>
+          <p class="rationale">
+            Three rising bars with dots — reads both as &quot;analytics&quot;
+            and as &quot;three people in line&quot;. Fully bespoke.
+          </p>
+        </div>
+
+        <!-- 12. WORDMARK ONLY -->
+        <div class="card full">
+          <div class="card-head">
+            <span class="num">12</span>
+            <span class="card-name">Wordmark only · minimal</span>
+          </div>
+          <div class="strip" style="justify-content:flex-start;">
+            <span class="wordmark wordmark-only">
+              Beyond Traffic<span class="dot">.</span>
+            </span>
+          </div>
+          <div class="strip dark" style="justify-content:flex-start;">
+            <span class="wordmark wordmark-only">
+              Beyond Traffic<span class="dot">.</span>
+            </span>
+          </div>
+          <p class="rationale">
+            No icon. Cleanest. Lets the yellow dot do the work. Pairs well with
+            your &quot;Stori&quot; design language.
+          </p>
+        </div>
+      </div>
+
+      <div class="cta">
+        <div class="label">Next step</div>
+        <h2>Reply with the number you want shipped.</h2>
+        <p>
+          I&apos;ll swap it into the live header, footer, and chat assistant in
+          one commit.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

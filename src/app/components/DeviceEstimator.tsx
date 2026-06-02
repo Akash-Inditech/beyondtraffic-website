@@ -352,10 +352,10 @@ export function DeviceEstimator() {
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                   <Link
-                    to="/pricing"
+                    to="/contact"
                     className="bg-white/10 backdrop-blur-sm text-white border border-white/30 px-5 py-3 md:px-6 md:py-3.5 rounded-full font-bold text-sm md:text-base hover:bg-white/20 transition-colors inline-flex items-center gap-2"
                   >
-                    See full pricing
+                    Talk to sales
                     <Sparkles className="w-4 h-4" />
                   </Link>
                 </div>

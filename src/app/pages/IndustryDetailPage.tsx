@@ -198,7 +198,7 @@ function SiteHeader() {
             </div>
           ))}
           <Link
-            to={hrefToLinkTo("#pricing")}
+            to="/estimator"
             className="px-4 py-2 text-gray-700 hover:text-yellow-600 hover:bg-yellow-50/60 rounded-full transition-all text-sm font-semibold uppercase tracking-wide"
           >
             Pricing
@@ -1058,7 +1058,7 @@ function IndustryFooter() {
           <Link to={hrefToLinkTo("#hardware")} className="hover:text-yellow-400 transition-colors">
             Hardware
           </Link>
-          <Link to={hrefToLinkTo("#pricing")} className="hover:text-yellow-400 transition-colors">
+          <Link to="/estimator" className="hover:text-yellow-400 transition-colors">
             Pricing
           </Link>
           <Link to={hrefToLinkTo("#contact")} className="hover:text-yellow-400 transition-colors">

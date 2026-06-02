@@ -361,7 +361,7 @@ export default function App() {
               </div>
             ))}
             <Link
-              to={hrefToLinkTo("#pricing")}
+              to="/estimator"
               className="px-4 py-2 text-gray-700 hover:text-yellow-600 hover:bg-yellow-50/60 rounded-full transition-all text-sm font-semibold uppercase tracking-wide"
             >
               Pricing
@@ -2439,189 +2439,7 @@ export default function App() {
       {/* Device & subscription estimator */}
       <DeviceEstimator />
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-amber-50 to-yellow-50 -z-10" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(234, 179, 8,0.15),transparent_70%)] -z-10" />
-        {/* Retail scene strip — bottom */}
-        <RetailSceneStripe className="absolute bottom-0 left-0 right-0 h-40 md:h-52 z-0" opacity={0.28} />
-        {/* Detection corners */}
-        <span className="hidden md:block absolute top-6 left-6 w-6 h-6 border-t-2 border-l-2 border-amber-400/50 z-10" />
-        <span className="hidden md:block absolute top-6 right-6 w-6 h-6 border-t-2 border-r-2 border-amber-400/50 z-10" />
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <div className="inline-flex items-center gap-2 bg-yellow-500 text-white rounded-full px-5 py-2.5 mb-6 shadow-lg shadow-yellow-500/50">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-bold uppercase tracking-wide">Pricing</span>
-            </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-6 font-black uppercase tracking-tight">
-              <span className="block text-gray-900">Simple, Transparent</span>
-              <span className="block bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent">Pricing</span>
-            </h2>
-            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-              Choose the perfect plan for your retail business
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Starter Plan */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="bg-white border-2 border-yellow-200 rounded-3xl p-8 hover:border-yellow-400 hover:shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300 relative overflow-hidden group"
-            >
-              <div className="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-10" />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-black uppercase mb-4 text-gray-900">Starter</h3>
-                <div className="mb-6">
-                  <div className="text-5xl font-black bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent mb-2">Custom</div>
-                  <div className="text-gray-600">per location/month</div>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  {[
-                    "1-5 Locations",
-                    "Real-time footfall tracking",
-                    "Basic analytics dashboard",
-                    "Email support",
-                    "Monthly reports",
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3 text-gray-700">
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <MotionLink
-                  to="/contact"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="block w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white text-center px-6 py-4 rounded-2xl font-bold hover:shadow-2xl hover:shadow-yellow-500/50 transition-all"
-                >
-                  Get Started
-                </MotionLink>
-              </div>
-            </motion.div>
-
-            {/* Professional Plan - Featured */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="bg-white rounded-3xl p-8 shadow-2xl relative overflow-hidden group border-4 border-yellow-400"
-            >
-              <div className="absolute top-0 right-0 bg-yellow-400 text-gray-900 px-6 py-2 text-sm font-black uppercase rounded-bl-2xl">
-                Popular
-              </div>
-              <div className="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-10" />
-              <div className="relative z-10 mt-6">
-                <h3 className="text-2xl font-black uppercase mb-4 text-gray-900">Professional</h3>
-                <div className="mb-6">
-                  <div className="text-5xl font-black bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent mb-2">
-                    Custom
-                  </div>
-                  <div className="text-gray-600">per location/month</div>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  {[
-                    "6-20 Locations",
-                    "Advanced analytics & AI insights",
-                    "POS integration",
-                    "Demographics tracking",
-                    "Priority support",
-                    "Custom reports",
-                    "API access",
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3 text-gray-700">
-                      <CheckCircle2 className="w-5 h-5 text-yellow-500 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <MotionLink
-                  to="/contact"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="block w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white text-center px-6 py-4 rounded-2xl font-bold hover:shadow-2xl hover:shadow-yellow-500/50 transition-all"
-                >
-                  Get Started
-                </MotionLink>
-              </div>
-            </motion.div>
-
-            {/* Enterprise Plan */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="bg-white border-2 border-yellow-200 rounded-3xl p-8 hover:border-yellow-400 hover:shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300 relative overflow-hidden group"
-            >
-              <div className="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-10" />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-black uppercase mb-4 text-gray-900">Enterprise</h3>
-                <div className="mb-6">
-                  <div className="text-5xl font-black bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent mb-2">Custom</div>
-                  <div className="text-gray-600">contact us</div>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  {[
-                    "20+ Locations",
-                    "Everything in Professional",
-                    "Dedicated account manager",
-                    "Custom integrations",
-                    "24/7 phone support",
-                    "On-site training",
-                    "SLA guarantees",
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3 text-gray-700">
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <MotionLink
-                  to="/contact"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="block w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white text-center px-6 py-4 rounded-2xl font-bold hover:shadow-2xl hover:shadow-yellow-500/50 transition-all"
-                >
-                  Contact Sales
-                </MotionLink>
-              </div>
-            </motion.div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-16 text-center bg-white/80 backdrop-blur-xl border-2 border-yellow-200 rounded-3xl p-8 shadow-xl"
-          >
-            <p className="text-gray-900 text-lg mb-2 font-bold">
-              All plans include free hardware installation and setup
-            </p>
-            <p className="text-gray-600">
-              Custom pricing available for unique requirements • No long-term contracts
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Testimonials Section — moved below pricing */}
+      {/* Testimonials Section */}
       <section id="testimonials" className="py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-violet-50">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -2761,7 +2579,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Pricing & Contact Section */}
+      {/* Contact Section — book a demo */}
       <section id="contact" className="relative py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-violet-50 overflow-hidden">
         <RetailSceneStripe className="absolute bottom-0 left-0 right-0 h-36 md:h-44" opacity={0.2} />
         <span className="hidden md:block absolute top-6 left-6 w-6 h-6 border-t-2 border-l-2 border-amber-400/40" />
@@ -2774,49 +2592,86 @@ export default function App() {
             className="text-center mb-12 md:mb-20"
           >
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-6 font-bold leading-tight px-4">
-              Let's{" "}
+              Book your{" "}
               <span className="bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent">
-                Get Started
+                free demo
               </span>
             </h2>
+            <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+              Tell us about your space. We&apos;ll come back within one business
+              day with a tailored walkthrough and an exact quote based on your
+              estimate above.
+            </p>
           </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-12">
-            {/* Pricing */}
+          <div className="grid lg:grid-cols-12 gap-8 md:gap-12 items-start">
+            {/* What happens next — replaces the legacy inline pricing widget */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-50px" }}
+              className="lg:col-span-5"
             >
-              <h3 className="text-3xl md:text-4xl mb-4 font-bold">Explore the Possibilities</h3>
-              <p className="text-xl text-gray-600 mb-8">
-                Estimate the Pricing for the Beyond Traffic subscription
+              <h3 className="text-2xl md:text-3xl mb-4 font-black text-gray-900 leading-tight">
+                What you&apos;ll get
+              </h3>
+              <p className="text-base md:text-lg text-gray-600 mb-7 leading-relaxed">
+                Every demo is hands-on, run by someone who&apos;s actually
+                deployed Beyond Traffic across UAE retail.
               </p>
-              <div className="bg-white border border-gray-200 rounded-3xl p-8 space-y-6 shadow-xl">
-                <div>
-                  <label className="block mb-3 text-lg">Number of Locations</label>
-                  <input
-                    type="number"
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-300 bg-gray-50 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all outline-none"
-                    placeholder="1"
-                  />
+
+              <ul className="space-y-3.5 mb-8">
+                {[
+                  {
+                    title: "30-minute live walkthrough",
+                    body: "Real dashboards, real data, on your own use case.",
+                  },
+                  {
+                    title: "Custom site survey",
+                    body: "We size the sensors to your actual entrance and floor plan.",
+                  },
+                  {
+                    title: "Tailored quote",
+                    body: "Hardware, install, and subscription locked in — no surprises.",
+                  },
+                  {
+                    title: "Integrations review",
+                    body: "POS, BI, CRM, security stack — we map the connectors before you sign.",
+                  },
+                ].map((step, i) => (
+                  <li
+                    key={step.title}
+                    className="flex gap-3 bg-white border border-yellow-200/70 rounded-2xl p-4 shadow-sm"
+                  >
+                    <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-600 text-white font-black flex items-center justify-center shadow-md shadow-yellow-500/30 text-sm">
+                      {i + 1}
+                    </div>
+                    <div>
+                      <p className="font-black text-gray-900 text-sm md:text-base leading-tight">
+                        {step.title}
+                      </p>
+                      <p className="text-xs md:text-sm text-gray-600 mt-1 leading-relaxed">
+                        {step.body}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="bg-white border border-yellow-200/70 rounded-2xl p-4 md:p-5 flex items-center gap-4 shadow-sm">
+                <div className="w-11 h-11 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center flex-shrink-0">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-70 animate-ping" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  </span>
                 </div>
                 <div>
-                  <label className="block mb-3 text-lg">Sensors per Location</label>
-                  <input
-                    type="number"
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-300 bg-gray-50 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all outline-none"
-                    placeholder="2"
-                  />
-                </div>
-                <div className="pt-6 border-t border-gray-200">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-gray-700 text-lg">Estimated Monthly Cost</span>
-                    <span className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent">
-                      Contact Us
-                    </span>
-                  </div>
-                  <p className="text-gray-600">Custom pricing tailored to your specific needs</p>
+                  <p className="font-black text-gray-900 text-sm leading-tight">
+                    Reply within 1 business day
+                  </p>
+                  <p className="text-xs text-gray-600 mt-0.5">
+                    UAE-based team, on-site visits available across the GCC.
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -2826,9 +2681,10 @@ export default function App() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-50px" }}
+              className="lg:col-span-7"
             >
-              <h3 className="text-3xl md:text-4xl mb-4 font-bold">Book Your Free Demo</h3>
-              <p className="text-xl text-gray-600 mb-8">Get in touch with our team</p>
+              <h3 className="text-2xl md:text-3xl mb-2 font-black text-gray-900 leading-tight">Book your demo</h3>
+              <p className="text-base md:text-lg text-gray-600 mb-7">We&apos;ll come back to you within one business day.</p>
               <form onSubmit={handleSubmit} className="space-y-5 bg-white border border-gray-200 rounded-3xl p-8 shadow-xl">
                 <div className="grid md:grid-cols-2 gap-5">
                   <div>

@@ -13,7 +13,14 @@
 export type NavItem = { name: string; href: string };
 export type NavDropdown = { label: string; items: NavItem[] };
 
-/** Home-page section ids that have a corresponding clean URL route. */
+/**
+ * Home-page section ids that have a corresponding clean URL route.
+ *
+ * Note: `/pricing` is intentionally kept here for backward-compat with any
+ * existing inbound links. Its hash anchor target lives inside the
+ * DeviceEstimator section, so /pricing scrolls users to the estimator
+ * (where the actual pricing now lives).
+ */
 export const SECTION_ROUTES = [
   "dashboard",
   "features",
@@ -23,7 +30,6 @@ export const SECTION_ROUTES = [
   "integrations",
   "industries",
   "estimator",
-  "pricing",
   "testimonials",
   "faq",
   "contact",
@@ -69,7 +75,7 @@ export const MOBILE_NAV_LINKS: NavItem[] = [
   { name: "In-Store Analytics", href: "/analytics" },
   { name: "Hardware", href: "/hardware" },
   { name: "Industries", href: "/industries" },
-  { name: "Pricing", href: "/pricing" },
+  { name: "Pricing", href: "/estimator" },
   { name: "Testimonials", href: "/testimonials" },
   { name: "FAQ", href: "/faq" },
 ];
