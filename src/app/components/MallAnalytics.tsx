@@ -459,7 +459,16 @@ export function MallAnalytics() {
                   />
                   <Tooltip
                     cursor={{ fill: "rgba(251, 191, 36,0.06)" }}
-                    contentStyle={{ background: "#0f172a", border: "1px solid #374151", borderRadius: 10, fontSize: 11 }}
+                    contentStyle={{
+                      background: "#0f172a",
+                      border: "1px solid #FACC15",
+                      borderRadius: 10,
+                      fontSize: 11,
+                      color: "#F9FAFB",
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
+                    }}
+                    labelStyle={{ color: "#FACC15", fontWeight: 700 }}
+                    itemStyle={{ color: "#F9FAFB" }}
                     formatter={(v: number) => [`${v} min`, "Dwell"]}
                   />
                   <Bar dataKey="dwell" radius={[0, 5, 5, 0]} isAnimationActive animationDuration={1300}>

@@ -1350,8 +1350,16 @@ export default function App() {
                       <XAxis dataKey="d" tick={{ fontSize: 9, fill: "#6b7280", fontWeight: 700 }} tickLine={false} axisLine={false} />
                       <YAxis hide />
                       <Tooltip
-                        contentStyle={{ background: "#0f172a", border: "1px solid #374151", borderRadius: 10, fontSize: 11 }}
+                        contentStyle={{
+                          background: "#0f172a",
+                          border: "1px solid #FACC15",
+                          borderRadius: 10,
+                          fontSize: 11,
+                          color: "#F9FAFB",
+                          boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
+                        }}
                         labelStyle={{ color: "#FACC15", fontWeight: 700 }}
+                        itemStyle={{ color: "#F9FAFB" }}
                       />
                       <Area type="monotone" dataKey="passed" stroke="#FACC15" strokeWidth={2} fill="url(#passedG)" />
                       <Area type="monotone" dataKey="entered" stroke="#10b981" strokeWidth={2} fill="url(#enteredG)" />
