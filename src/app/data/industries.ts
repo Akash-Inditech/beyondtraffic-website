@@ -77,10 +77,10 @@ export const INDUSTRIES: Industry[] = [
     shortName: "Fashion",
     icon: Shirt,
     accent: {
-      grad: "from-pink-500 to-rose-600",
-      text: "text-pink-600",
-      softBg: "bg-pink-50",
-      chart: "#EC4899",
+      grad: "from-yellow-500 to-amber-600",
+      text: "text-amber-700",
+      softBg: "bg-yellow-50",
+      chart: "#D97706",
     },
     hero: {
       eyebrow: "Industry · Fashion & Apparel",
@@ -137,8 +137,8 @@ export const INDUSTRIES: Industry[] = [
           { label: "9p", value: 98, value2: 32 },
         ],
         series: [
-          { key: "value", label: "Walk-ins", color: "#EC4899" },
-          { key: "value2", label: "Purchases", color: "#A855F7" },
+          { key: "value", label: "Walk-ins", color: "#D97706" },
+          { key: "value2", label: "Purchases", color: "#92400E" },
         ],
       },
       {
