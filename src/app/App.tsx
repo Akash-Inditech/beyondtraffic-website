@@ -469,12 +469,12 @@ export default function App() {
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="mb-4 md:mb-5"
               >
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[0.95] tracking-tight mb-3 md:mb-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[1.08] md:leading-[1.05] tracking-tight mb-4 md:mb-5">
                   <motion.span
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
                     animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                     transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="block text-gray-900 drop-shadow-sm"
+                    className="block text-gray-900 drop-shadow-sm pb-0.5"
                   >
                     Real-Time Traffic.
                   </motion.span>
@@ -482,7 +482,7 @@ export default function App() {
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
                     animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                     transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="block text-gray-900 drop-shadow-sm"
+                    className="block text-gray-900 drop-shadow-sm pb-0.5"
                   >
                     Real Business Insight,
                   </motion.span>
@@ -490,7 +490,7 @@ export default function App() {
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
                     animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                     transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="block stori-gradient drop-shadow-lg relative"
+                    className="block stori-gradient drop-shadow-lg relative pb-2"
                   >
                     See Beyond the Crowd!
                     <motion.span
