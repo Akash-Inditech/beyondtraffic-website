@@ -459,7 +459,7 @@ export default function App() {
                 className="mb-2 md:mb-3"
               >
                 <span className="stori-label">
-                  Beyond Traffic &mdash; The Intelligence Platform for Modern Retail
+                  Beyond Traffic &mdash; Intelligent Footfall counting system for retail
                 </span>
               </motion.div>
 
@@ -490,7 +490,7 @@ export default function App() {
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
                     animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                     transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="block stori-gradient drop-shadow-lg relative pb-2"
+                    className="block stori-gradient drop-shadow-lg relative pt-2 md:pt-3 pb-2"
                   >
                     See Beyond the Crowd!
                     <motion.span
@@ -533,17 +533,17 @@ export default function App() {
                   whileHover={{ scale: 1.04, y: -3 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                  className="group bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 text-white px-7 py-3 md:px-8 md:py-3.5 rounded-full shadow-2xl shadow-yellow-500/40 hover:shadow-yellow-500/60 transition-shadow duration-300 flex items-center gap-2 text-base md:text-lg font-semibold relative overflow-hidden"
+                  className="group bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 text-white px-6 py-2.5 md:px-7 md:py-3 rounded-full shadow-2xl shadow-yellow-500/40 hover:shadow-yellow-500/60 transition-shadow duration-300 flex items-center gap-2 text-sm md:text-base font-semibold relative overflow-hidden"
                 >
                   <span className="relative z-10">Stop Guessing, Start Tracking</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-300 relative z-10" />
+                  <ArrowRight className="w-4 h-4 md:w-[18px] md:h-[18px] group-hover:translate-x-1.5 transition-transform duration-300 relative z-10" />
                 </MotionLink>
                 <MotionLink
                   to="/dashboard"
                   whileHover={{ scale: 1.04, y: -3 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                  className="text-gray-800 px-5 py-3 md:px-6 md:py-3.5 rounded-full border-2 border-gray-200 hover:border-gray-400 transition-colors flex items-center gap-2 text-sm md:text-base font-semibold"
+                  className="text-gray-800 px-5 py-2.5 md:px-6 md:py-3 rounded-full border-2 border-gray-200 hover:border-gray-400 transition-colors flex items-center gap-2 text-sm md:text-[15px] font-semibold"
                 >
                   See Live Dashboard
                 </MotionLink>
