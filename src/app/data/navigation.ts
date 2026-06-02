@@ -22,6 +22,7 @@ export const SECTION_ROUTES = [
   "hardware",
   "integrations",
   "industries",
+  "estimator",
   "pricing",
   "testimonials",
   "faq",
@@ -38,6 +39,7 @@ export const NAV_DROPDOWNS: NavDropdown[] = [
       { name: "In-Store Analytics", href: "/analytics" },
       { name: "Hardware & Sensors", href: "/hardware" },
       { name: "Integrations", href: "/integrations" },
+      { name: "Device Estimator", href: "/estimator" },
     ],
   },
   {

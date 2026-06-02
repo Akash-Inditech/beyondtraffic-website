@@ -57,6 +57,7 @@ import {
 import { FAQAccordion } from "./components/FAQAccordion";
 import { HeroTrackingScene } from "./components/HeroTrackingScene";
 import { IndustryCard } from "./components/IndustryCard";
+import { DeviceEstimator } from "./components/DeviceEstimator";
 import { LiveDashboardPreview } from "./components/LiveDashboardPreview";
 import { MallAnalytics } from "./components/MallAnalytics";
 import { RetailProblemViz } from "./components/RetailProblemViz";
@@ -144,13 +145,19 @@ export default function App() {
     console.log("Form submitted:", formData);
   };
 
+  // Real Beyond Traffic clients. Logo files live in /public/clients/
+  // and are loaded relative to Vite's BASE_URL so they resolve both in dev
+  // and on GitHub Pages' sub-path.
   const brands = [
-    { name: "BFL GROUP", icon: Triangle },
-    { name: "HealthySpot", icon: Heart },
-    { name: "New West KnifeWorks", icon: Package },
-    { name: "Inditech Technologies", icon: Briefcase },
-    { name: "Optical Retail UAE", icon: Glasses },
-    { name: "Galadari Motors", icon: Car },
+    { name: "Sana Osmani", src: `${import.meta.env.BASE_URL}clients/sana-osmani.jpg` },
+    { name: "ILG", src: `${import.meta.env.BASE_URL}clients/ilg.png` },
+    { name: "Secura Centre", src: `${import.meta.env.BASE_URL}clients/secura-centre.png` },
+    { name: "Hilite Mall", src: `${import.meta.env.BASE_URL}clients/hilite-mall.svg` },
+    { name: "Sobha City Mall", src: `${import.meta.env.BASE_URL}clients/sobha-city-mall.png` },
+    { name: "JYSK", src: `${import.meta.env.BASE_URL}clients/jysk.png` },
+    { name: "Jawhara Jewellers", src: `${import.meta.env.BASE_URL}clients/jawhara.jpg` },
+    { name: "Chattels & More", src: `${import.meta.env.BASE_URL}clients/chattels-more.png` },
+    { name: "Wolfi's", src: `${import.meta.env.BASE_URL}clients/wolfis.png` },
   ];
 
   const faqItems = [
@@ -851,14 +858,33 @@ export default function App() {
               {[...brands, ...brands, ...brands].map((brand, index) => (
                 <motion.div
                   key={index}
-                  className="flex items-center gap-3 mx-8 md:mx-12 flex-shrink-0 group cursor-pointer"
-                  whileHover={{ scale: 1.08, y: -4 }}
+                  className="mx-3 md:mx-4 flex-shrink-0 group cursor-pointer"
+                  whileHover={{ scale: 1.06, y: -3 }}
                   transition={{ type: "spring", stiffness: 300 }}
+                  title={brand.name}
                 >
-                  <brand.icon className="w-7 h-7 text-gray-500 group-hover:text-yellow-400 transition-colors duration-300" />
-                  <span className="text-lg md:text-xl font-black uppercase tracking-tight text-gray-500 group-hover:text-yellow-400 transition-colors duration-300 whitespace-nowrap">
-                    {brand.name}
-                  </span>
+                  <div className="bg-white/95 backdrop-blur-sm border border-white/40 rounded-xl px-5 py-3 md:px-6 md:py-3.5 shadow-md group-hover:shadow-yellow-500/40 group-hover:bg-white group-hover:border-yellow-300/60 transition-all duration-300 h-14 md:h-16 flex items-center justify-center min-w-[140px] md:min-w-[160px]">
+                    <img
+                      src={brand.src}
+                      alt={brand.name}
+                      loading="lazy"
+                      className="max-h-8 md:max-h-10 max-w-[120px] md:max-w-[140px] object-contain"
+                      onError={(e) => {
+                        // Fallback to a styled wordmark if the file isn't present yet.
+                        const img = e.currentTarget;
+                        const parent = img.parentElement;
+                        if (parent && !parent.dataset.fallback) {
+                          parent.dataset.fallback = "1";
+                          img.style.display = "none";
+                          const span = document.createElement("span");
+                          span.className =
+                            "text-sm md:text-base font-black uppercase tracking-tight text-gray-700 whitespace-nowrap";
+                          span.textContent = brand.name;
+                          parent.appendChild(span);
+                        }
+                      }}
+                    />
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
@@ -2201,9 +2227,9 @@ export default function App() {
                 Integrations Made Easy
               </p>
 
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.05] tracking-tight px-4 mb-6 md:mb-10">
-                <span className="block text-gray-900">Connect Beyond Traffic to</span>
-                <span className="block stori-gradient">your existing retail tools</span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.18] md:leading-[1.15] tracking-tight px-4 mb-6 md:mb-10">
+                <span className="block text-gray-900 pb-1">Connect Beyond Traffic to</span>
+                <span className="block stori-gradient pb-2">your existing retail tools</span>
               </h2>
 
               <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
@@ -2409,6 +2435,9 @@ export default function App() {
           </motion.div>
         </div>
       </section>
+
+      {/* Device & subscription estimator */}
+      <DeviceEstimator />
 
       {/* Pricing Section */}
       <section id="pricing" className="py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
