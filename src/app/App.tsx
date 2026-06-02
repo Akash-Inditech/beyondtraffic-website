@@ -447,7 +447,7 @@ export default function App() {
       </header>
 
       {/* Hero Section — two-column: text left, dark tracking scene right */}
-      <section className="relative pt-6 md:pt-9 pb-8 md:pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden bg-white">
+      <section className="relative pt-2 md:pt-4 pb-6 md:pb-10 px-4 sm:px-6 lg:px-8 overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-start">
             {/* LEFT — content */}
@@ -456,7 +456,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.05 }}
-                className="mb-3 md:mb-4"
+                className="mb-2 md:mb-3"
               >
                 <span className="stori-label">
                   Beyond Traffic &mdash; The Intelligence Platform for Modern Retail
@@ -467,14 +467,14 @@ export default function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="mb-4 md:mb-5"
+                className="mb-3 md:mb-4"
               >
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[1.08] md:leading-[1.05] tracking-tight mb-4 md:mb-5">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[0.95] tracking-tight mb-3 md:mb-4">
                   <motion.span
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
                     animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                     transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="block text-gray-900 drop-shadow-sm pb-0.5"
+                    className="block text-gray-900 drop-shadow-sm"
                   >
                     Real-Time Traffic.
                   </motion.span>
@@ -482,7 +482,7 @@ export default function App() {
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
                     animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                     transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="block text-gray-900 drop-shadow-sm pb-0.5"
+                    className="block text-gray-900 drop-shadow-sm"
                   >
                     Real Business Insight,
                   </motion.span>
@@ -517,7 +517,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                className="text-sm md:text-base text-gray-600 max-w-xl mb-5 md:mb-6 leading-relaxed"
+                className="text-sm md:text-base text-gray-600 max-w-xl mb-4 md:mb-5 leading-relaxed"
               >
                 Transform retail performance with AI-powered traffic intelligence. Track footfall, measure conversion, understand demographics&mdash;all in real-time with 3D stereo vision technology.
               </motion.p>
@@ -554,7 +554,7 @@ export default function App() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.85 }}
-                className="mt-4 md:mt-6 flex items-center gap-5 text-[11px] md:text-xs font-bold uppercase tracking-widest text-gray-500"
+                className="mt-3 md:mt-4 flex items-center gap-5 text-[11px] md:text-xs font-bold uppercase tracking-widest text-gray-500"
               >
                 <span className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -572,7 +572,7 @@ export default function App() {
             </div>
 
             {/* RIGHT — tracking scene, aligned with the start of the headline */}
-            <div className="lg:col-span-6 xl:col-span-6 lg:mt-[3.25rem] xl:mt-[3.5rem]">
+            <div className="lg:col-span-6 xl:col-span-6 lg:mt-[2rem] xl:mt-[2.25rem]">
               <HeroTrackingScene />
             </div>
           </div>
