@@ -288,7 +288,7 @@ export default function App() {
           >
             <Link to="/" className="flex items-center gap-3 group">
               <img
-                src={`${import.meta.env.BASE_URL}BT%20LOGO%20small.png`}
+                src={`${import.meta.env.BASE_URL}BT%20LOGO-dark%20BG.png`}
                 alt="Beyond Traffic logo"
                 className={`object-contain group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
                   scrolled ? "w-11 h-11" : "w-12 h-12"
@@ -2818,7 +2818,7 @@ export default function App() {
             <div className="col-span-2 md:col-span-2">
               <div className="flex items-center gap-3 mb-6">
                 <img
-                  src={`${import.meta.env.BASE_URL}BT%20LOGO%20small.png`}
+                  src={`${import.meta.env.BASE_URL}BT%20LOGO-WHITE.png`}
                   alt="Beyond Traffic logo"
                   className="w-14 h-14 object-contain"
                 />
