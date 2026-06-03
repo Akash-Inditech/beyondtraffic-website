@@ -287,13 +287,13 @@ export default function App() {
             animate={{ opacity: 1, x: 0 }}
           >
             <Link to="/" className="flex items-center gap-3 group">
-              <div
-                className={`bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
-                  scrolled ? "w-9 h-9" : "w-10 h-10"
+              <img
+                src={`${import.meta.env.BASE_URL}BT%20LOGO%20small.png`}
+                alt="Beyond Traffic logo"
+                className={`object-contain group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
+                  scrolled ? "w-11 h-11" : "w-12 h-12"
                 }`}
-              >
-                <Eye className={`text-white transition-all ${scrolled ? "w-5 h-5" : "w-6 h-6"}`} />
-              </div>
+              />
               <span className="text-xl font-black uppercase tracking-tight text-gray-900">
                 Beyond Traffic<span className="text-yellow-500">.</span>
               </span>
@@ -2817,9 +2817,11 @@ export default function App() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12 mb-12 md:mb-16">
             <div className="col-span-2 md:col-span-2">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-yellow-500/30">
-                  <Eye className="w-7 h-7 text-white" />
-                </div>
+                <img
+                  src={`${import.meta.env.BASE_URL}BT%20LOGO%20small.png`}
+                  alt="Beyond Traffic logo"
+                  className="w-14 h-14 object-contain"
+                />
                 <span className="text-2xl font-semibold">Beyond Traffic</span>
               </div>
               <p className="text-gray-400 mb-6 leading-relaxed text-lg">
