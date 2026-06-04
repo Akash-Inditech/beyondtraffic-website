@@ -1,0 +1,29 @@
+# Beyond Traffic — Apache config for static SPA hosting (cPanel)
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # --- Force HTTPS ---
+  # Leave commented until your SSL certificate is issued in cPanel,
+  # otherwise you can get a redirect loop. Uncomment after SSL is active.
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  # --- SPA fallback ---
+  # Serve real files/folders directly; route everything else to index.html
+  # so React Router can handle deep links like /features or /industries/fashion.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Cache hashed assets aggressively (filenames change on every build)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>

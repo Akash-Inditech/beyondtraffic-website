@@ -17,9 +17,16 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig(({ command }) => ({
-  // GitHub Pages serves the site at /beyondtraffic-website/, so production
-  // builds need that as the base path. Dev server still uses '/'.
-  base: command === 'build' ? '/beyondtraffic-website/' : '/',
+  // Base path depends on where we deploy:
+  //  - cPanel / own domain root (default production build) -> '/'
+  //  - GitHub Pages sub-path -> set DEPLOY_TARGET=ghpages in the build env
+  //  - dev server always uses '/'
+  base:
+    command === 'build'
+      ? process.env.DEPLOY_TARGET === 'ghpages'
+        ? '/beyondtraffic-website/'
+        : '/'
+      : '/',
   plugins: [
     figmaAssetResolver(),
     // The React and Tailwind plugins are both required for Make, even if
