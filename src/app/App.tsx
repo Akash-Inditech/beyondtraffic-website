@@ -37,6 +37,7 @@ import {
   Triangle,
   CreditCard,
   Plane,
+  Mail,
 } from "lucide-react";
 import {
   Area,
@@ -139,10 +140,29 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
+  const SALES_EMAIL = "sales@thebeyondtraffic.com";
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Thank you! We'll be in touch shortly.");
-    console.log("Form submitted:", formData);
+    const subject = `Demo request — ${formData.name || "Website enquiry"}${
+      formData.company ? ` (${formData.company})` : ""
+    }`;
+    const body = [
+      `Name: ${formData.name}`,
+      `Company: ${formData.company}`,
+      `Role: ${formData.role}`,
+      `Email: ${formData.email}`,
+      `Phone: ${formData.phone}`,
+      `Locations: ${formData.locations}`,
+      `Industry: ${formData.industry}`,
+      `Heard about us via: ${formData.source}`,
+      ``,
+      `Message:`,
+      formData.message,
+    ].join("\n");
+    window.location.href = `mailto:${SALES_EMAIL}?subject=${encodeURIComponent(
+      subject,
+    )}&body=${encodeURIComponent(body)}`;
   };
 
   // Real Beyond Traffic clients. Logo files live in /public/clients/
@@ -2827,26 +2847,13 @@ export default function App() {
               <p className="text-gray-400 mb-6 leading-relaxed text-lg">
                 The most accurate people counting system for retail in the UAE.
               </p>
-              <div className="flex gap-4">
-                <a
-                  href="#"
-                  className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-yellow-500 transition-all"
-                >
-                  <span className="text-xs">ð•</span>
-                </a>
-                <a
-                  href="#"
-                  className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-yellow-500 transition-all"
-                >
-                  <span className="text-xs">in</span>
-                </a>
-                <a
-                  href="#"
-                  className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-yellow-500 transition-all"
-                >
-                  <span className="text-xs">f</span>
-                </a>
-              </div>
+              <a
+                href={`mailto:${SALES_EMAIL}`}
+                className="inline-flex items-center gap-2 text-gray-300 hover:text-yellow-400 transition-colors"
+              >
+                <Mail className="w-4 h-4" />
+                {SALES_EMAIL}
+              </a>
             </div>
             <div>
               <h4 className="mb-6 text-lg font-semibold">Platform</h4>
@@ -2926,20 +2933,34 @@ export default function App() {
               <p className="text-gray-400 mb-4 md:mb-6 text-sm md:text-base">
                 Get the latest insights on retail analytics and footfall tracking.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3">
+              <form
+                className="flex flex-col sm:flex-row gap-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const email = (
+                    e.currentTarget.elements.namedItem("newsletterEmail") as HTMLInputElement
+                  )?.value;
+                  window.location.href = `mailto:${SALES_EMAIL}?subject=${encodeURIComponent(
+                    "Newsletter signup",
+                  )}&body=${encodeURIComponent(`Please add this email to the newsletter: ${email}`)}`;
+                }}
+              >
                 <input
                   type="email"
+                  name="newsletterEmail"
+                  required
                   placeholder="Enter your email"
                   className="flex-1 px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/50 transition-all outline-none text-sm md:text-base"
                 />
                 <motion.button
+                  type="submit"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl hover:shadow-xl hover:shadow-yellow-500/30 transition-all font-medium text-sm md:text-base"
                 >
                   Subscribe
                 </motion.button>
-              </div>
+              </form>
             </div>
           </div>
 
