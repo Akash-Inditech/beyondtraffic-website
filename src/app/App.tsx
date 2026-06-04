@@ -2457,7 +2457,7 @@ export default function App() {
                     to="/features"
                     className="border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-2xl hover:bg-white/10 transition-all font-medium inline-block"
                   >
-                    Explore Features
+                    Reexplore Features
                   </Link>
                 </motion.div>
               </div>
