@@ -2443,21 +2443,23 @@ export default function App() {
                 specific UAE context.
               </p>
               <div className="flex gap-3 md:gap-4 justify-center flex-wrap">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-white text-yellow-500 px-6 md:px-8 py-3 md:py-4 rounded-2xl hover:shadow-2xl transition-all font-medium flex items-center gap-2 group"
-                >
-                  Get Industry Demo
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-2xl hover:bg-white/10 transition-all font-medium"
-                >
-                  Explore Features
-                </motion.button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    to={hrefToLinkTo("#contact")}
+                    className="bg-white text-yellow-500 px-6 md:px-8 py-3 md:py-4 rounded-2xl hover:shadow-2xl transition-all font-medium flex items-center gap-2 group"
+                  >
+                    Get Industry Demo
+                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    to="/features"
+                    className="border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-2xl hover:bg-white/10 transition-all font-medium inline-block"
+                  >
+                    Explore Features
+                  </Link>
+                </motion.div>
               </div>
             </div>
           </motion.div>
