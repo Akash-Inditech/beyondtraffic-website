@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowUp, MessageCircle, Send, Sparkles, X } from "lucide-react";
+import { ArrowUp, Send, Sparkles, X } from "lucide-react";
 
 /**
  * Fixed bottom-right floating action stack:
@@ -85,7 +85,16 @@ export function FloatingActions() {
               transition={{ duration: 0.18 }}
               className="relative"
             >
-              <MessageCircle className="w-6 h-6 md:w-7 md:h-7" strokeWidth={2.4} />
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                fillRule="evenodd"
+                clipRule="evenodd"
+                className="w-7 h-7 md:w-8 md:h-8"
+                aria-hidden="true"
+              >
+                <path d="M5 3.5h14A2.5 2.5 0 0 1 21.5 6v8A2.5 2.5 0 0 1 19 16.5h-6.2l-4.3 3.4A.9.9 0 0 1 7 19.2v-2.7H5A2.5 2.5 0 0 1 2.5 14V6A2.5 2.5 0 0 1 5 3.5Zm8.2 2.6c.7 2.3 1.6 3.2 3.9 3.9-2.3.7-3.2 1.6-3.9 3.9-.7-2.3-1.6-3.2-3.9-3.9 2.3-.7 3.2-1.6 3.9-3.9Z" />
+              </svg>
             </motion.span>
           )}
         </AnimatePresence>
