@@ -369,17 +369,14 @@ export default function App() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <Link to="/" className="flex items-center gap-3 group">
+            <Link to="/" className="flex items-center group">
               <img
                 src={`${import.meta.env.BASE_URL}BT%20LOGO%20small.png`}
                 alt="Beyond Traffic logo"
-                className={`object-contain group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
-                  scrolled ? "w-14 h-14" : "w-16 h-16"
+                className={`w-auto object-contain group-hover:scale-105 transition-all duration-300 ${
+                  scrolled ? "h-11" : "h-14"
                 }`}
               />
-              <span className="text-xl font-black uppercase tracking-tight text-gray-900">
-                Beyond Traffic<span className="text-yellow-500">.</span>
-              </span>
             </Link>
           </motion.div>
 
@@ -2919,13 +2916,12 @@ export default function App() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12 mb-12 md:mb-16">
             <div className="col-span-2 md:col-span-2">
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center mb-6">
                 <img
                   src={`${import.meta.env.BASE_URL}BT%20LOGO-dark%20BG.png`}
                   alt="Beyond Traffic logo"
-                  className="w-20 h-20 object-contain"
+                  className="h-20 w-auto object-contain"
                 />
-                <span className="text-2xl font-semibold">Beyond Traffic</span>
               </div>
               <p className="text-gray-400 mb-6 leading-relaxed text-lg">
                 The most accurate people counting system for retail in the UAE.
