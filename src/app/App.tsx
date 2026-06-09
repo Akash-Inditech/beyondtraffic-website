@@ -141,28 +141,91 @@ export default function App() {
   }, []);
 
   const SALES_EMAIL = "sales@thebeyondtraffic.com";
+  // Web3Forms — delivers submissions straight to the sales inbox (no backend).
+  const WEB3FORMS_KEY = "8b7841dd-7e9d-4069-a9af-d7686bcf74c2";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formStatus, setFormStatus] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
+  const [newsletterStatus, setNewsletterStatus] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
+
+  const submitNewsletter = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const subject = `Demo request — ${formData.name || "Website enquiry"}${
-      formData.company ? ` (${formData.company})` : ""
-    }`;
-    const body = [
-      `Name: ${formData.name}`,
-      `Company: ${formData.company}`,
-      `Role: ${formData.role}`,
-      `Email: ${formData.email}`,
-      `Phone: ${formData.phone}`,
-      `Locations: ${formData.locations}`,
-      `Industry: ${formData.industry}`,
-      `Heard about us via: ${formData.source}`,
-      ``,
-      `Message:`,
-      formData.message,
-    ].join("\n");
-    window.location.href = `mailto:${SALES_EMAIL}?subject=${encodeURIComponent(
-      subject,
-    )}&body=${encodeURIComponent(body)}`;
+    const email = (
+      e.currentTarget.elements.namedItem("newsletterEmail") as HTMLInputElement
+    )?.value;
+    setNewsletterStatus("sending");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: "Newsletter signup — thebeyondtraffic.com",
+          from_name: "Beyond Traffic Website",
+          email,
+          message: `Newsletter signup request: ${email}`,
+        }),
+      });
+      const data = await res.json();
+      setNewsletterStatus(data.success ? "success" : "error");
+    } catch {
+      setNewsletterStatus("error");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormStatus("sending");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `Demo request — ${formData.name || "Website enquiry"}${
+            formData.company ? ` (${formData.company})` : ""
+          }`,
+          from_name: "Beyond Traffic Website",
+          name: formData.name,
+          company: formData.company,
+          role: formData.role,
+          email: formData.email,
+          phone: formData.phone,
+          locations: formData.locations,
+          industry: formData.industry,
+          source: formData.source,
+          message: formData.message,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFormStatus("success");
+        setFormData({
+          name: "",
+          company: "",
+          role: "",
+          email: "",
+          phone: "",
+          locations: "",
+          industry: "",
+          message: "",
+          source: "",
+        });
+      } else {
+        setFormStatus("error");
+      }
+    } catch {
+      setFormStatus("error");
+    }
   };
 
   // Real Beyond Traffic clients. Logo files live in /public/clients/
@@ -311,7 +374,7 @@ export default function App() {
                 src={`${import.meta.env.BASE_URL}BT%20LOGO%20small.png`}
                 alt="Beyond Traffic logo"
                 className={`object-contain group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
-                  scrolled ? "w-11 h-11" : "w-12 h-12"
+                  scrolled ? "w-14 h-14" : "w-16 h-16"
                 }`}
               />
               <span className="text-xl font-black uppercase tracking-tight text-gray-900">
@@ -2813,14 +2876,32 @@ export default function App() {
                   />
                 </div>
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: formStatus === "sending" ? 1 : 1.02 }}
+                  whileTap={{ scale: formStatus === "sending" ? 1 : 0.98 }}
                   type="submit"
-                  className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-8 py-4 rounded-2xl hover:shadow-xl hover:shadow-yellow-500/30 transition-all font-medium text-lg flex items-center justify-center gap-2 group"
+                  disabled={formStatus === "sending"}
+                  className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-8 py-4 rounded-2xl hover:shadow-xl hover:shadow-yellow-500/30 transition-all font-medium text-lg flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Submit Request
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  {formStatus === "sending" ? "Sending…" : "Submit Request"}
+                  {formStatus !== "sending" && (
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  )}
                 </motion.button>
+
+                {formStatus === "success" && (
+                  <p className="text-center text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-xl py-3 px-4">
+                    Thanks! Your request has been sent — our team will be in touch shortly.
+                  </p>
+                )}
+                {formStatus === "error" && (
+                  <p className="text-center text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl py-3 px-4">
+                    Something went wrong. Please try again, or email us directly at{" "}
+                    <a href={`mailto:${SALES_EMAIL}`} className="underline">
+                      {SALES_EMAIL}
+                    </a>
+                    .
+                  </p>
+                )}
               </form>
             </motion.div>
           </div>
@@ -2842,7 +2923,7 @@ export default function App() {
                 <img
                   src={`${import.meta.env.BASE_URL}BT%20LOGO-dark%20BG.png`}
                   alt="Beyond Traffic logo"
-                  className="w-14 h-14 object-contain"
+                  className="w-20 h-20 object-contain"
                 />
                 <span className="text-2xl font-semibold">Beyond Traffic</span>
               </div>
@@ -2935,34 +3016,38 @@ export default function App() {
               <p className="text-gray-400 mb-4 md:mb-6 text-sm md:text-base">
                 Get the latest insights on retail analytics and footfall tracking.
               </p>
-              <form
-                className="flex flex-col sm:flex-row gap-3"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const email = (
-                    e.currentTarget.elements.namedItem("newsletterEmail") as HTMLInputElement
-                  )?.value;
-                  window.location.href = `mailto:${SALES_EMAIL}?subject=${encodeURIComponent(
-                    "Newsletter signup",
-                  )}&body=${encodeURIComponent(`Please add this email to the newsletter: ${email}`)}`;
-                }}
-              >
-                <input
-                  type="email"
-                  name="newsletterEmail"
-                  required
-                  placeholder="Enter your email"
-                  className="flex-1 px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/50 transition-all outline-none text-sm md:text-base"
-                />
-                <motion.button
-                  type="submit"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl hover:shadow-xl hover:shadow-yellow-500/30 transition-all font-medium text-sm md:text-base"
+              {newsletterStatus === "success" ? (
+                <p className="text-sm font-medium text-emerald-300 bg-emerald-500/10 border border-emerald-400/30 rounded-xl py-3 px-4">
+                  You're subscribed — thanks for signing up!
+                </p>
+              ) : (
+                <form
+                  className="flex flex-col sm:flex-row gap-3"
+                  onSubmit={submitNewsletter}
                 >
-                  Subscribe
-                </motion.button>
-              </form>
+                  <input
+                    type="email"
+                    name="newsletterEmail"
+                    required
+                    placeholder="Enter your email"
+                    className="flex-1 px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-gray-500 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/50 transition-all outline-none text-sm md:text-base"
+                  />
+                  <motion.button
+                    type="submit"
+                    disabled={newsletterStatus === "sending"}
+                    whileHover={{ scale: newsletterStatus === "sending" ? 1 : 1.05 }}
+                    whileTap={{ scale: newsletterStatus === "sending" ? 1 : 0.95 }}
+                    className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl hover:shadow-xl hover:shadow-yellow-500/30 transition-all font-medium text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {newsletterStatus === "sending" ? "Subscribing…" : "Subscribe"}
+                  </motion.button>
+                </form>
+              )}
+              {newsletterStatus === "error" && (
+                <p className="mt-2 text-sm text-red-300">
+                  Couldn't subscribe right now — please try again.
+                </p>
+              )}
             </div>
           </div>
 
