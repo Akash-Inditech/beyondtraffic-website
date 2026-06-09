@@ -2,125 +2,82 @@ import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, HelpCircle, Calculator, Sparkles } from "lucide-react";
 import { Link } from "react-router";
+import {
+  type Lens,
+  LENS_INFO,
+  lookupCoverage,
+} from "../data/td2000g2Coverage";
 
 /**
- * Plan-your-deployment calculator.
+ * Plan-your-deployment calculator for the TD2000G2 people-counting sensor.
  *
- * Takes a mounting height, entrance width, and sensor model and produces a
- * rough sizing + price estimate that the prospect can use to start a sales
- * conversation. The numbers are intentionally rounded — the proposal step
- * (Book Demo) tunes them on-site.
+ * Coverage figures come straight from the manufacturer's TD2000G2 coverage
+ * spec (see ../data/td2000g2Coverage). The visitor picks a lens and enters the
+ * mounting height + entrance width; we look up the real floor coverage and
+ * estimate how many sensors the entrance needs. Final layout is confirmed
+ * during the on-site survey (Book Demo).
  */
 
-type Product = {
-  id: string;
-  name: string;
-  fov: number; // total field of view, degrees
-  /** Effective entrance-counting coverage as a multiplier of mounting height (m per metre). */
-  entranceCoverageK: number;
-  /** Effective in-store analytics coverage radius as a multiplier of mounting height. */
-  areaCoverageK: number;
-  /** One-time hardware cost in AED. */
-  unitPriceAed: number;
-  /** Per-device per-month subscription in AED. */
-  monthlyPerDeviceAed: number;
-  recommended?: boolean;
-};
-
-const PRODUCTS: Product[] = [
-  {
-    id: "bt-3d-pro-160",
-    name: "BT 3D Pro 160° (Preferred)",
-    fov: 160,
-    entranceCoverageK: 1.7,
-    areaCoverageK: 1.55,
-    unitPriceAed: 2500,
-    monthlyPerDeviceAed: 89,
-    recommended: true,
-  },
-  {
-    id: "bt-3d-std-120",
-    name: "BT 3D Standard 120°",
-    fov: 120,
-    entranceCoverageK: 1.15,
-    areaCoverageK: 1.05,
-    unitPriceAed: 1800,
-    monthlyPerDeviceAed: 79,
-  },
-  {
-    id: "bt-compact-95",
-    name: "BT Compact 95°",
-    fov: 95,
-    entranceCoverageK: 0.85,
-    areaCoverageK: 0.78,
-    unitPriceAed: 1400,
-    monthlyPerDeviceAed: 69,
-  },
-];
-
-const SETUP_PER_DEVICE_AED = 250;
-
 type Estimate = {
-  entranceUnits: number;
-  entranceCoveragePerDevice: number;
+  /** Coverage width per sensor at the floor (m). */
+  coverageWidth: number;
+  /** Coverage depth per sensor at the floor (m). */
+  coverageDepth: number;
+  /** Floor area covered per sensor (m²). */
   areaPerDevice: number;
-  hardware: number;
-  setup: number;
-  monthly: number;
-  yearly: number;
+  /** Sensors needed to span the entrance width. */
+  sensorsNeeded: number;
+  /** Mounting height actually used after clamping to the lens range. */
+  usedHeight: number;
+  /** Whether the entered height was within the lens's valid range. */
+  inRange: boolean;
 };
 
 function computeEstimate(
+  lens: Lens,
   mountingHeight: number,
   entranceWidth: number,
-  product: Product,
 ): Estimate {
-  const safeHeight = Math.max(2, Math.min(mountingHeight, 6));
-  const safeWidth = Math.max(0.5, Math.min(entranceWidth, 40));
-
-  const entranceCoveragePerDevice = product.entranceCoverageK * safeHeight;
-  const entranceUnits = Math.max(
-    1,
-    Math.ceil(safeWidth / entranceCoveragePerDevice),
+  const { width, depth, usedHeight, inRange } = lookupCoverage(
+    lens,
+    mountingHeight,
   );
-
-  const areaRadius = product.areaCoverageK * safeHeight;
-  const areaPerDevice = Math.PI * areaRadius * areaRadius;
-
-  const hardware = entranceUnits * product.unitPriceAed;
-  const setup = entranceUnits * SETUP_PER_DEVICE_AED;
-  const monthly = entranceUnits * product.monthlyPerDeviceAed;
-  const yearly = monthly * 12;
+  const safeWidth = Math.max(0.5, Math.min(entranceWidth, 100));
+  const sensorsNeeded = Math.max(1, Math.ceil(safeWidth / width));
 
   return {
-    entranceUnits,
-    entranceCoveragePerDevice,
-    areaPerDevice,
-    hardware,
-    setup,
-    monthly,
-    yearly,
+    coverageWidth: width,
+    coverageDepth: depth,
+    areaPerDevice: width * depth,
+    sensorsNeeded,
+    usedHeight,
+    inRange,
   };
 }
 
-const formatAed = (v: number) =>
-  `AED ${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+const LENS_OPTIONS: Lens[] = ["2mm", "8mm"];
 
 export function DeviceEstimator() {
+  const [lens, setLens] = useState<Lens>("2mm");
   const [mountingHeight, setMountingHeight] = useState(3.5);
   const [entranceWidth, setEntranceWidth] = useState(5);
-  const [productId, setProductId] = useState(PRODUCTS[0].id);
   const [calculated, setCalculated] = useState(false);
 
-  const product = useMemo(
-    () => PRODUCTS.find((p) => p.id === productId) ?? PRODUCTS[0],
-    [productId],
-  );
+  const lensInfo = LENS_INFO[lens];
 
   const estimate = useMemo(
-    () => computeEstimate(mountingHeight, entranceWidth, product),
-    [mountingHeight, entranceWidth, product],
+    () => computeEstimate(lens, mountingHeight, entranceWidth),
+    [lens, mountingHeight, entranceWidth],
   );
+
+  // Switching lens clamps the height into the new lens's supported range.
+  const onLensChange = (next: Lens) => {
+    setLens(next);
+    const info = LENS_INFO[next];
+    setMountingHeight((h) =>
+      Math.max(info.minHeight, Math.min(h, info.maxHeight)),
+    );
+  };
 
   return (
     <section
@@ -147,9 +104,9 @@ export function DeviceEstimator() {
             <span className="block stori-gradient pb-2">under 30 seconds.</span>
           </h2>
           <p className="text-base md:text-lg text-gray-600 leading-relaxed">
-            Tell us your entrance dimensions and we&apos;ll estimate the
-            sensors required and what your monthly subscription would look
-            like. Final pricing is tuned during the on-site survey.
+            Pick a TD2000G2 lens and enter your ceiling height and entrance
+            width. We&apos;ll show the real sensor coverage and how many units
+            you&apos;d need. Final layout is confirmed during the on-site survey.
           </p>
         </div>
 
@@ -168,7 +125,7 @@ export function DeviceEstimator() {
               </div>
               <div>
                 <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.18em] text-amber-700">
-                  Device Estimator
+                  TD2000G2 Estimator
                 </p>
                 <h3 className="text-lg md:text-xl font-black text-gray-900 leading-tight">
                   Configure your entrance
@@ -176,36 +133,47 @@ export function DeviceEstimator() {
               </div>
             </div>
 
-            <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-              Enter the mounting height and entrance width. We&apos;ll estimate:
-            </p>
-            <ul className="mb-6 space-y-2 text-sm">
-              <li className="flex items-start gap-2 text-gray-700">
-                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
-                <span>
-                  <span className="font-bold text-gray-900">Entrance counting</span> &mdash;
-                  sized to the door width.
-                </span>
-              </li>
-              <li className="flex items-start gap-2 text-gray-700">
-                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
-                <span>
-                  <span className="font-bold text-gray-900">In-store analytics</span> &mdash;
-                  coverage area per sensor.
-                </span>
-              </li>
-            </ul>
-
             <div className="space-y-5">
+              <Field label="Lens" hint="Wide-angle for low ceilings; long-range for high ceilings.">
+                <div className="grid grid-cols-2 gap-2">
+                  {LENS_OPTIONS.map((opt) => {
+                    const info = LENS_INFO[opt];
+                    const active = opt === lens;
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => onLensChange(opt)}
+                        className={`text-left rounded-xl border px-3.5 py-3 transition ${
+                          active
+                            ? "border-amber-400 bg-amber-50 ring-2 ring-yellow-400/40"
+                            : "border-gray-200 bg-white hover:border-amber-300"
+                        }`}
+                      >
+                        <span className="block text-sm font-black text-gray-900">
+                          {info.label}
+                        </span>
+                        <span className="block text-[11px] text-gray-500 leading-snug mt-0.5">
+                          {info.minHeight}–{info.maxHeight} m
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-[11px] text-gray-500 leading-snug">
+                  {lensInfo.blurb}
+                </p>
+              </Field>
+
               <Field
                 label="Mounting Height (metres)"
-                hint="Typical ceiling height is 2.5–4 m. Min 2, max 6."
+                hint={`Valid range for this lens: ${lensInfo.minHeight}–${lensInfo.maxHeight} m.`}
               >
                 <input
                   type="number"
                   step={0.1}
-                  min={2}
-                  max={6}
+                  min={lensInfo.minHeight}
+                  max={lensInfo.maxHeight}
                   value={mountingHeight}
                   onChange={(e) =>
                     setMountingHeight(parseFloat(e.target.value) || 0)
@@ -222,27 +190,13 @@ export function DeviceEstimator() {
                   type="number"
                   step={0.5}
                   min={0.5}
-                  max={40}
+                  max={100}
                   value={entranceWidth}
                   onChange={(e) =>
                     setEntranceWidth(parseFloat(e.target.value) || 0)
                   }
                   className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base font-semibold tabular-nums focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 transition"
                 />
-              </Field>
-
-              <Field label="Product Type" hint="Wider FOV covers more per device.">
-                <select
-                  value={productId}
-                  onChange={(e) => setProductId(e.target.value)}
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 transition appearance-none cursor-pointer"
-                >
-                  {PRODUCTS.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
               </Field>
 
               <motion.button
@@ -278,7 +232,7 @@ export function DeviceEstimator() {
                       Your estimate
                     </p>
                     <h3 className="text-xl md:text-2xl font-black leading-tight mt-1">
-                      {product.name}
+                      TD2000G2 · {lensInfo.label}
                     </h3>
                   </div>
                   <span className="inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 rounded-full px-2.5 py-1">
@@ -293,54 +247,47 @@ export function DeviceEstimator() {
                 <div className="grid grid-cols-2 gap-3 md:gap-4 mb-5 md:mb-6">
                   <ResultTile
                     label="Sensors needed"
-                    value={`${estimate.entranceUnits}`}
+                    value={`${estimate.sensorsNeeded}`}
                     sub={`for the ${entranceWidth} m entrance`}
                     highlight
                   />
                   <ResultTile
-                    label="Coverage / sensor"
-                    value={`${estimate.entranceCoveragePerDevice.toFixed(1)} m`}
-                    sub="entrance width"
+                    label="Coverage width / sensor"
+                    value={`${estimate.coverageWidth.toFixed(1)} m`}
+                    sub={`at ${estimate.usedHeight.toFixed(1)} m mounting`}
                   />
                   <ResultTile
-                    label="In-store area / sensor"
-                    value={`${estimate.areaPerDevice.toFixed(0)} m²`}
-                    sub="effective analytics zone"
+                    label="Coverage depth / sensor"
+                    value={`${estimate.coverageDepth.toFixed(1)} m`}
+                    sub="along the walking path"
                   />
                   <ResultTile
-                    label="Field of view"
-                    value={`${product.fov}°`}
-                    sub="total horizontal FOV"
+                    label="Floor area / sensor"
+                    value={`${estimate.areaPerDevice.toFixed(1)} m²`}
+                    sub="counting footprint"
                   />
                 </div>
 
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-5 mb-4">
-                  <div className="grid grid-cols-2 gap-3 md:gap-4">
-                    <LineItem
-                      label={`Hardware × ${estimate.entranceUnits}`}
-                      value={formatAed(estimate.hardware)}
-                    />
-                    <LineItem
-                      label="Installation"
-                      value={formatAed(estimate.setup)}
-                    />
-                    <LineItem
-                      label="Monthly subscription"
-                      value={formatAed(estimate.monthly)}
-                      strong
-                    />
-                    <LineItem
-                      label="Annual subscription"
-                      value={formatAed(estimate.yearly)}
-                    />
+                {!estimate.inRange && (
+                  <div className="bg-amber-500/10 border border-amber-400/30 rounded-2xl px-4 py-3 mb-4">
+                    <p className="text-[12px] md:text-sm text-amber-200 leading-relaxed">
+                      The {lensInfo.label} lens supports{" "}
+                      {lensInfo.minHeight}–{lensInfo.maxHeight} m mounting
+                      heights. We&apos;ve used the closest in-range value
+                      ({estimate.usedHeight.toFixed(1)} m) — switch lens for
+                      heights outside this range.
+                    </p>
                   </div>
-                </div>
+                )}
 
                 <p className="text-[11px] md:text-xs text-gray-400 leading-relaxed mb-5">
-                  <span className="font-bold text-gray-200">Estimate only.</span>{" "}
-                  Final pricing depends on entrance layout, light conditions,
-                  network setup, and contract length. Multi-site, multi-year, and
-                  enterprise volume discounts are not reflected above.
+                  <span className="font-bold text-gray-200">
+                    Coverage from the TD2000G2 spec.
+                  </span>{" "}
+                  Figures are single-sensor floor coverage at the chosen
+                  mounting height. Real layouts account for entrance shape,
+                  overlap/merge spacing, lighting, and mounting constraints —
+                  confirmed during the on-site survey.
                 </p>
 
                 <div className="flex flex-wrap gap-3">
@@ -390,9 +337,6 @@ function Field({
         )}
       </label>
       {children}
-      {hint && (
-        <p className="mt-1.5 text-[11px] text-gray-500 leading-snug">{hint}</p>
-      )}
     </div>
   );
 }
@@ -429,33 +373,6 @@ function ResultTile({
       {sub && (
         <p className="mt-1.5 text-[11px] text-gray-400 leading-tight">{sub}</p>
       )}
-    </div>
-  );
-}
-
-function LineItem({
-  label,
-  value,
-  strong,
-}: {
-  label: string;
-  value: string;
-  strong?: boolean;
-}) {
-  return (
-    <div>
-      <p className="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-gray-400 leading-tight mb-1">
-        {label}
-      </p>
-      <p
-        className={`tabular-nums leading-none ${
-          strong
-            ? "text-lg md:text-xl font-black text-yellow-300"
-            : "text-base md:text-lg font-bold text-white"
-        }`}
-      >
-        {value}
-      </p>
     </div>
   );
 }
