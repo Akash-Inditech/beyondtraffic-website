@@ -551,15 +551,13 @@ export default function App() {
                 className="mb-3 md:mb-4"
               >
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[0.95] tracking-tight mb-3 md:mb-4">
-                  {/* Keyword-bearing line for SEO; visually hidden, read by search engines and screen readers */}
-                  <span className="sr-only">AI People Counting System for UAE Retail — </span>
                   <motion.span
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
                     animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
                     transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     className="block text-gray-900 drop-shadow-sm"
                   >
-                    Real-Time Traffic.
+                    People Counting System
                   </motion.span>
                   <motion.span
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
@@ -567,7 +565,7 @@ export default function App() {
                     transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                     className="block text-gray-900 drop-shadow-sm"
                   >
-                    Real Business Insight,
+                    for UAE Retail,
                   </motion.span>
                   <motion.span
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
@@ -575,7 +573,7 @@ export default function App() {
                     transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="block stori-gradient drop-shadow-lg relative pt-2 md:pt-3 pb-2"
                   >
-                    See Beyond the Crowd!
+                    See Beyond the Crowd
                     <motion.span
                       className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 rounded-full origin-left"
                       style={{ width: "92%" }}
