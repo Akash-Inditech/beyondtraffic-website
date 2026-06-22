@@ -38,6 +38,7 @@ import {
   CreditCard,
   Plane,
   Mail,
+  Phone,
 } from "lucide-react";
 import {
   Area,
@@ -550,6 +551,8 @@ export default function App() {
                 className="mb-3 md:mb-4"
               >
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black leading-[0.95] tracking-tight mb-3 md:mb-4">
+                  {/* Keyword-bearing line for SEO; visually hidden, read by search engines and screen readers */}
+                  <span className="sr-only">AI People Counting System for UAE Retail — </span>
                   <motion.span
                     initial={{ opacity: 0, y: 14, letterSpacing: "0.1em" }}
                     animate={{ opacity: 1, y: 0, letterSpacing: "-0.02em" }}
@@ -2926,13 +2929,29 @@ export default function App() {
               <p className="text-gray-400 mb-6 leading-relaxed text-lg">
                 The most accurate people counting system for retail in the UAE.
               </p>
-              <a
-                href={`mailto:${SALES_EMAIL}`}
-                className="inline-flex items-center gap-2 text-gray-300 hover:text-yellow-400 transition-colors"
-              >
-                <Mail className="w-4 h-4" />
-                {SALES_EMAIL}
-              </a>
+              <address className="not-italic space-y-3 text-gray-300">
+                <p className="font-semibold text-white">
+                  Smart Stories Marketing Management LLC
+                </p>
+                <p className="flex items-start gap-2 text-gray-400">
+                  <MapPin className="w-4 h-4 mt-1 shrink-0" />
+                  <span>Floor 2, Office 208, Khaleej Tower, Dubai, 48956, UAE</span>
+                </p>
+                <a
+                  href="tel:+971521804260"
+                  className="flex items-center gap-2 hover:text-yellow-400 transition-colors"
+                >
+                  <Phone className="w-4 h-4" />
+                  +971 52 180 4260
+                </a>
+                <a
+                  href={`mailto:${SALES_EMAIL}`}
+                  className="flex items-center gap-2 hover:text-yellow-400 transition-colors"
+                >
+                  <Mail className="w-4 h-4" />
+                  {SALES_EMAIL}
+                </a>
+              </address>
             </div>
             <div>
               <h4 className="mb-6 text-lg font-semibold">Platform</h4>
