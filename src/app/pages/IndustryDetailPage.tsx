@@ -10,7 +10,6 @@ import {
   Menu,
   Minus,
   CheckCircle2,
-  Eye,
   Activity,
   Radio,
   X,
@@ -124,16 +123,13 @@ function SiteHeader() {
       >
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div
-            className={`bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${
-              scrolled ? "w-9 h-9" : "w-10 h-10"
+          <img
+            src={`${import.meta.env.BASE_URL}BT%20LOGO%20small.png`}
+            alt="Beyond Traffic logo"
+            className={`w-auto object-contain group-hover:scale-105 transition-all duration-300 ${
+              scrolled ? "h-11" : "h-14"
             }`}
-          >
-            <Eye className={`text-white transition-all ${scrolled ? "w-5 h-5" : "w-6 h-6"}`} />
-          </div>
-          <span className="text-xl font-black uppercase tracking-tight text-gray-900">
-            Beyond Traffic<span className="text-yellow-500">.</span>
-          </span>
+          />
         </Link>
 
         {/* Desktop nav */}
@@ -1035,17 +1031,11 @@ function IndustryFooter() {
 
       <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-yellow-500/30">
-            <Eye className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <p className="text-white font-black text-lg leading-none">
-              Beyond Traffic<span className="text-yellow-500">.</span>
-            </p>
-            <p className="text-xs mt-1 text-gray-400">
-              Real-time retail intelligence for the UAE.
-            </p>
-          </div>
+          <img
+            src={`${import.meta.env.BASE_URL}BT%20LOGO-dark%20BG.png`}
+            alt="Beyond Traffic logo"
+            className="h-16 w-auto object-contain"
+          />
         </div>
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs md:text-sm font-semibold text-gray-400 uppercase tracking-wide">

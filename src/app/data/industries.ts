@@ -326,10 +326,10 @@ export const INDUSTRIES: Industry[] = [
     shortName: "Luxury",
     icon: Gem,
     accent: {
-      grad: "from-violet-500 to-purple-600",
-      text: "text-violet-600",
-      softBg: "bg-violet-50",
-      chart: "#8B5CF6",
+      grad: "from-yellow-500 to-amber-600",
+      text: "text-amber-700",
+      softBg: "bg-yellow-50",
+      chart: "#D97706",
     },
     hero: {
       eyebrow: "Industry · Jewellery & Luxury",
@@ -400,8 +400,8 @@ export const INDUSTRIES: Industry[] = [
           { label: "8p", value: 32, value2: 18 },
         ],
         series: [
-          { key: "value", label: "Window browsers", color: "#C4B5FD" },
-          { key: "value2", label: "Engaged consultations", color: "#8B5CF6" },
+          { key: "value", label: "Window browsers", color: "#FCD34D" },
+          { key: "value2", label: "Engaged consultations", color: "#D97706" },
         ],
       },
       {
@@ -419,8 +419,8 @@ export const INDUSTRIES: Industry[] = [
           { label: "8p", value: 78, value2: 80 },
         ],
         series: [
-          { key: "value", label: "Demand", color: "#8B5CF6" },
-          { key: "value2", label: "Staffing", color: "#10B981" },
+          { key: "value", label: "Demand", color: "#D97706" },
+          { key: "value2", label: "Staffing", color: "#92400E" },
         ],
       },
     ],
@@ -455,10 +455,10 @@ export const INDUSTRIES: Industry[] = [
     shortName: "Hospitality",
     icon: UtensilsCrossed,
     accent: {
-      grad: "from-emerald-500 to-teal-600",
-      text: "text-emerald-600",
-      softBg: "bg-emerald-50",
-      chart: "#10B981",
+      grad: "from-yellow-500 to-amber-600",
+      text: "text-amber-700",
+      softBg: "bg-yellow-50",
+      chart: "#D97706",
     },
     hero: {
       eyebrow: "Industry · Hospitality & F&B",
@@ -515,7 +515,7 @@ export const INDUSTRIES: Industry[] = [
           { label: "11p", value: 48, value2: 44 },
         ],
         series: [
-          { key: "value", label: "Today", color: "#10B981" },
+          { key: "value", label: "Today", color: "#D97706" },
           { key: "value2", label: "Last week", color: "#9CA3AF" },
         ],
       },
@@ -586,10 +586,10 @@ export const INDUSTRIES: Industry[] = [
     shortName: "Airports",
     icon: Plane,
     accent: {
-      grad: "from-blue-500 to-indigo-600",
-      text: "text-blue-600",
-      softBg: "bg-blue-50",
-      chart: "#3B82F6",
+      grad: "from-yellow-500 to-amber-600",
+      text: "text-amber-700",
+      softBg: "bg-yellow-50",
+      chart: "#D97706",
     },
     hero: {
       eyebrow: "Industry · Airports",
@@ -675,7 +675,7 @@ export const INDUSTRIES: Industry[] = [
           { label: "8p", value: 1860, value2: 1920 },
         ],
         series: [
-          { key: "value", label: "Actual", color: "#3B82F6" },
+          { key: "value", label: "Actual", color: "#D97706" },
           { key: "value2", label: "Forecast", color: "#94A3B8" },
         ],
       },
